@@ -3421,11 +3421,17 @@ const COS=[
   ['w_genesis','wing','태초의 날개',1e8,['#ff6ad5','#fff27a']],['w_inf','wing','무한의 날개',5e8,['rainbow','#ffffff']],['a_genesis','aura','태초 오라',8e7,['#ff6ad5','#fff27a']],['a_inf','aura','무한 오라',3e8,['rainbow','#ffffff']],
   ['n_genesis','name','태초 이름표',5e7,['#ff6ad5']],['n_inf','name','무한 이름표 (금빛 무지개)',2e8,['rainbow']],['d_genesis','dye','태초 망토',4e7,['#ff6ad5']],['d_inf','dye','무한 망토 (무지개)',1e8,['rainbow']],
   ['n_rb','name','윤회 이름표',0,['#4affd0'],{rb:1}],['a_rb','aura','윤회 오라',0,['#4affd0','#ffffff'],{rb:3}],['w_rb','wing','윤회의 날개',0,['#4affd0','#b48aff'],{rb:10}],['d_rb','dye','윤회 망토',0,['#2a7a6a'],{rb:15}],['n_rb2','name','별빛 윤회 이름표',0,['#b48aff'],{rb:20}],['a_rb2','aura','영겁의 오라',0,['#b48aff','#fff27a'],{rb:40}],['w_rb2','wing','영겁의 날개',0,['rainbow','#4affd0'],{rb:50}],['a_rb3','aura','윤회의 왕 오라',0,['rainbow','#ffffff'],{rb:100}],
+  ['w_bat','wing','박쥐 날개',50000,['#4a3a5a','#ff4a6a']],['w_leaf','wing','나뭇잎 날개',35000,['#6ee77a','#2a8a3a']],['a_thunder','aura','번개 오라',40000,['#fff27a','#7ff0ff']],['a_sakura','aura','벚꽃 오라',30000,['#ff9ad8','#ffffff']],
+  ['n_sky','name','하늘 이름표',10000,['#7ff0ff']],['n_mint','name','민트 이름표',10000,['#5affd8']],['d_navy','dye','밤하늘 망토',8000,['#1a2a6a']],['d_forest','dye','숲 망토',8000,['#2a6a3a']],
+  ['w_star','wing','성좌의 날개',2e8,['#7ab0ff','#ffffff']],['w_galaxy','wing','은하의 날개',6e8,['#b48aff','#7ab0ff']],['w_dawn','wing','개벽의 날개',15e8,['#ffe066','#ff9ad8']],
+  ['a_galaxy','aura','은하 오라',4e8,['#b48aff','#7ab0ff']],['a_dawn','aura','개벽 오라',1e9,['#ffe066','#ffffff']],['n_galaxy','name','은하 이름표',1e8,['#b48aff']],['d_galaxy','dye','은하 망토',5e7,['#5a3ab8']],
   ['d_black','dye','칠흑 망토',8000,['#2a2838']],['d_white','dye','순백 망토',8000,['#f0f0f8']],['d_crimson','dye','진홍 망토',8000,['#c42a3a']],['d_royal','dye','왕실 보라 망토',12000,['#7a3ad8']]];
+const NEW_CASH=new Set(['w_star','w_galaxy','w_dawn','a_galaxy','a_dawn','n_galaxy','d_galaxy','m_starwolf','m_galaxy','m_dawn','cometpet','nebpet','eyepet','starpet','w_bat','w_leaf','a_thunder','a_sakura','n_sky','n_mint','d_navy','d_forest','m_pony']);
 const COS_BY=Object.fromEntries(COS.map(c=>[c[0],c]));const COS_CAT={wing:'날개',aura:'오라',name:'이름표',dye:'망토 염색'};
 /* 탈것 (가루로 구매 · 하나만 탈 수 있음 · 이동 속도 증가) */
 const MOUNTS=[['m_wolf','회색 늑대',3e6,.08,['#9aa0b0','#5a6070','#ffffff'],'beast'],['m_horse','백마',1e7,.12,['#f0f0f8','#a8a8bc','#ffd35a'],'beast'],['m_tiger','천둥 호랑이',3e7,.16,['#ffb03a','#2a2028','#7ff0ff'],'beast'],
   ['m_unicorn','유니콘',8e7,.2,['#ffe8fa','#c9a8ff','#ff9ad8'],'beast'],['m_dragon','흑룡',2e8,.25,['#3a2a4a','#1a1020','#ff3a3a'],'dragon'],['m_phoenix','불사조',5e8,.3,['#ff6a2a','#ffd35a','#fff27a'],'bird'],['m_cloud','근두운',1e9,.35,['#ffffff','#cfe0ff','#ffd35a'],'cloud'],
+  ['m_pony','조랑말',5e5,.05,['#c8a070','#7a5030','#ffffff'],'beast'],['m_starwolf','성좌 늑대',3e8,.3,['#7ab0ff','#1a2a5a','#ffffff'],'beast'],['m_galaxy','은하룡',8e8,.36,['#b48aff','#2a1a4a','#7ab0ff'],'dragon'],['m_dawn','개벽의 봉황',2e9,.4,['#ffe066','#ff9ad8','#ffffff'],'bird'],
   ['m_rbdeer','윤회의 사슴',0,.18,['#cfeee8','#4a8a7a','#4affd0'],'beast',{rb:5}],['m_rbdragon','윤회룡',0,.3,['#2a6a6a','#103030','#4affd0'],'dragon',{rb:30}],['m_rbcloud','영겁의 구름',0,.38,['#e8e0ff','#b48aff','#fff27a'],'cloud',{rb:75}]];
 const MOUNT_BY=Object.fromEntries(MOUNTS.map(m=>[m[0],m]));const MOUNT_LIFT=10;
 const mountOn=()=>me.cos&&MOUNT_BY[me.cos.mount]?me.cos.mount:'';
@@ -3470,7 +3476,7 @@ function renderCash2(){const tabs=$('cashtabs');tabs.textContent='';
   if(cashTab==='cos'){sum.textContent='능력치 없이 꾸미기만 하는 외형이에요. 한 번 사면 계속 갖고 있고, 종류마다 하나씩 켤 수 있어요. 같이 하는 사람 화면에도 보여요.';
     for(const C of COS){const [id,cat,name,price,cols]=C,own=me.cos.own.includes(id),on=me.cos[cat]===id;if(C[5]&&C[5].rb&&!own)continue;
       g.appendChild(cashRow(`${name}`,`${COS_CAT[cat]}${on?' · 착용 중':''}`,own?'보유 중':`가루 ${fmtK(price)}`,!own?'구매':on?'끄기':'켜기',own||countItem('dust')>=price,()=>{
-        if(!own){if(!payDust(price))return;me.cos.own.push(id);me.cos[cat]=id;sys(`${name}을(를) 샀어요!`)}else me.cos[cat]=on?'':id;invChanged();persist();renderCash()},cols[0]==='rainbow'?'#ff9ad8':cols[0]==='#2a2838'?'#9a98b0':cols[0]))}return true}
+        if(!own){if(!payDust(price))return;me.cos.own.push(id);me.cos[cat]=id;sys(`${name}을(를) 샀어요!`)}else me.cos[cat]=on?'':id;invChanged();persist();renderCash()},cols[0]==='rainbow'?'#ff9ad8':cols[0]==='#2a2838'?'#9a98b0':cols[0],NEW_CASH.has(id)?'신상':''))}return true}
   if(cashTab==='grow'){sum.textContent='사냥을 빠르게 해 주는 상품이에요. 부스터는 실제 시간 기준이라 게임을 꺼도 흘러요.';
     for(const [k,[nm,mul]] of Object.entries(BOOST))for(const [days,price] of [[1,BOOST_PR[k][0]],[7,BOOST_PR[k][1]]]){const left=boostOn(k)?Math.ceil((me[k]-Date.now())/36e5):0;
       g.appendChild(cashRow(`${nm} ${days}일`,`${k[0]==='x'?'얻는 경험치':'아이템 드롭률'} ×${mul}${k.length>2?' (일반 부스터와 겹치지 않고 큰 쪽 적용)':''}${left?` · 남은 시간 ${left}시간 (사면 늘어나요)`:''}`,`가루 ${fmtK(price)}`,'구매',countItem('dust')>=price,()=>{if(!payDust(price))return;me[k]=Math.max(me[k]||0,Date.now())+days*864e5;invChanged();persist();sys(`${nm} ${days}일! ${k[0]==='x'?'경험치':'드롭률'} ×${mul}`);renderCash()},'#7ff0ff'))}
@@ -3481,7 +3487,7 @@ function renderCash2(){const tabs=$('cashtabs');tabs.textContent='';
   if(cashTab==='mount'){me.cos=me.cos||{own:[]};const on=mountOn();sum.textContent=`가루로 사는 탈것이에요. 하나만 탈 수 있고, 타고 있으면 이동 속도가 빨라져요 (모든 이동 속도 보너스 합계는 최대 +80%). 같이 하는 사람 화면에도 보여요. 지금 가루 ${fmtK(countItem('dust'))}`;
     for(const [id,name,price,spd,cols,,mx] of MOUNTS){const own=me.cos.own.includes(id),ride=on===id;if(mx&&mx.rb&&!own)continue;
       g.appendChild(wideCard(cashRow(name,`이동 속도 +${Math.round(spd*100)}%${ride?' · 타는 중':own?' · 보유 중':''}`,own?'보유 중':`가루 ${fmtK(price)}`,!own?'구매':ride?'내리기':'타기',own||countItem('dust')>=price,()=>{
-        if(!own){if(!payDust(price))return;me.cos.own.push(id);me.cos.mount=id;sys(`${name}을(를) 샀어요! 이동 속도 +${Math.round(spd*100)}%`);toast(`탈것: ${name}`,2000)}else me.cos.mount=ride?'':id;recalc();hudKey='';invChanged();persist();renderCash()},cols[2])))}
+        if(!own){if(!payDust(price))return;me.cos.own.push(id);me.cos.mount=id;sys(`${name}을(를) 샀어요! 이동 속도 +${Math.round(spd*100)}%`);toast(`탈것: ${name}`,2000)}else me.cos.mount=ride?'':id;recalc();hudKey='';invChanged();persist();renderCash()},cols[2],NEW_CASH.has(id)?'신상':'')))}
     return true}
   if(cashTab==='ins'){me.ins=me.ins||{a:0,h:0,d:0};sum.textContent=`쌓인 마력 가루를 영구 능력치로 바꿔요 (계정이 아니라 이 캐릭터). 1레벨마다 +${INS_PER}%, 최대 ${INS_MAX}레벨. 다음 레벨 비용은 레벨 × ${INS_COST.toLocaleString()} 가루. 지금 가루 ${fmtK(countItem('dust'))}`;
     for(const [k,nm,col] of INS_KINDS){const lv=me.ins[k]||0,row=cashRow(`${nm} 각인 Lv.${lv} / ${INS_MAX}`,`${nm} +${(lv*INS_PER).toFixed(1)}%`+(lv<INS_MAX?` · 다음 레벨 가루 ${fmtK(insCost(lv))}`:' · 최대'),lv<INS_MAX?`+1: ${fmtK(insCost(lv))}`:'최대','+1',lv<INS_MAX&&countItem('dust')>=insCost(lv),()=>{insBuy(k,1)},col);
@@ -4464,6 +4470,10 @@ const PETS=[
   {id:'deathlord',name:'죽음의 군주',sp:'lich',pal:mkP('#1a1030','#c43aff','#3affb0'),kind:'ranged',premium:1,price:90000,mul:3.2,proj:'orb',cd:.6,col:'#c43aff',drop:.15,exp:.15,desc:'영혼탄 연사 (공격력 320%) + 드롭률·경험치 +15%'},
   {id:'genesis',name:'태초의 수호룡',sp:'whelp',pal:mkP('#ff6ad5','#ffffff','#fff27a'),kind:'ranged',premium:1,price:3e8,mul:6,proj:'orb',cd:.6,col:'#ff6ad5',drop:.4,exp:.4,desc:'태초의 빛 브레스 (공격력 600%) + 드롭률·경험치 +40%'},
   {id:'infinity',name:'무한의 군주',sp:'lich',pal:mkP('#fff27a','#ffffff','#7ff0ff'),kind:'ranged',premium:1,price:1e9,mul:8,proj:'orb',cd:.5,col:'#fff27a',drop:.5,exp:.5,desc:'무한의 구체 연사 (공격력 800%) + 드롭률·경험치 +50%'},
+  {id:'cometpet',name:'혜성 꼬마',sp:'cometimp',pal:{...mkP('#ff8a3d','#fff3b0','#ffffff'),w:'#ffffff'},kind:'ranged',premium:1,price:4e8,mul:5,proj:'fire',cd:.6,col:'#ffb03a',drop:.35,desc:'혜성 불꽃을 쏴요 (공격력 500%) + 드롭률 +35%'},
+  {id:'nebpet',name:'성운 해파리',sp:'nebjelly',pal:{...mkP('#9a7aff','#ff9ad8','#ffffff'),w:'#ffffff'},kind:'ranged',premium:1,price:8e8,mul:6.5,proj:'orb',cd:.55,col:'#c9a8ff',drop:.45,exp:.45,desc:'성운 구슬 연사 (공격력 650%) + 드롭률·경험치 +45%'},
+  {id:'eyepet',name:'천상의 눈',sp:'eyewing',pal:{...mkP('#fff3b0','#7ff0ff','#7ab0ff'),w:'#f4efe6',k:'#140f1e'},kind:'ranged',premium:1,price:15e8,mul:8.5,proj:'orb',cd:.5,col:'#fff3b0',drop:.4,exp:.6,desc:'천상의 빛줄기 (공격력 850%) + 경험치 +60% · 드롭률 +40%'},
+  {id:'starpet',name:'성좌 정령',sp:'prism',pal:{...mkP('#7ab0ff','#ffffff','#ffe066'),w:'#ffe066'},kind:'ranged',premium:1,price:3e9,mul:10,proj:'orb',cd:.45,col:'#7ab0ff',drop:.6,exp:.6,desc:'별빛 구체 연사 (공격력 1000%) + 드롭률·경험치 +60% · 가장 강한 펫'},
   {id:'chaosgod',name:'혼돈의 용신',sp:'whelp',pal:mkP('#3a1a6a','#ff4a6a','#7ff0ff'),kind:'ranged',premium:1,price:150000,mul:4.5,proj:'fire',cd:.75,col:'#ff4a6a',drop:.3,exp:.3,desc:'혼돈의 브레스 (공격력 450%) + 드롭률·경험치 +30%'},
 ];
 const PET_BY={};for(const P of PETS){P.D={id:'pet_'+P.id,sp:P.sp,pal:palFor(P.sp,P.pal)};PET_BY[P.id]=P}
@@ -5055,8 +5065,8 @@ function renderCash(){
     const img=document.createElement('img');img.alt='';img.src=(P._u||(P._u=monSpr(P.D,0,false).toDataURL()));
     const nm=document.createElement('div');nm.className='nm';nm.textContent=P.name+(petLv(P.id)?` Lv.${petLv(P.id)}`:'');
     const sm=document.createElement('small');const tg=document.createElement('span');tg.className='tag';
-    tg.textContent=P.premium?'★ 프리미엄':P.kind==='drop'?'드롭 +10%':P.kind==='melee'?'근접 공격':'원거리 공격';tg.style.color=P.premium?'#ff7ae0':P.kind==='drop'?'#ffd35a':'#ff8a9a';if(P.premium)el.style.borderColor='#ff7ae0';sm.append(tg,document.createTextNode(P.desc));
-    const row=document.createElement('div');row.className='row';const pr=document.createElement('span');pr.className='price';pr.textContent=own?'보유 중':`가루 ${P.price.toLocaleString()}`;
+    tg.textContent=NEW_CASH.has(P.id)?'★ 신상':P.premium?'★ 프리미엄':P.kind==='drop'?'드롭 +10%':P.kind==='melee'?'근접 공격':'원거리 공격';tg.style.color=P.premium?'#ff7ae0':P.kind==='drop'?'#ffd35a':'#ff8a9a';if(P.premium)el.style.borderColor='#ff7ae0';sm.append(tg,document.createTextNode(P.desc));
+    const row=document.createElement('div');row.className='row';const pr=document.createElement('span');pr.className='price';pr.textContent=own?'보유 중':`가루 ${fmtK(P.price)}`;
     const b=document.createElement('button');b.type='button';
     if(!own){b.className='btn sm';b.textContent='구매';b.disabled=countItem('dust')<P.price;b.addEventListener('click',()=>buyPet(P))}
     else if(on){b.className='btn sm alt';b.textContent='돌려보내기';b.addEventListener('click',()=>{me.pet='';persist();sys(`${P.name}을(를) 돌려보냈어요.`);renderCash()})}
