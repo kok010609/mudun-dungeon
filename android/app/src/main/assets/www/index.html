@@ -1838,7 +1838,7 @@ function enterZone(id,silent){udLeaveCheck(id);
   renderPlist();
 }
 /* 몬스터 레벨 표시: 1000 이상은 별 레벨 (1000 → ★1, 1001 → ★2 …) */
-const mLv=lv=>lv>=1000?`★${lv-999}`:`Lv.${lv}`;
+const mLv=lv=>lv>=1000?`Lv.999+${lv-999}`:`Lv.${lv}`;
 const solidPx=(px,py)=>SOLID.has(Z.at(Math.floor(px/16),Math.floor(py/16)));
 function blocked(x,y,hw,hh){return solidPx(x-hw,y-hh)||solidPx(x+hw,y-hh)||solidPx(x-hw,y)||solidPx(x+hw,y)}
 function moveBody(b,dx,dy,hw,hh,extra){
@@ -3181,14 +3181,14 @@ function renderAdv7(){const g=$('advgrid');const rb=me.rb||0,tl=me.tlv||0;
   const hd=document.createElement('div');hd.style.gridColumn='1/-1';hd.style.marginTop='6px';hd.className='nm';hd.style.color='#ff9ad8';hd.textContent=`환생 (초월 ${TLV_MAX} · 지금 초월 ${tl} · 환생 ${rb}회)`;g.appendChild(hd);
   const el=document.createElement('div');el.className='pet';el.style.gridTemplateColumns='1fr';el.style.gridColumn='1/-1';el.style.borderColor='#ff9ad8';
   const nm=document.createElement('div');nm.className='nm';nm.style.color='#ff9ad8';nm.style.fontSize='19px';nm.textContent=`★${rb+1} ${rb+1}번째 환생`;
-  const sm=document.createElement('small');sm.style.whiteSpace='pre-line';sm.textContent=`레벨과 초월 레벨이 Lv.1로 돌아가요. 장비·가방·금화·전직·펫은 그대로예요.\n환생할 때마다 영구 보너스: 공격력·최대 체력·방어 +${RB_BONUS.atk}%, 얻는 경험치 +${RB_BONUS.exp}% (누적)\n배운 스킬과 버프는 레벨과 상관없이 바로 써요.\n이름 앞에 환생 별 ★ 표시. 지금 보너스: 공격·체력·방어 +${rb*RB_BONUS.atk}%, 경험치 +${rb*RB_BONUS.exp}%`;
+  const sm=document.createElement('small');sm.style.whiteSpace='pre-line';sm.textContent=`레벨과 초월 레벨이 Lv.1로 돌아가요. 장비·가방·금화·전직·펫은 그대로예요.\n환생할 때마다 영구 보너스: 공격력·최대 체력·방어 +${RB_BONUS.atk}%, 얻는 경험치 +${RB_BONUS.exp}% (누적, 최대 +${RB_EXP_MAX}%)\n대신 환생할수록 다시 올리는 데 필요한 경험치가 +${RB_NEED*100}%씩 늘어요 (다음 환생 뒤 ×${(1+RB_NEED*(rb+1)).toFixed(2)}).\n배운 스킬과 버프는 레벨과 상관없이 바로 써요.\n이름 앞에 환생 별 ★ 표시 (★는 환생 횟수만 뜻해요. 999를 넘는 레벨은 나·몬스터 모두 Lv.999+N). 지금 보너스: 공격·체력·방어 +${rb*RB_BONUS.atk}%, 경험치 +${Math.min(RB_EXP_MAX,rb*RB_BONUS.exp)}%`;
   const b=document.createElement('button');b.type='button';b.className='btn sm';b.style.background='#ff9ad8';
   if(tl<TLV_MAX){b.textContent=`초월 ${TLV_MAX}에 열려요`;b.disabled=true}
   else{b.textContent=rbConfirm?'정말 환생할까요? 한 번 더 누르면 Lv.1로 돌아가요':'환생하기';b.addEventListener('click',()=>{if(!rbConfirm){rbConfirm=1;renderAdv();setTimeout(()=>{rbConfirm=0},6000);return}rbConfirm=0;doRebirth()})}
   const tb=document.createElement('button');tb.type='button';tb.className='btn sm alt';tb.textContent=`특성 트리 열기 (남은 포인트 ${traitPts()})`;tb.disabled=!(me.rb>0);tb.addEventListener('click',()=>togglePanel('trait'));
   el.append(nm,sm,b,tb);g.appendChild(el)}
 function doRebirth(){if((me.tlv||0)<TLV_MAX)return;me.rb=(me.rb||0)+1;me.lvl=1;me.exp=0;me.tlv=0;me.texp=0;recalc();me.hp=me.maxHp;me.mp=me.maxMp;refreshSkills();buildSkillBar();hudKey='';persist();
-  towerPost();toast(`★ 환생 ${me.rb}회! 특성 포인트 +${TRAIT_PER_RB}`,5000);sys(`★ ${me.rb}번째 환생! 영구 보너스: 공격력·체력·방어 +${me.rb*RB_BONUS.atk}%, 경험치 +${me.rb*RB_BONUS.exp}%. 장비와 전직은 그대로예요.`);news({k:'rb',d:me.rb});
+  towerPost();toast(`★ 환생 ${me.rb}회! 특성 포인트 +${TRAIT_PER_RB}`,5000);sys(`★ ${me.rb}번째 환생! 영구 보너스: 공격력·체력·방어 +${me.rb*RB_BONUS.atk}%, 경험치 +${Math.min(RB_EXP_MAX,me.rb*RB_BONUS.exp)}% · 필요 경험치 ×${rbNeed().toFixed(2)}. 장비와 전직은 그대로예요.`);news({k:'rb',d:me.rb});
   for(let k=0;k<12;k++)fxs.push({k:'ring',x:me.x,y:me.y,t:-k*.08,dur:1.2,col:k%2?'#ff9ad8':'#ffffff',r:30+k*34});burst(me.x,me.y-12,240,['#ff9ad8','#ffffff','#ffd35a'],300,1.5,2,-50);flashT=.8;flashCol='#ffe0f0';shakeT=1;edgeT=2;edgeCol='#ff9ad8';renderAdv();setTimeout(()=>grantRbMs(),600)}
 const rbTag=n=>n>0?`★${n} `:'';
 function adv5On(){const a4=adv4Id();return !!(a4&&me.adv5&&me.adv5[me.cls]===a4)}
@@ -3315,7 +3315,7 @@ const TR_NAMES_X=[];{const a=['별','달','태양','혜성','성운','은하','�
 const TR_NAMES=['시작의 시련','인내의 회랑','고통의 계단','망각의 시험장','강철의 정원','영혼의 용광로','별빛 단련장','신들의 연무장','초월의 문턱','무한의 정점'];
 const trOpen=k=>endOK()&&(k>34?(me.rb||0)>=(k-34)*2:(me.rb>0||(me.tlv||0)>=(k-1)*TR_STEP));   // 환생한 사람은 모든 단계
 function makeTrain(k){k=Math.max(1,Math.min(TR_N,k));const T=k>34?ABYSS_FROM+9:ABYSS_FROM+((k-1)%10),z=makeDungeon(T),[ah,ad,ae]=avgOfT3(T),tgt=needT(Math.min(TLV_MAX,TR_STEP*(k-1)+15))/TR_KILLS;
-  z.id='tr'+k;z.train=k;z.expMul=tgt/ae*(k>34?Math.pow(1.15,k-34):1);if(k>34)z.monPool=trMons(k);if(k<=10){z.hpMul=1.2+.1*(k-1);z.dmgMul=1.1+.05*(k-1)}else{const [th,td]=avgOfT3(ABYSS_FROM+9);z.hpMul=th*2.1*Math.pow(1.12,k-10)/ah;z.dmgMul=td*1.55*Math.pow(1.06,k-10)/ad}
+  z.id='tr'+k;z.train=k;z.expMul=tgt/ae*(k>34?Math.pow(1.08,k-34):1);if(k>34)z.monPool=trMons(k);if(k<=10){z.hpMul=1.2+.1*(k-1);z.dmgMul=1.1+.05*(k-1)}else{const [th,td]=avgOfT3(ABYSS_FROM+9);z.hpMul=th*2.1*Math.pow(1.12,k-10)/ah;z.dmgMul=td*1.55*Math.pow(1.06,k-10)/ad}
   z.title=`초월의 수련장 ${k}단계 · ${TR_NAMES[k-1]||TR_NAMES_X[k-11]||TR_NAMES_Y[k-35]}`;z.sub=`초월 ${(k-1)*TR_STEP}부터 · ${k<=10?`심연 ${k}단계보다 체력 x${z.hpMul.toFixed(1)}`:`심연 10단계보다 체력 x${(2.1*Math.pow(1.12,k-10)).toFixed(1)}`} · 경험치 x${Math.round(z.expMul)} (초월 레벨 한 칸에 약 ${TR_KILLS}마리)`;return z}
 function avgOfT3(T){const ns=MONLIST.filter(D=>D.T===T&&!D.boss&&!D.pk&&!D.tr);return [ns.reduce((a,D)=>a+D.hp,0)/ns.length,ns.reduce((a,D)=>a+D.dmg,0)/ns.length,ns.reduce((a,D)=>a+D.exp,0)/ns.length]}
 function renderTrain(){const ul=$('trl');ul.textContent='';
@@ -3323,7 +3323,7 @@ function renderTrain(){const ul=$('trl');ul.textContent='';
   let shown=0;for(let k=1;k<=TR_N;k++){const ok=trOpen(k);if(!ok&&shown++>=2)break;if(k===35){const hd=document.createElement('li');hd.style.cssText='display:block;color:#ffd35a;border:0;background:none';hd.textContent='★ 35단계부터: 새 몬스터 7종 · 환생 2회마다 1단계씩 열려요';ul.appendChild(hd)}const li=document.createElement('li');li.className=ok?'':'lock';
     const no=document.createElement('div');no.className='no';no.textContent='T'+k;no.style.color='#5affd8';
     const mid=document.createElement('div');const dn=document.createElement('div');dn.className='dn';dn.textContent=`${k}단계 · ${TR_NAMES[k-1]||TR_NAMES_X[k-11]||TR_NAMES_Y[k-35]}`+(k>34?' ★새 몬스터':'');
-    const sm=document.createElement('small');sm.textContent=(k>34?`환생 ${(k-34)*2}회 이상 · `:`추천 초월 ${(k-1)*TR_STEP}~${Math.min(TLV_MAX,k*TR_STEP)} · `)+`${k<=10?`심연 ${k}단계 몬스터 강화판`:`심연 10단계보다 체력 x${(2.1*Math.pow(1.12,k-10)).toFixed(1)}`}`+(k>34?` · 경험치 x${Math.pow(1.15,k-34).toFixed(1)} 더 · 한계돌파석·별의 돌 드롭`:'')+(ok?'':k>34?` · 환생 ${(k-34)*2}회에 열림`:` · 초월 ${(k-1)*TR_STEP}에 열림`);mid.append(dn,sm);
+    const sm=document.createElement('small');sm.textContent=(k>34?`환생 ${(k-34)*2}회 이상 · `:`추천 초월 ${(k-1)*TR_STEP}~${Math.min(TLV_MAX,k*TR_STEP)} · `)+`${k<=10?`심연 ${k}단계 몬스터 강화판`:`심연 10단계보다 체력 x${(2.1*Math.pow(1.12,k-10)).toFixed(1)}`}`+(k>34?` · 경험치 x${Math.pow(1.08,k-34).toFixed(1)} 더 · 한계돌파석·별의 돌 드롭`:'')+(ok?'':k>34?` · 환생 ${(k-34)*2}회에 열림`:` · 초월 ${(k-1)*TR_STEP}에 열림`);mid.append(dn,sm);
     const b=document.createElement('button');b.type='button';b.className='btn sm';b.style.background='#5affd8';b.textContent='입장';b.disabled=!ok;
     b.addEventListener('click',()=>{for(const id in zones)if(id.startsWith('tr')&&id!=='tr'+k)delete zones[id];enterZone('tr'+k);sys(`초월의 수련장 ${k}단계에 들어왔어요. 돌아갈 땐 시작 방 포털(E) 또는 귀환(G).`)});li.append(no,mid,b);ul.appendChild(li)}}
 
@@ -4572,17 +4572,19 @@ function hurtPlayer(d,fromX,fromY){
   const a=Math.atan2(me.y-fromY,me.x-fromX);for(let i=0;i<6;i++)moveBody(me,Math.cos(a)*1.5,Math.sin(a)*1.5,5,4);
   if(me.hp<=0&&trv('t_rev')&&!((me.revAt||0)>Date.now())){me.revAt=Date.now()+6e5;me.hp=Math.round(me.maxHp*.5);me.iframe=2;toast('부활! (10분 뒤 다시 가능)',2500);floatText(me.x,me.y-40,'부활!','#6ee7b7',true);burst(me.x,me.y-12,60,['#6ee7b7','#ffffff'],150,1)}
   if(me.hp<=0&&udOn()){if(udLife())return true;me.hp=0;udEnd('dead');return true}
-  if(me.hp<=0){me.dead=2.2;toast(Z.T>=0?'쓰러졌어요… 던전 입구에서 다시 일어나요':'쓰러졌어요… 분수대에서 다시 일어나요',2000);{const pct=Z.T<0?0:Z.T>=HELL_FROM?.15:Z.T>=50?.1:.05;if(pct){if(me.lvl>=LV_MAX){const loss=Math.min(me.texp||0,Math.round(needT((me.tlv||0)+1)*pct));me.texp=(me.texp||0)-loss;if(loss){sys(`쓰러져서 초월 경험치 ${loss.toLocaleString()}을(를) 잃었어요 (다음 레벨 필요량의 ${pct*100}%)`);floatText(me.x,me.y-44,`-${loss.toLocaleString()} EXP`,'#ff5a5a',true)}}else{const loss=Math.min(me.exp,Math.round(needExp(me.lvl)*pct));me.exp-=loss;if(loss){sys(`쓰러져서 경험치 ${loss.toLocaleString()}을(를) 잃었어요 (다음 레벨 필요량의 ${pct*100}%)`);floatText(me.x,me.y-44,`-${loss.toLocaleString()} EXP`,'#ff5a5a',true)}}}}hudKey='';persist()}
+  if(me.hp<=0){me.dead=2.2;toast(Z.T>=0?'쓰러졌어요… 던전 입구에서 다시 일어나요':'쓰러졌어요… 분수대에서 다시 일어나요',2000);{const pct=Z.T<0?0:Z.T>=HELL_FROM?.15:Z.T>=50?.1:.05;if(pct){if(me.lvl>=LV_MAX){const loss=Math.min(me.texp||0,Math.round(needTl((me.tlv||0)+1)*pct));me.texp=(me.texp||0)-loss;if(loss){sys(`쓰러져서 초월 경험치 ${loss.toLocaleString()}을(를) 잃었어요 (다음 레벨 필요량의 ${pct*100}%)`);floatText(me.x,me.y-44,`-${loss.toLocaleString()} EXP`,'#ff5a5a',true)}}else{const loss=Math.min(me.exp,Math.round(needLv(me.lvl)*pct));me.exp-=loss;if(loss){sys(`쓰러져서 경험치 ${loss.toLocaleString()}을(를) 잃었어요 (다음 레벨 필요량의 ${pct*100}%)`);floatText(me.x,me.y-44,`-${loss.toLocaleString()} EXP`,'#ff5a5a',true)}}}}hudKey='';persist()}
   return true;
 }
-const TLV_MAX=999,needT=t=>Math.round(needExp(LV_MAX-1+t)*1.5);   // 초월 레벨: 999 다음부터 이어지는 경험치 × 1.5 (아주 어렵게)
-function gainTExp(n){me.texp=(me.texp||0)+n;while((me.tlv||0)<TLV_MAX&&me.texp>=needT((me.tlv||0)+1)){me.texp-=needT((me.tlv||0)+1);me.tlv=(me.tlv||0)+1;me.tlvMax=Math.max(me.tlvMax||0,me.tlv);if(me.tlv%10===0)towerPost();recalc();me.hp=me.maxHp;me.mp=me.maxMp;
+const TLV_MAX=999,needT=t=>Math.round(needExp(LV_MAX-1+t)*1.5);
+/* 레벨 속도 개선: 환생 1번마다 다시 올리는 데 필요한 경험치 +10% · 몬스터 한 마리로는 레벨 필요 경험치의 1/3, 초월 레벨 필요 경험치의 1/2까지만 */
+const RB_NEED=.1,rbNeed=()=>1+RB_NEED*(me.rb||0),needLv=l=>Math.round(needExp(l)*rbNeed()),needTl=t=>Math.round(needT(t)*rbNeed()),RB_EXP_MAX=200;   // 초월 레벨: 999 다음부터 이어지는 경험치 × 1.5 (아주 어렵게)
+function gainTExp(n){me.texp=(me.texp||0)+n;while((me.tlv||0)<TLV_MAX&&me.texp>=needTl((me.tlv||0)+1)){me.texp-=needTl((me.tlv||0)+1);me.tlv=(me.tlv||0)+1;me.tlvMax=Math.max(me.tlvMax||0,me.tlv);if(me.tlv%10===0)towerPost();recalc();me.hp=me.maxHp;me.mp=me.maxMp;
     toast(`초월 레벨 업! 초월 ${me.tlv}`,2600);sys(`✦ 초월 ${me.tlv} 달성! 공격력·최대 체력·방어 +0.33%씩 (지금 총 +${Math.round(me.tlv/TLV_DIV*100)}%)`);news({k:'tlv',d:me.tlv});
     burst(me.x,me.y-12,70,['#ff4a6a','#ffd35a','#ffffff','#b03aff'],170,1,2,-40);for(let k=0;k<3;k++)fxs.push({k:'ring',x:me.x,y:me.y,t:-k*.1,dur:.7,col:k%2?'#ffffff':'#ff4a6a',r:50+k*30})}hudKey='';persist()}
 function x10On(){return (me.x10||0)>Date.now()}
 function x10Left(){const tm=Math.ceil(Math.max(0,(me.x10||0)-Date.now())/6e4),h=Math.floor(tm/60),m=tm%60;return h?`${h}시간 ${m}분`:`${m}분`}
-function gainExp(n){if(me.buffs.exp>0)n*=2;if(x10On())n*=10;if(Z&&Z.expMul)n*=Z.expMul;n*=boostMul('xb');if(me.rb)n*=1+me.rb*RB_BONUS.exp/100;n=Math.round(n*(1+eqSum('exp')/100)*petExpMul());floatText(me.x,me.y-32,'+'+n+' EXP','#ffcc4d');
-  if(me.lvl>=LV_MAX){me.exp=0;gainTExp(n);return}me.exp+=n;while(me.lvl<LV_MAX&&me.exp>=needExp(me.lvl)){me.exp-=needExp(me.lvl);const hp0=me.maxHp,mp0=me.maxMp,atk0=atkOf();me.lvl++;if(me.lvl===ADV3_LV&&adv2Of()&&!adv3Of())setTimeout(()=>{toast('Lv.900 달성! 3차 전직 가능 (초월의 증표 3개 필요)',3500);sys('Lv.900! 90층 이상 신화 보스가 떨어뜨리는 초월의 증표 3개를 모아 전직 창(J)에서 3차 전직하세요.')},800);if(me.lvl===LV_MAX)setTimeout(()=>{toast('Lv.999 달성! 이제 초월 레벨이 올라요',3500);sys('Lv.999 달성! 이제부터 초월 레벨이 올라요. 3차 전직했다면 4차 전직(J)도 할 수 있어요.')},900);if(me.lvl===ADV2_LV&&advOf()&&!adv2Of())setTimeout(()=>{toast('Lv.650 달성! 2차 전직할 수 있어요 (J)',3500);sys('Lv.650! 전직 창(J)에서 2차 전직을 할 수 있어요.')},700);if(me.lvl===ADV_LV&&!advOf())setTimeout(()=>{toast('Lv.300 달성! 전직할 수 있어요 (J)',3500);sys('Lv.300! 상태창의 [전직] 버튼이나 J 키로 전직하세요.')},600);if(me.lvl>=LV_MAX){const left=me.exp;me.exp=0;setTimeout(()=>{toast('Lv.999! 이제 초월 레벨이 시작돼요',3500);sys('Lv.999 달성! 지금부터 얻는 경험치는 초월 레벨(초월 1부터)로 쌓여요. 초월 레벨마다 공격력·최대 체력·방어 +1%.')},1000);if(left>0)setTimeout(()=>gainTExp(left),1100)}recalc();me.hp=me.maxHp;me.mp=me.maxMp;toast('레벨 업!  Lv.'+me.lvl);sfx('lvup');
+function gainExp(n){if(me.buffs.exp>0)n*=2;if(x10On())n*=10;if(Z&&Z.expMul)n*=Z.expMul;n*=boostMul('xb');if(me.rb)n*=1+Math.min(RB_EXP_MAX,me.rb*RB_BONUS.exp)/100;n=Math.round(n*(1+eqSum('exp')/100)*petExpMul());n=Math.min(n,me.lvl>=LV_MAX?Math.round(needTl((me.tlv||0)+1)*.5):Math.round(needLv(me.lvl)/3));floatText(me.x,me.y-32,'+'+n+' EXP','#ffcc4d');
+  if(me.lvl>=LV_MAX){me.exp=0;gainTExp(n);return}me.exp+=n;while(me.lvl<LV_MAX&&me.exp>=needLv(me.lvl)){me.exp-=needLv(me.lvl);const hp0=me.maxHp,mp0=me.maxMp,atk0=atkOf();me.lvl++;if(me.lvl===ADV3_LV&&adv2Of()&&!adv3Of())setTimeout(()=>{toast('Lv.900 달성! 3차 전직 가능 (초월의 증표 3개 필요)',3500);sys('Lv.900! 90층 이상 신화 보스가 떨어뜨리는 초월의 증표 3개를 모아 전직 창(J)에서 3차 전직하세요.')},800);if(me.lvl===LV_MAX)setTimeout(()=>{toast('Lv.999 달성! 이제 초월 레벨이 올라요',3500);sys('Lv.999 달성! 이제부터 초월 레벨이 올라요. 3차 전직했다면 4차 전직(J)도 할 수 있어요.')},900);if(me.lvl===ADV2_LV&&advOf()&&!adv2Of())setTimeout(()=>{toast('Lv.650 달성! 2차 전직할 수 있어요 (J)',3500);sys('Lv.650! 전직 창(J)에서 2차 전직을 할 수 있어요.')},700);if(me.lvl===ADV_LV&&!advOf())setTimeout(()=>{toast('Lv.300 달성! 전직할 수 있어요 (J)',3500);sys('Lv.300! 상태창의 [전직] 버튼이나 J 키로 전직하세요.')},600);if(me.lvl>=LV_MAX){const left=me.exp;me.exp=0;setTimeout(()=>{toast('Lv.999! 이제 초월 레벨이 시작돼요',3500);sys('Lv.999 달성! 지금부터 얻는 경험치는 초월 레벨(초월 1부터)로 쌓여요. 초월 레벨마다 공격력·최대 체력·방어 +1%.')},1000);if(left>0)setTimeout(()=>gainTExp(left),1100)}recalc();me.hp=me.maxHp;me.mp=me.maxMp;toast('레벨 업!  Lv.'+me.lvl);sfx('lvup');
     sys(`레벨 ${me.lvl}! 최대 체력 +${me.maxHp-hp0} · 최대 마나 +${me.maxMp-mp0}${atkOf()>atk0?` · 공격력 +${atkOf()-atk0}`:''} (체력·마나 모두 회복)`);
     floatText(me.x,me.y-44,`HP +${me.maxHp-hp0}`,'#ff8a9a',true);floatText(me.x,me.y-56,`MP +${me.maxMp-mp0}`,'#8fc0ff',true);
     burst(me.x,me.y-12,40,['#ffd35a','#ffffff','#5ee6e0'],130,.9,2,-30);fxs.push({k:'ring',x:me.x,y:me.y,t:0,dur:.6,col:'#ffd35a',r:50});
@@ -4846,10 +4848,10 @@ function render(t){
     if(D.boss){label(X,Y,`${mLv(lv)} ${D.name}`,D.god?GODS[D.T].col:'#c9a8ff',14);continue}
     if(D.pk&&m.pk){label(X,sy(m.y-31),`PK ${m.pk.title?`[${m.pk.title}] `:''}${mLv(lv)} ${m.pk.nick}`,'#ff4a4a',12);continue}
     if(m.evName)label(X,Y,`★ ${m.evName} ${Math.max(0,Math.ceil(m.goldT||0))}초`,'#ffd35a',13);else if(m.elite)label(X,Y,`정예 ${mLv(lv)} ${D.name}`,'#ffd35a',12);else if(m.hp<m.maxHp)label(X,Y,`${mLv(lv)} ${D.name}`,lc,11);else label(X,Y,`${mLv(lv)}`,lc,10)}
-  for(const r of remotes.values()){if(isNaN(r.rx)||!r.nick||r.z!==zoneId)continue;label(sx(r.rx),sy(r.ry-29),(r.av?`[${((r.a4&&(r.a4>=2?mythOf(r.a3,r.a4):ADV4[r.a3]))||ADV3[r.a3]||ADV2[r.a2]||ADV[r.av]).name}] `:'')+rbTag(r.rb)+`Lv.${r.lvl}${r.tl?'✦'+r.tl:''} ${r.nick}`,r.av?((r.a4&&(r.a4>=2?mythOf(r.a3,r.a4):ADV4[r.a3]))||ADV3[r.a3]||ADV2[r.a2]||ADV[r.av]).col:'#eef0ff');
+  for(const r of remotes.values()){if(isNaN(r.rx)||!r.nick||r.z!==zoneId)continue;label(sx(r.rx),sy(r.ry-29),(r.av?`[${((r.a4&&(r.a4>=2?mythOf(r.a3,r.a4):ADV4[r.a3]))||ADV3[r.a3]||ADV2[r.a2]||ADV[r.av]).name}] `:'')+rbTag(r.rb)+`Lv.${r.lvl}${r.tl?'+'+r.tl:''} ${r.nick}`,r.av?((r.a4&&(r.a4>=2?mythOf(r.a3,r.a4):ADV4[r.a3]))||ADV3[r.a3]||ADV2[r.a2]||ADV[r.av]).col:'#eef0ff');
     if(r.bubble&&now<r.bubbleUntil)bubble(sx(r.rx),sy(r.ry-40),r.bubble)}
   if(started&&!me.dead&&PET_BY[me.pet])label(sx(pet.x),sy(pet.y-24),PET_BY[me.pet].name,'#ff9ae8',10);
-  if(started&&!me.dead){label(sx(me.x),sy(me.y-29),(advShow()?`[${advShow().name}] `:'')+rbTag(me.rb)+`Lv.${me.lvl}${me.tlv?'✦'+me.tlv:''} ${me.nick}`,(me.cos&&nameCol(me.cos.name,t))||(advShow()?advShow().col:'#ffcc4d'));if(me.bubble&&now<me.bubbleUntil)bubble(sx(me.x),sy(me.y-40),me.bubble)}
+  if(started&&!me.dead){label(sx(me.x),sy(me.y-29),(advShow()?`[${advShow().name}] `:'')+rbTag(me.rb)+`Lv.${me.lvl}${me.tlv?'+'+me.tlv:''} ${me.nick}`,(me.cos&&nameCol(me.cos.name,t))||(advShow()?advShow().col:'#ffcc4d'));if(me.bubble&&now<me.bubbleUntil)bubble(sx(me.x),sy(me.y-40),me.bubble)}
   for(const f of floats){octx.globalAlpha=1-Math.max(0,f.t-0.5)/0.4;const ko=/[가-힣]/.test(f.txt);
     octx.font=ko?`${(f.big?19:16)*dpr}px "Do Hyeon",sans-serif`:`${(f.big?17:13)*dpr}px "Press Start 2P",monospace`;octx.lineWidth=4*dpr;octx.strokeStyle='#0b0e1c';
     const y=sy(f.y-f.t*16);octx.strokeText(f.txt,sx(f.x),y);octx.fillStyle=f.col;octx.fillText(f.txt,sx(f.x),y)}
@@ -4863,9 +4865,9 @@ function updateHud(){
   updateSkillBar();
   const k=[x10On()?x10Left():'',Object.values(me.buffs).map(Math.ceil).join(','),Object.values(me.sbuf).map(v=>Math.ceil(v)).join(','),me.lvl,Math.ceil(me.hp),me.maxHp,Math.floor(me.mp),me.maxMp,me.exp,me.nick,me.gold,atkOf(),defOf(),pots].join('|');if(k===hudKey)return;hudKey=k;
   $('mpf').style.width=(me.mp/me.maxMp*100)+'%';$('mpt').textContent=`MP ${Math.floor(me.mp)}/${me.maxMp}`;
-  $('lv').textContent=rbTag(me.rb)+'Lv.'+me.lvl+(me.tlv?' ✦'+me.tlv:'');$('nm').textContent=me.nick;
+  $('lv').textContent=rbTag(me.rb)+'Lv.'+me.lvl+(me.tlv?'+'+me.tlv:'');$('lv').title=`★${me.rb||0} = 환생 횟수 · Lv.${me.lvl}${me.lvl>=LV_MAX?` + 초월 ${me.tlv||0} (999를 넘는 몬스터 레벨도 같은 방식: Lv.999+N)`:''}`;$('nm').textContent=me.nick;
   $('hpf').style.width=(me.hp/me.maxHp*100)+'%';$('hpt').textContent=`${Math.ceil(me.hp)}/${me.maxHp}`;
-  const n=needExp(me.lvl);if(me.lvl>=LV_MAX){const tn=needT((me.tlv||0)+1);$('expf').style.width=((me.tlv||0)>=TLV_MAX?100:(me.texp||0)/tn*100)+'%';$('expt').textContent=(me.tlv||0)>=TLV_MAX?'초월 MAX':`초월 ${me.tlv||0} · ${(me.texp||0).toLocaleString()}/${tn.toLocaleString()}`}else{$('expf').style.width=(me.exp/n*100)+'%';$('expt').textContent=`EXP ${me.exp}/${n}`}
+  const n=needLv(me.lvl);if(me.lvl>=LV_MAX){const tn=needTl((me.tlv||0)+1);$('expf').style.width=((me.tlv||0)>=TLV_MAX?100:(me.texp||0)/tn*100)+'%';$('expt').textContent=(me.tlv||0)>=TLV_MAX?'초월 MAX':`초월 ${me.tlv||0} · ${(me.texp||0).toLocaleString()}/${tn.toLocaleString()}`}else{$('expf').style.width=(me.exp/n*100)+'%';$('expt').textContent=`EXP ${me.exp}/${n}`}
   $('advBtn').hidden=me.lvl<ADV_LV;
   const bl=[['atk','힘'],['def','철벽'],['spd','신속'],['exp','경험 x2']].filter(([k])=>me.buffs[k]>0);const sb=Object.keys(me.sbuf).filter(k=>me.sbuf[k]>0&&BUFF_BY_ID[k]);
   const bx=$('buffs');bx.hidden=!bl.length&&!sb.length&&!x10On()&&!boostOn('xb')&&!boostOn('db')&&!boostOn('xb2')&&!boostOn('db2');bx.textContent='';for(const k of ['xb','db','xb2','db2'])if(boostOn(k)){const sp=document.createElement('span');sp.textContent=`${BOOST[k][0]} ${Math.ceil((me[k]-Date.now())/36e5)}시간`;sp.style.color='#7ff0ff';bx.appendChild(sp)}if(x10On()){const sp=document.createElement('span');sp.textContent=`경험치 x10 ${x10Left()}`;sp.style.color='#ffcc4d';bx.appendChild(sp)}
@@ -5071,7 +5073,7 @@ function renderBag(){
     cell.appendChild(slotEl(me.eq[k],1,sel&&sel.from==='eq'&&sel.k===k,()=>{sel={from:'eq',k};renderBag()},label+' 칸 비어 있음',me.eqE[k]||0,(me.eqO[k]||[]).length,!!(me.eqLk&&me.eqLk[k])));
     const cap=document.createElement('span');cap.className='cap';cap.textContent=label;cell.appendChild(cap);return cell};
   const L=$('dsl'),Rr=$('dsr');L.textContent='';Rr.textContent='';for(const k of DOLL_L)L.appendChild(mkSlot(k));for(const k of DOLL_R)Rr.appendChild(mkSlot(k));
-  {const A=advShow&&advShow();$('dname').textContent=`${A?`[${A.name}] `:''}${rbTag(me.rb)}Lv.${me.lvl}${me.tlv?' ✦'+me.tlv:''}\n${me.nick}`;$('dname').style.whiteSpace='pre-line';$('dname').style.color=A?A.col:'#ffcc4d'}
+  {const A=advShow&&advShow();$('dname').textContent=`${A?`[${A.name}] `:''}${rbTag(me.rb)}Lv.${me.lvl}${me.tlv?'+'+me.tlv:''}\n${me.nick}`;$('dname').style.whiteSpace='pre-line';$('dname').style.color=A?A.col:'#ffcc4d'}
   drawDoll();
   {const c=cpNow(),el=$('dcp');el.textContent='';const l=document.createElement('span');l.className='l';l.textContent='전투력';const v=document.createElement('span');v.className='v';v.textContent=c.toLocaleString();
     if(renderBag.cp&&renderBag.cp!==c&&Date.now()-(renderBag.cpT||0)<15000){const d=document.createElement('span');d.className='dlt';d.style.color=c>renderBag.cp?'#6ee7b7':'#ff8a9a';d.textContent=(c>renderBag.cp?'▲ +':'▼ ')+(c-renderBag.cp).toLocaleString();v.appendChild(d)}
