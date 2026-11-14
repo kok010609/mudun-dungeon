@@ -1646,7 +1646,7 @@ function drawHeroAt(c,x,y,dir,moving,cape,hair,t,ap,wid,lit,sp=-1,cls='knight'){
   const hx=x+HAND[dir][0],hy=y+HAND[dir][1]+bob;
   const mg=cls==='mage';
   if(mg){const sa=dir==='left'?-Math.PI/2-.25:-Math.PI/2+.25;ang=sa;trail=0;if(ap>=0&&ap<1){const k=ap<.3?ap/.3:1-(ap-.3)/.7;ang=sa+(base-sa)*k*.85}}
-  const sword=()=>{if(mg){drawStaff(c,hx,hy,ang,w?.col||'#7ff0ff',w?.len||12,t);return}if(cls==='archer'){drawBow(c,hx,hy,dir,w?.col||'#c9a26b',ap);return}if(trail>0)drawTrail(c,hx,hy,a0,ang,len,wcol,trail);drawSword(c,hx,hy,ang,wcol,len,glow)};
+  const sword=()=>{if(mg){drawStaff(c,hx,hy,ang,w?.col||'#7ff0ff',w?.len||12,t);return}if(cls==='archer'){drawBow(c,hx,hy,dir,w?.col||'#c9a26b',ap);return}if(cls==='samurai'){if(trail>0)drawTrail(c,hx,hy,a0,ang,len+2,mix(wcol,'#ffffff',.6),trail);drawKatana(c,hx,hy,ang,wcol,len+2,glow);return}if(trail>0)drawTrail(c,hx,hy,a0,ang,len,wcol,trail);drawSword(c,hx,hy,ang,wcol,len,glow)};
   const rg=cls==='rogue',OH={down:[6,-10],up:[-6,-10],right:[-3,-11],left:[3,-11]}[dir],ohx=x+OH[0],ohy=y+OH[1]+bob,oang=dir==='down'||dir==='up'?Math.PI-ang:ang+sg*.55;
   const off=()=>{if(rg)drawSword(c,ohx,ohy,oang,wcol,len,glow)};
   drawShadow(c,x,y,6);
@@ -1658,6 +1658,12 @@ function drawHeroAt(c,x,y,dir,moving,cape,hair,t,ap,wid,lit,sp=-1,cls='knight'){
   if(dir==='down')off();
   if(lit&&glow&&!mg)frameLights.push({x:hx+Math.cos(ang)*len*.6,y:hy+Math.sin(ang)*len*.6,r:30+(trail>0?14:0),col:wcol,i:.7});
 }
+/* 카타나: 가늘고 살짝 휜 은빛 칼날 + 금색 코등이 + 검은 손잡이 (칼날 끝 쪽에 무기 색 빛) */
+function drawKatana(c,hx,hy,ang,col,len,glow){const ca=Math.cos(ang),sa=Math.sin(ang),px=-sa,py=ca,P=(x,y,cl)=>{c.fillStyle=cl;c.fillRect(Math.round(x),Math.round(y),1,1)};
+  for(let k=-4;k<0;k++)P(hx+ca*k,hy+sa*k,k%2?'#1e1a26':'#5a4a6a');P(hx-ca*4.5,hy-sa*4.5,'#d8b04a');
+  P(hx+px,hy+py,'#d8b04a');P(hx-px,hy-py,'#d8b04a');P(hx,hy,'#d8b04a');
+  for(let k=1;k<=len;k++){const bend=(k/len)*(k/len)*1.6,x=hx+ca*k+px*bend,y=hy+sa*k+py*bend;P(x,y,k>len-3?mix(col,'#ffffff',.3):'#dfe6f2');if(k<len-1)P(x+px*.9,y+py*.9,k%3?'#9aa6bc':'#ffffff')}
+  if(glow){c.globalAlpha=.35;for(let k=Math.floor(len*.5);k<=len;k++){const bend=(k/len)*(k/len)*1.6;P(hx+ca*k+px*(bend-1),hy+sa*k+py*(bend-1),col)}c.globalAlpha=1}}
 function drawHero(c,p,cape,hair,t,ap,wid,sp,cls){drawHeroAt(c,Math.round(p.x)-cam.x,Math.round(p.y)-cam.y,p.dir,p.moving,cape,hair,t,ap,wid,true,sp,cls)}
 
 /* ---------- 몬스터 그리기 ---------- */
@@ -3982,17 +3988,26 @@ function samTakeKi(){const k=me.ki||0;me.ki=0;return 1+k/KI_MAX}
 function samSum(f){if(me.cls!=='samurai')return 0;let t=f==='crit'?5:0;for(const A of [advOf(),adv2Of(),adv3Of()])if(A&&A.fx&&A.fx[f])t+=A.fx[f];
   if((me.samFocusT||0)>Date.now()&&f==='crit')t+=30;
   if(hasB('b_bushido')){if(f==='atkp')t+=15;if(f==='crit')t+=10}if(hasB('b_zen')){if(f==='dmgRed')t+=.15;if(f==='spd')t+=.15}if(hasB('b_blade')){if(f==='hpp')t+=15;if(f==='ls')t+=.05}return t}
-/* 사무라이 외형: 기사 그림 위에 머리띠 · 상투 · 허리 칼집 */
+/* 사무라이 외형 (처음부터 따로 그림): 상투 · 머리띠 · 기모노(V 깃) · 붉은 오비 · 하카마 · 하오리(망토 색, 등에 가문 문장) · 짚신 · 허리 칼집 */
 const samCache=new Map();
-function samuraiSprite(cape,hair,dir,lf,wf){const key=cape+hair+dir+lf+wf;if(samCache.has(key))return samCache.get(key);const b=heroSprite(cape,hair,dir,lf,wf);
-  const s=document.createElement('canvas');s.width=b.width;s.height=b.height;const c=s.getContext('2d');c.drawImage(b,0,0);const band='#e8e8f0',bandD='#a8a8bc',red='#d8283a',sc='#2a2030',scL='#5a4a6a',gold='#d8b04a';
-  const R=(x,y,w,h,col)=>{c.fillStyle=col;c.fillRect(x,y,w,h)};
-  R(8,3,8,1,band);R(8,4,8,1,bandD);
-  if(dir==='down'){R(11,3,2,1,red)}else if(dir==='up'){R(10,0,4,2,'#2a2028');R(11,-0,2,1,'#3a3040');R(15,4,2,1,band);R(16,5,1,2,bandD)}
-  else if(dir==='right'){R(10,0,3,2,'#2a2028');R(7,4,1,1,band);R(6,5,1,2,bandD);R(14,3,2,1,red)}else{R(11,0,3,2,'#2a2028');R(16,4,1,1,band);R(17,5,1,2,bandD);R(8,3,2,1,red)}
-  if(dir==='right'){R(4,13,8,2,sc);R(4,13,8,1,scL);R(11,12,2,3,gold)}else if(dir==='left'){R(12,13,8,2,sc);R(12,13,8,1,scL);R(11,12,2,3,gold)}
-  else if(dir==='down'){R(16,12,2,6,sc);R(16,12,1,6,scL);R(15,11,4,1,gold)}else{R(6,12,2,6,sc);R(7,12,1,6,scL);R(5,11,4,1,gold)}
-  samCache.set(key,s);return s}
+const SAM_DOWN=["......ok","......ok","....oook","...okkkk","...owwww","...oksss","...okses","...ossss","....oSss","..occwwn",".occcnwn",".occcnnw",".occbbbb",".oschhhh","..ochhHh","..ohhhHh","..ohhHhh",".ohhhHhh",".ohhHhhh",".ooooooo"].map(M);
+const SAM_UP=["......ok","......ok","....oook","...okkkk","...owwww","...okkkk","...okkkk","...okkkk","....okkk","..occccc",".occcccw",".occccwc",".occcccw",".occcccc","..ohhhhh","..ohhhHh","..ohhHhh",".ohhhHhh",".ohhHhhh",".ooooooo"].map(M);
+const SAM_SIDE=["......okko......",".....okkko......","....okkkkkoo....","...okkkkkkkko...","..wowwwwwwwwo...",".ww.okkksssso...","....okkkssesko..","....okkksssso...",".....okkssSo....","....occnwwco....","...occcnnwco....","...occcnnnco....","...obbbbbbbo....","...ochhhhhso....","...ohhhhhhho....","..ohhhHhhhho....","..ohhHhhhhhho...",".ohhhHhhhhhho...",".ohhHhhhhhhho...",".oooooooooooo..."];
+function samuraiSprite(cape,hair,dir,lf,wf){const key=cape+dir+lf+wf;if(samCache.has(key))return samCache.get(key);
+  const P={o:'#1b1530',k:'#1e1a26',K:'#3a3448',w:'#f2f0f6',s:'#f2c9a0',S:'#d49a78',e:'#1b1530',c:cape,C:shade(cape,-.35),l:shade(cape,.3),n:'#2c2a40',b:'#b8243a',h:'#3e3e5a',H:'#2a2a40',t:'#c8a870',y:'#d8b04a'};
+  const s=document.createElement('canvas');s.width=24;s.height=26;const c=s.getContext('2d'),ox=4,oy=3;
+  const put=(x,y,ch)=>{const v=P[ch];if(v){c.fillStyle=v;c.fillRect(x,y,1,1)}};
+  const paint=(rows,x0,y0)=>rows.forEach((r,y)=>[...r].forEach((ch,x)=>{if(ch!=='.')put(x0+x,y0+y,ch)}));
+  const feet=(xs)=>{for(const x of xs){put(ox+x,oy+20,'o');put(ox+x+1,oy+20,'t');put(ox+x+2,oy+20,'t');put(ox+x+3,oy+20,'o')}};
+  if(dir==='down'){paint(SAM_DOWN,ox,oy);feet(lf===1?[2,9]:lf===2?[3,8]:[3,9]);
+    /* 허리 칼집과 손잡이 (왼쪽 허리) */put(ox+14,oy+11,'y');put(ox+15,oy+10,'k');put(ox+16,oy+9,'k');for(let k=0;k<5;k++)put(ox+14+(k>2?1:0),oy+12+k,'k')}
+  else if(dir==='up'){paint(SAM_UP,ox,oy);feet(lf===1?[2,9]:lf===2?[3,8]:[3,9]);put(ox+1,oy+12,'k');put(ox+0,oy+13,'k');put(ox+0,oy+14,'k');
+    /* 머리띠 끈 */put(ox+12,oy+5,'w');put(ox+13,oy+6,'w');put(ox+13,oy+7,'w');put(ox+12,oy+6,'w')}
+  else{paint(SAM_SIDE,ox,oy);feet(lf===1?[1,7]:lf===2?[3,5]:[2,6]);
+    /* 칼: 칼집은 뒤로, 손잡이는 앞으로 */for(let x=0;x<=10;x++)put(ox+x,oy+12+(x<4?1:0),x<10?'k':'y');put(ox+11,oy+11,'k');put(ox+12,oy+10,'k');put(ox+13,oy+10,'K')}
+  let out=s;if(dir==='left'){out=document.createElement('canvas');out.width=24;out.height=26;const oc=out.getContext('2d');oc.translate(24,0);oc.scale(-1,1);oc.drawImage(s,0,0)}
+  samCache.set(key,out);return out}
+
 /* 사무라이 전용 효과 (화면 위에 그리는 칼선) */
 const samFx=[];let samLast=0,ildo=null;
 const DV=d=>{const v=DIRV[d]||[0,1],l=Math.hypot(v[0],v[1])||1;return [v[0]/l,v[1]/l]};
