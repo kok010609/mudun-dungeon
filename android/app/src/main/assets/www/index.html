@@ -992,7 +992,7 @@ for(let T=0;T<TIERS.length;T++){const ns=MONLIST.filter(D=>D.T===T&&!D.boss),av=
 
 /* ---------- 아이템 ---------- */
 /* 등급 정리 (8개): 일반 · 고급 · 희귀 · 영웅 · 초월 · 레전드 · 태초 · 무한 (헬·심연은 초월, 윤회·창세는 태초로 합침) */
-const RAR=[['일반','#d9dcef'],['고급','#6ee77a'],['희귀','#59b4ff'],['영웅','#c47bff'],['영웅','#c47bff'],['초월','#ff4a6a'],['초월','#ff4a6a'],['초월','#ff4a6a'],['운영자','#3affb0'],['레전드','#ffa31a'],['태초','#ff6ad5'],['태초','#ff6ad5'],['무한','#fff27a'],['영원','#bff6ff']];
+const RAR=[['일반','#d9dcef'],['고급','#6ee77a'],['희귀','#59b4ff'],['영웅','#c47bff'],['영웅','#c47bff'],['초월','#ff4a6a'],['초월','#ff4a6a'],['초월','#ff4a6a'],['운영자','#3affb0'],['레전드','#ffa31a'],['태초','#ff6ad5'],['태초','#ff6ad5'],['무한','#fff27a'],['영원','#bff6ff'],['성좌','#7ab0ff'],['은하','#b48aff'],['개벽','#ffe066']];
 const ITEMS={
   coin:{name:'금화',kind:'coin',rar:0,icon:'coin'},
   herb: {name:'약초',     kind:'potion',rar:0,icon:'herb',heal:8,pct:.1,price:4,  desc:'최대 체력의 10% 회복'},
@@ -1075,6 +1075,10 @@ for(let T=TRANS_FROM;T<TIERS.length;T++)for(const pre of GPRE){
   const g={...ITEMS['R'+pre+T],name:'태초 '+base.name+' Ⅱ',rar:11,col:'#ff6ad5',reborn:false,genesis:true};delete g.id;delete g.desc;for(const f of ['atk','def','hp','mp'])if(g[f])g[f]=Math.round(g[f]*1.25);g.crit=(g.crit||0)+10;GEAR('G'+pre+T,g);ITEMS['G'+pre+T].id='G'+pre+T;
   const n={...ITEMS['G'+pre+T],name:'무한 '+base.name,rar:12,col:'#fff27a',inf:true};delete n.id;delete n.desc;for(const f of ['atk','def','hp','mp'])if(n[f])n[f]=Math.round(n[f]*1.25);n.crit=(n.crit||0)+10;GEAR('I'+pre+T,n);ITEMS['I'+pre+T].id='I'+pre+T;
   const e={...ITEMS['I'+pre+T],name:'영원 '+base.name,rar:13,col:'#bff6ff',eternal:true};delete e.id;delete e.desc;for(const f of ['atk','def','hp','mp'])if(e[f])e[f]=Math.round(e[f]*1.25);e.crit=(e.crit||0)+10;GEAR('E'+pre+T,e);ITEMS['E'+pre+T].id='E'+pre+T}}
+/* [성좌] · [은하] · [개벽] 등급 (영원 위 3단계): 한 단계마다 공격·방어·체력·마나 x1.3, 치명타 +5 (최대 100) · 보스 군단 돌파 보상과 승급 제작으로만 */
+const G3=[['C','성좌',14,'#7ab0ff','star'],['V','은하',15,'#b48aff','galaxy'],['O','개벽',16,'#ffe066','dawn']];
+{const T=TIERS.length-1;for(const pre of GPRE){let prev='E';for(const [P,nm,r,col,flag] of G3){const base=ITEMS[pre+T],b=ITEMS[prev+pre+T];if(!b)break;
+  const o={...b,name:nm+' '+base.name,rar:r,col,[flag]:true};delete o.id;delete o.desc;for(const f of ['atk','def','hp','mp'])if(o[f])o[f]=Math.round(o[f]*1.3);o.crit=Math.min(100,(o.crit||0)+5);GEAR(P+pre+T,o);ITEMS[P+pre+T].id=P+pre+T;prev=P}}}
 /* ---------- 운영자 아이템 (/아이템 코드로만 얻음 · 분해·판매 불가) ---------- */
 {const G='#3affb0',gm=(id,o)=>{GEAR(id,{rar:8,gm:true,noSell:true,glow:true,col:G,tier:99,...o})};
   gm('gm_sword',{name:'운영자의 검',kind:'weapon',cls:'knight',icon:'gsword',atk:50000,crit:30,ls:.1,len:16});
@@ -1782,7 +1786,7 @@ const OPTDEF={crit:['치명타','%',5,1],atkp:['공격력','%',10,1],defp:['방�
   sk:['스킬 피해','%',10,100],ls:['흡혈','%',3,100],spd:['이동 속도','%',5,100],mpr:['마나 회복','/초',5,1],exp:['경험치','%',5,1],drop:['드롭률','%',5,1],gold:['금화 획득','%',10,1]};
 const OPTPOOL={weapon:['crit','atkp','sk','ls','spd','exp','drop','gold'],helm:['hpp','defp','mpp','mpr','crit','exp','drop'],armor:['hpp','defp','mpp','mpr','ls','drop','gold'],
   glove:['crit','atkp','sk','ls','defp','gold'],belt:['hpp','defp','mpp','mpr','exp','gold'],cape:['hpp','defp','spd','exp','gold','drop'],shoulder:['atkp','defp','hpp','crit','ls','sk'],earring:['crit','mpp','mpr','sk','exp','drop'],sub:['atkp','defp','crit','sk','hpp','ls'],pants:['hpp','defp','spd','ls','drop','exp'],boots:['spd','defp','hpp','exp','drop','gold'],ring:Object.keys(OPTDEF),amulet:Object.keys(OPTDEF)};
-const OPTN=[[0,1],[1,2],[2,3],[3,4],[4,5],[5,5],[5,5],[5,5],[5,5],[5,5],[5,5],[5,5],[5,5],[5,5]];
+const OPTN=[[0,1],[1,2],[2,3],[3,4],[4,5],[5,5],[5,5],[5,5],[5,5],[5,5],[5,5],[5,5],[5,5],[5,5],[5,5],[5,5],[5,5]];
 function rollOpts(id){const it=ITEMS[id];const pool=OPTPOOL[it&&it.kind];if(!pool)return undefined;const [a,b]=OPTN[it.rar]||[0,1],n=Math.min(5,a+Math.floor(Math.random()*(b-a+1)));
   const keys=[...pool].sort(()=>Math.random()-.5).slice(0,n);return keys.map(k=>{const mx=OPTDEF[k][2],v=it.gm||it.legend?mx:1+Math.floor(mx*Math.pow(Math.random(),1.6));return [k,Math.min(mx,v)/OPTDEF[k][3]]})}
 function cleanOpts(a){if(!Array.isArray(a))return undefined;return a.filter(o=>Array.isArray(o)&&OPTDEF[o[0]]&&Number.isFinite(+o[1])).slice(0,5).map(([k,v])=>[k,Math.max(0,Math.min(OPTDEF[k][2]/OPTDEF[k][3],+v))])}
@@ -3359,6 +3363,10 @@ const CRAFT=[
   {id:'c_reroll',name:'접두어 다시 굴리기',need:[['mark3',1]],dust:3000,slot:'eq',desc:'착용 중인 장비 하나의 접두어를 새로 랜덤으로 (레전드는 항상 최대치)',give:k=>{const id=me.eq[k];me.eqO[k]=rollOpts(id);recalc();return `${ITEMS[id].name} 접두어 ${me.eqO[k].length}개 새로 붙음`}},
   {id:'c_legend',name:'레전드 장비 제작',need:[['lb_stone',15],['core4',15]],dust:3000000,slot:'kind',desc:'한계돌파석 15 + 4차의 핵 15 + 가루 300만 → 고른 부위의 레전드 장비 (내가 깬 가장 높은 층 기준, 45층 이상)',give:k=>{const T=Math.min(TIERS.length-1,topTier());
     const pre={weapon:me.cls==='mage'?'st':me.cls==='rogue'?'rd':me.cls==='archer'?'bw':pick(['w','d','g']),helm:'h',armor:'a',glove:'k',belt:'bt',pants:'pt',cape:'cp',shoulder:'sh',earring:'er',sub:me.cls==='knight'?'sk':me.cls==='rogue'?'pc':me.cls==='archer'?'qv':'tm'}[k];const id='L'+pre+T;if(!ITEMS[id])return null;addItem(id,1,0,rollOpts(id));news({k:'leg',i:id});return '★ '+ITEMS[id].name}}];
+{const up=(id,nm,from,fromNm,P,lb,ss,dust)=>({id,name:nm+' 장비 승급',need:[['lb_stone',lb],['star_st',ss]],dust,desc:`가방의 ${fromNm} 장비 3개(아무 부위, 강화·접두어는 사라져요) + 한계돌파석 ${lb} + 별의 돌 ${ss} + 가루 ${fmtK(dust)} → ${nm} 장비 1개 (랜덤 부위)`,
+    g3:fromNm,have:()=>me.bag.filter(s=>ITEMS[s.id][from]&&ITEMS[s.id].rar===({eternal:13,star:14,galaxy:15})[from]).length,
+    give:()=>{const need=({eternal:13,star:14,galaxy:15})[from];if(me.bag.filter(s=>ITEMS[s.id].rar===need&&ITEMS[s.id][from]).length<3){sys(`${fromNm} 장비가 3개 필요해요.`);return null}let n=0;for(let i=me.bag.length-1;i>=0&&n<3;i--){const it=ITEMS[me.bag[i].id];if(it[from]&&it.rar===need){me.bag.splice(i,1);n++}}return dropGen(P)}});
+  CRAFT.push(up('c_g3a','성좌','eternal','영원','C',50,20,1e7),up('c_g3b','은하','star','성좌','V',100,50,1e8),up('c_g3c','개벽','galaxy','은하','O',200,100,1e9))}
 CRAFT.push({id:'c_star',name:'별의 돌 연마',need:[['lb_stone',3]],dust:30000,desc:'한계돌파석 3 + 가루 3만 → 별의 돌 1개 (+25 넘는 별 강화 재료)',give:()=>{addItem('star_st',1);return '별의 돌 1개'}},
   {id:'c_inf',name:'무한 장비 승급',need:[['lb_stone',30]],dust:1000000,gen:3,desc:'가방의 태초 Ⅱ 장비 3개(아무 부위, 강화·접두어는 사라져요) + 한계돌파석 30 + 가루 100만 → 무한 장비 1개 (랜덤 부위)',give:()=>{
     let n=0;for(let i=me.bag.length-1;i>=0&&n<3;i--){const it=ITEMS[me.bag[i].id];if(it.genesis&&!it.inf){me.bag.splice(i,1);n++}}return dropGen('I')}});
@@ -3388,7 +3396,7 @@ CRAFT.push(
   {id:'c_lb2',name:'별의 돌 분해',need:[['star_st',1]],dust:0,desc:'별의 돌 1개 → 한계돌파석 2개',give:()=>{addItem('lb_stone',2);return '한계돌파석 2개'}});
 const genBag=()=>me.bag.filter(s=>{const it=ITEMS[s.id];return it.genesis&&!it.inf}).length;
 const CR_KINDS=[['weapon','무기'],['helm','투구'],['armor','갑옷'],['glove','장갑'],['belt','벨트'],['pants','하의'],['cape','망토'],['shoulder','어깨'],['earring','귀걸이'],['sub','보조무기']];
-function craftOk(R,k){if(countItem('dust')<R.dust)return false;if(R.id==='c_box3'&&me.bag.length>=bagMax())return false;if(R.id==='c_enh'&&k&&me.eq[k]&&(me.eqE[k]||0)>=(ITEMS[me.eq[k]].legend?LEG_CAP:20))return false;if(R.gen&&genBag()<R.gen)return false;for(const [id,n] of R.need)if(countItem(id)<n)return false;if(R.id==='c_legend'&&topTier()<TRANS_FROM)return false;if(R.slot==='eq'&&!(k&&me.eq[k]))return false;return true}
+function craftOk(R,k){if(countItem('dust')<R.dust)return false;if(R.id==='c_box3'&&me.bag.length>=bagMax())return false;if(R.id==='c_enh'&&k&&me.eq[k]&&(me.eqE[k]||0)>=(ITEMS[me.eq[k]].legend?LEG_CAP:20))return false;if(R.gen&&genBag()<R.gen)return false;if(R.have&&R.have()<3)return false;for(const [id,n] of R.need)if(countItem(id)<n)return false;if(R.id==='c_legend'&&topTier()<TRANS_FROM)return false;if(R.slot==='eq'&&!(k&&me.eq[k]))return false;return true}
 function doCraft(R,k){if(!craftOk(R,k))return;for(const [id,n] of R.need)takeN(id,n);if(R.dust)takeN('dust',R.dust);const out=R.give(k);
   if(!out){sys('만들 수 없어요.');return}invChanged();persist();toast(`제작 완료: ${out}`,3000);sys(`[제작소] ${R.name} → ${out}`);
   fxs.push({k:'ring',x:me.x,y:me.y,t:0,dur:.6,col:'#ffcc4d',r:40});burst(me.x,me.y-12,40,['#ffcc4d','#ffffff'],140,.7);renderCraft()}
@@ -3396,7 +3404,7 @@ function renderCraft(){renderAltar();const ul=$('crl');ul.textContent='';
   $('crsum').textContent=`쓸 데 없이 쌓인 재료를 더 좋은 것으로 바꿔요. 지금 가진 것: 증표 ${countItem('mark3')} · 핵 ${countItem('core4')} · 한계돌파석 ${countItem('lb_stone')} · 가루 ${fmtK(countItem('dust'))} · 약초 ${countItem('herb')} · 방어구 주문서 ${countItem('sc_a')}`;
   for(const R of CRAFT){const li=document.createElement('li');const no=document.createElement('div');no.className='no';no.textContent='⚒';no.style.color='#ffcc4d';
     const mid=document.createElement('div');const dn=document.createElement('div');dn.className='dn';dn.textContent=R.name;const sm=document.createElement('small');
-    sm.textContent=R.desc+' · 필요: '+(R.gen?`태초 Ⅱ 장비 ${genBag()}/${R.gen}, `:'')+R.need.map(([id,n])=>`${ITEMS[id].name} ${countItem(id)}/${n}`).join(', ')+(R.dust?` · 가루 ${fmtK(countItem('dust'))}/${fmtK(R.dust)}`:'')+(R.id==='c_legend'?` · 기준 층 ${topTier()>=0?topTier()+1:'-'}층`:'');mid.append(dn,sm);
+    sm.textContent=R.desc+' · 필요: '+(R.gen?`태초 Ⅱ 장비 ${genBag()}/${R.gen}, `:'')+(R.have?`${R.g3} 장비 ${R.have()}/3, `:'')+R.need.map(([id,n])=>`${ITEMS[id].name} ${countItem(id)}/${n}`).join(', ')+(R.dust?` · 가루 ${fmtK(countItem('dust'))}/${fmtK(R.dust)}`:'')+(R.id==='c_legend'?` · 기준 층 ${topTier()>=0?topTier()+1:'-'}층`:'');mid.append(dn,sm);
     const right=document.createElement('div');right.style.cssText='display:grid;gap:4px;justify-items:end';let sel=null;
     if(R.slot){sel=document.createElement('select');sel.setAttribute('aria-label',R.name+' 부위');sel.style.cssText='font:inherit;font-size:13px;background:var(--panel-hi);color:var(--text);border:2px solid var(--ink);padding:2px';
       const opts=R.slot==='eq'?EQ_KINDS.filter(([k])=>me.eq[k]).map(([k,l])=>[k,`${l}: ${ITEMS[me.eq[k]].name}`]):CR_KINDS;for(const [k,l] of opts){const o=document.createElement('option');o.value=k;o.textContent=l;sel.appendChild(o)}right.appendChild(sel)}
@@ -3719,7 +3727,7 @@ function popBsr(z){z.mons.length=0;for(let i=0;i<BSR_N;i++){const m=spawnMon({},
 function bsrHit(m,f){return Math.round(me.maxHp*bsrPct(Z.bsr||1)*(f||1))+defOf()}
 function onKillBsr(m){if(!Z||!Z.bsr||!m.bsr)return;const k=Z.bsr;Z.bsrKills=(Z.bsrKills||0)+1;const n=Z.bsrKills;
   if(n%10===0){addItem('lb_stone',1+Math.floor(k/5));if(n%20===0)addItem('star_st',1);floatText(me.x,me.y-50,`보스 ${n}마리!`,'#ffd35a',true)}
-  if(n===BSR_GOAL){me.bsrBest=Math.max(me.bsrBest||0,k);const g=Math.round(2e7*k);me.gold+=g;addItem('core4',1+Math.floor(k/4));toast(`보스 군단 ${k}단계 돌파!`,4000);sfx('lvup');
+  if(n===BSR_GOAL){me.bsrBest=Math.max(me.bsrBest||0,k);const g=Math.round(2e7*k);me.gold+=g;addItem('core4',1+Math.floor(k/4));toast(`보스 군단 ${k}단계 돌파!`,4000);sfx('lvup');{const rw=[];if(k>=5&&Math.random()<Math.min(.3,.03*(k-4))*SET_DROP)rw.push(dropEternal('보스 군단'));if(k>=10&&Math.random()<Math.min(.25,.02*(k-9))*SET_DROP)rw.push(dropGen('C'));if(k>=20&&Math.random()<Math.min(.1,.01*(k-19))*SET_DROP)rw.push(dropGen('V'));if(k>=30&&Math.random()<Math.min(.05,.005*(k-29))*SET_DROP)rw.push(dropGen('O'));if(rw.length)sys('보스 군단 돌파 보상: '+rw.join(', '))}
     sys(`★ 보스 군단 ${k}단계 돌파 (${BSR_GOAL}마리)! 금화 ${g.toLocaleString()} · 4차의 핵 ${1+Math.floor(k/4)}개. 다음 ${k+1}단계가 열렸어요 (콘텐츠 창 → 보스 군단). 계속 사냥해도 돼요.`);persist()}}
 function renderBsr(){const ul=$('bsl');ul.textContent='';const best=me.bsrBest||0,a=atkOf();
   $('bssum').textContent=`던전 보스급 몬스터만 ${BSR_N}마리 나오는 곳이에요 (쓰러뜨리면 8초 뒤 다시 나와요). 보스 체력은 지금 내 공격력(${fmtK(a)})과 스킬 배율에 맞춰지고, 단계마다 1.15배. 보스에게 맞으면 최대 체력의 일정 비율이 깎여요. ${BSR_GOAL}마리를 쓰러뜨리면 다음 단계가 열리고 금화·4차의 핵, 10마리마다 한계돌파석, 20마리마다 별의 돌. 보스라서 장비·금화도 잔뜩 떨어져요. 최고 ${best}단계`;
@@ -3847,7 +3855,7 @@ function gseenAll(){me.gseen=me.gseen||{};for(const k in me.eq||{})if(me.eq[k])m
 /* 지금 레벨·진행에서 노릴 층: 레벨이 되고, 바로 앞 층을 깬 가장 깊은 층 */
 function recTier(){let R=0;for(let T=0;T<TIERS.length;T++){if(TIERS[T].lv>me.lvl)break;if(T===0||me.cleared[T-1])R=T}return R}
 const tierOf=id=>id&&ITEMS[id]?(ITEMS[id].tier??-1):-1;
-const gradeOf=id=>{const it=ITEMS[id];if(!it)return '';return it.genesis?'태초':it.reborn?'윤회':it.legend?'레전드':it.abyss?(it.tier>=ABYSS_FROM?'태초 초월':'심연'):it.trans?'초월':'일반'};
+const gradeOf=id=>{const it=ITEMS[id];if(!it)return '';return it.rar>=14?RAR[it.rar][0]:it.genesis?'태초':it.reborn?'윤회':it.legend?'레전드':it.abyss?(it.tier>=ABYSS_FROM?'태초 초월':'심연'):it.trans?'초월':'일반'};
 function gCell(id,seen,note){const it=ITEMS[id],cell=document.createElement('div');cell.className='dexcell'+(seen?'':' unk');
   const img=document.createElement('img');img.src=itemUrl(id);img.alt='';const nm=document.createElement('div');nm.className='nm';nm.textContent=seen?it.name:'???';if(seen&&it.col)nm.style.color=it.col;
   const sm=document.createElement('small');sm.textContent=(note?note+' · ':'')+(it.atk?`공격 ${fmtK(it.atk)}`:it.def?`방어 ${fmtK(it.def)}`:it.hp?`체력 ${fmtK(it.hp)}`:'');cell.append(img,nm,sm);return cell}
