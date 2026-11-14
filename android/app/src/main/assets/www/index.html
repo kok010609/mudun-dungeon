@@ -224,6 +224,7 @@ body.mobile #bag{gap:8px}
 .petgrid.shopg{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
 .shopc{--c:#c9a8ff;display:flex;flex-direction:column;gap:6px;min-width:0;background:var(--panel-hi);border:2px solid var(--ink);border-left:5px solid var(--c);padding:9px 10px}
 .shopc.wide{grid-column:1/-1}
+.roulcv{width:min(240px,70vw);height:auto;align-self:center;image-rendering:auto}
 #cash header h2{white-space:nowrap}
 .shopc .nm{font-size:17px;line-height:1.25;color:var(--c);overflow-wrap:anywhere}
 .shopc .bd{display:inline-block;font-size:11px;line-height:1.5;padding:0 6px;margin-left:6px;background:var(--c);color:#14182c;vertical-align:2px}
@@ -1141,6 +1142,7 @@ Object.assign(ITEMS,{
   em4:{name:'4차 전직 엠블럼',kind:'emblem',rar:6,icon:'emblem',emb:4,noSell:true,col:'#ff5a4a',desc:'공격력·최대 체력·방어 +25%'},
   em5:{name:'5차 전직 엠블럼',kind:'emblem',rar:7,icon:'emblem',emb:5,noSell:true,col:'#ff7ae0',desc:'공격력·최대 체력·방어 +35%'},
   em6:{name:'6차 전직 엠블럼',kind:'emblem',rar:9,icon:'emblem',emb:6,noSell:true,col:'#fff3b0',desc:'공격력·최대 체력·방어 +50%'},
+  exp10h:{name:'경험치 10배 주문서 (2시간)',kind:'potion',rar:5,icon:'scroll',exp10:true,hours:2,noSell:true,col:'#ffcc4d',desc:'읽으면 2시간 동안 얻는 경험치 10배 (초월 경험치 포함). 게임을 꺼 둬도 시간은 흘러요. 여러 장 읽으면 2시간씩 늘어나요. 행운의 룰렛에서 나와요.'},
   exp10:{name:'경험치 10배 주문서 (이벤트)',kind:'potion',rar:5,icon:'scroll',exp10:true,noSell:true,col:'#ffcc4d',desc:'읽으면 24시간 동안 얻는 경험치 10배 (초월 경험치 포함). 게임을 꺼 둬도 시간은 흘러요. 여러 장 읽으면 24시간씩 늘어나요.'},
   adv_reset:{name:'전직 초기화 주문서',kind:'potion',rar:4,icon:'scroll',reset:true,dust:50000,noSell:true,col:'#ff7ae0',desc:'지금 직업의 1차·2차·3차 전직과 4차 전직을 모두 초기화해요 (초월의 증표·4차의 핵은 돌려받지 못해요). 전직 창(J)에서 다시 고를 수 있어요'},
   home:  {name:'귀환 주문서',  kind:'potion',rar:0,icon:'scroll',home:true,price:20,col:'#7ff0ff',desc:'즉시 마을 분수대로 돌아갑니다'},
@@ -1926,7 +1928,7 @@ function useAt(i){
     me.resetAsk=0;const old=advShow().name;me.adv[me.cls]='';me.adv2[me.cls]='';me.adv3[me.cls]='';if(me.adv4)me.adv4[me.cls]='';if(me.adv5)me.adv5[me.cls]='';if(me.adv6)me.adv6[me.cls]='';me.awakeT=0;me.sk1=false;refreshSkills();recalc();me.hp=Math.min(me.hp,me.maxHp);me.mp=Math.min(me.mp,me.maxMp);buildSkillBar();takeAt(i);sel=null;invChanged();
     toast('전직 초기화!',2500);sys(`${old} 전직을 초기화했어요. 전직 창(J)에서 다시 고를 수 있어요.`);for(let k=0;k<3;k++)fxs.push({k:'ring',x:me.x,y:me.y,t:-k*.12,dur:.7,col:'#ff7ae0',r:40+k*30});burst(me.x,me.y-12,60,['#ff7ae0','#ffffff'],160,.8)}
   else if(it.trreset){if(!traitSpent()){sys('찍은 특성이 없어요.');return}takeAt(i);if(!me.bag[i]||sel&&sel.i>=me.bag.length)sel=null;resetTraits();invChanged()}
-  else if(it.exp10){const now=Date.now();me.x10=Math.max(me.x10||0,now)+864e5;takeAt(i);if(!me.bag[i]||sel&&sel.i>=me.bag.length)sel=null;persist();
+  else if(it.exp10){const now=Date.now();me.x10=Math.max(me.x10||0,now)+(it.hours||24)*36e5;takeAt(i);if(!me.bag[i]||sel&&sel.i>=me.bag.length)sel=null;persist();
     toast(`경험치 10배! 남은 시간 ${x10Left()}`,3000);sys(`경험치 10배 주문서를 읽었어요. ${x10Left()} 동안 경험치 10배 (게임을 꺼도 시간은 흘러요).`);for(let k=0;k<3;k++)fxs.push({k:'ring',x:me.x,y:me.y,t:-k*.12,dur:.7,col:'#ffcc4d',r:40+k*30});burst(me.x,me.y-12,60,['#ffcc4d','#ffffff'],160,.8)}
   else if(it.home){if(me.dead)return;takeAt(i);sel=null;enterZone('town');sys('귀환 주문서로 마을에 돌아왔어요.')}
   else if(it.kind==='potion'){if(me.dead)return;if(me.hp>=me.maxHp){floatText(me.x,me.y-30,'체력이 가득해요','#98a2cc');return}
@@ -3759,6 +3761,7 @@ const CS_PACK=[
 function csBuy(price,fn,msg){if(!payDust(price))return;fn();recalc();hudKey='';invChanged();persist();sys(msg);toast(msg,1600);burst(me.x,me.y-14,16,['#c9a8ff','#ffffff'],80,.5);renderCash()}
 function csHead(g,t,sub){const h=document.createElement('div');h.className='cshd';h.textContent=t;if(sub){const s=document.createElement('small');s.textContent=' '+sub;h.appendChild(s)}g.appendChild(h)}
 function renderCashHome(g,sum){const s=csState();sum.textContent='매일 무료 선물을 받고, 이번 주 특가와 패키지를 확인하세요. 패키지는 일주일에 한 번씩 살 수 있어요.';
+  csHead(g,'행운의 룰렛','복불복! 가루 100만으로 한 번');roulCard(g);
   csHead(g,'오늘의 선물');
   g.appendChild(wideCard(cashRow('오늘의 무료 선물',CS_FREE.map(([id,n])=>`${ITEMS[id].name} ${fmtK(n)}`).join(' · ')+' (매일 자정 초기화)',s.free?'오늘 받음':'무료',s.free?'내일 또 받아요':'받기',!s.free,()=>{const S=csState();if(S.free)return;S.free=1;for(const [id,n] of CS_FREE)addItem(id,n);invChanged();persist();sys('오늘의 무료 선물을 받았어요!');toast('무료 선물 받음!',1600);burst(me.x,me.y-14,24,['#ffd35a','#ffffff'],100,.6);renderCash()},'#ffd35a',s.free?'':'무료')));
   csHead(g,'이번 주 특가','30% 할인 · 하나씩 한 번만');ltdCards(g);
@@ -3925,6 +3928,29 @@ function csCards(g){const tab=cashTab,s=csState(),dust=countItem('dust');
   }
 }
 {const rc=renderCash;renderCash=function(){const r=rc.apply(this,arguments);try{if(!$('cash').hidden&&['home','grow','enh'].includes(cashTab))csCards($('petgrid'))}catch(e){console.error(e)}return r}}
+
+/* ================= 행운의 룰렛: 가루 100만으로 돌려요 (복불복) ================= */
+const ROUL_PRICE=1e6;
+const ROUL=[['경험치 10배\n2시간','#ffcc4d',10,()=>{addItem('exp10h',1);return '경험치 10배 주문서 (2시간)'}],['가루\n300만','#ff6ad5',4,()=>{addItem('dust',3e6);return '마력 가루 300만 (대박!)'}],
+  ['가루\n150만','#c9a8ff',10,()=>{addItem('dust',15e5);return '마력 가루 150만'}],['가루\n50만','#9a8ac8',22,()=>{addItem('dust',5e5);return '마력 가루 50만'}],
+  ['별의 돌\n×2','#ff9ad8',12,()=>{addItem('star_st',2);return '별의 돌 2개'}],['한계돌파석\n×5','#ffa31a',12,()=>{addItem('lb_stone',5);return '한계돌파석 5개'}],
+  ['엘릭서\n×30','#6ee7b7',19.7,()=>{addItem('pot_x',30);return '엘릭서 30병'}],['+1\n강화권','#9dffa8',.3,()=>{addItem('en_1',1);return '+1 장비 강화권 (초대박!)'}],['꽝\n가루 10만','#5a5a6a',10,()=>{addItem('dust',1e5);return '꽝… 마력 가루 10만'}]];
+let roulBusy=false,roulAng=0;
+function roulPick(){let r=Math.random()*ROUL.reduce((a,x)=>a+x[2],0);for(let i=0;i<ROUL.length;i++){r-=ROUL[i][2];if(r<0)return i}return ROUL.length-1}
+function drawRoul(cv,ang){const c=cv.getContext('2d'),W=cv.width,R=W/2-6,n=ROUL.length;c.clearRect(0,0,W,W);c.save();c.translate(W/2,W/2);
+  for(let i=0;i<n;i++){const a0=ang+i/n*Math.PI*2-Math.PI/2,a1=a0+Math.PI*2/n;c.beginPath();c.moveTo(0,0);c.arc(0,0,R,a0,a1);c.closePath();c.fillStyle=ROUL[i][1];c.fill();c.strokeStyle='#1b1530';c.lineWidth=2;c.stroke();
+    c.save();c.rotate(a0+Math.PI/n);c.fillStyle=i===8?'#ffffff':'#14102a';c.font='bold 11px sans-serif';c.textAlign='right';ROUL[i][0].split('\n').forEach((t,k)=>c.fillText(t,R-8,k*12-1));c.restore()}
+  c.beginPath();c.arc(0,0,16,0,Math.PI*2);c.fillStyle='#ffd35a';c.fill();c.strokeStyle='#1b1530';c.stroke();c.restore();
+  c.beginPath();c.moveTo(W/2-9,2);c.lineTo(W/2+9,2);c.lineTo(W/2,20);c.closePath();c.fillStyle='#ffffff';c.fill();c.strokeStyle='#1b1530';c.lineWidth=2;c.stroke()}
+function roulCard(g){const card=wideCard(cashRow('행운의 룰렛',`가루 100만으로 한 번 돌려요. 확률: ${ROUL.map(x=>`${x[0].replace('\n',' ')} ${x[2]}%`).join(' · ')}`,`가루 ${fmtK(ROUL_PRICE)} / 1회`,'돌리기',countItem('dust')>=ROUL_PRICE&&!roulBusy,()=>spinRoul(card),'#ffcc4d','복불복'));
+  const cv=document.createElement('canvas');cv.width=cv.height=240;cv.className='roulcv';drawRoul(cv,roulAng);card.insertBefore(cv,card.querySelector('.row'));
+  const b10=document.createElement('button');b10.type='button';b10.className='btn sm alt';b10.textContent='10번 한꺼번에';b10.disabled=countItem('dust')<ROUL_PRICE*10||roulBusy;
+  b10.addEventListener('click',()=>{if(roulBusy||!payDust(ROUL_PRICE*10))return;const got={};for(let k=0;k<10;k++){const i=roulPick(),t=ROUL[i][3]();got[t]=(got[t]||0)+1}invChanged();persist();const msg=Object.entries(got).map(([t,n])=>n>1?`${t} ×${n}`:t).join(', ');sys('룰렛 10번: '+msg);toast('룰렛 10번 결과는 채팅창에!',2400);renderCash()});
+  card.querySelector('.row').appendChild(b10);g.appendChild(card)}
+function spinRoul(card){if(roulBusy||!payDust(ROUL_PRICE))return;roulBusy=true;card.querySelectorAll('button').forEach(b=>b.disabled=true);const cv=card.querySelector('canvas'),i=roulPick(),n=ROUL.length;
+  const target=-(i+.5)/n*Math.PI*2+(Math.random()-.5)*(Math.PI*2/n)*.6,start=roulAng,end=target+Math.PI*2*(6+Math.ceil((start-target)/(Math.PI*2))),t0=performance.now(),D=2600;try{sfx('click')}catch(e){}
+  const step=now=>{const k=Math.min(1,(now-t0)/D),e=1-Math.pow(1-k,3);roulAng=start+(end-start)*e;drawRoul(cv,roulAng);if(k<1){requestAnimationFrame(step);return}
+    roulAng=end%(Math.PI*2);const t=ROUL[i][3]();invChanged();persist();roulBusy=false;const big=i===0||i===1||i===7;toast((i===8?'':'🎉 ')+t,big?4000:2200);sys(`행운의 룰렛: ${t}`);if(big){burst(me.x,me.y-14,60,['#ffd35a','#ffffff','#ff6ad5'],160,.9);try{sfx('lvup')}catch(e){}if(i===0||i===7)news({k:'roul',t})}renderCash()};requestAnimationFrame(step)}
 
 function makeDuel(k){k=Math.max(1,Math.min(DUEL_MAX,k));const T=ABYSS_FROM+9,z=makeArena(T);
   z.id='pv'+k;z.duel=k;z.hpMul=duelHp(k);z.dmgMul=duelDmg(k);z.expMul=3;
@@ -5315,6 +5341,7 @@ function handleNews(n,d){
   if(d.i==='core4'&&!d.k){sysItem(`${n} 님이 `,d.i,' 을(를) 얻었어요! (헬 보스)');toast(`${n} 님 4차의 핵 획득!`,2500);return}
   if(d.i==='mark3'&&!d.k){sysItem(`${n} 님이 `,d.i,' 을(를) 얻었어요! (90층 이상 신화 보스 · 헬 보스)');toast(`${n} 님 초월의 증표 획득!`,2500)}
   else if(typeof d.i==='string'&&ITEMS[d.i]&&ITEMS[d.i].rar>=2&&!d.k)sysItem(`${n} 님이 `,d.i,' 을(를) 얻었어요!');
+  else if(d.k==='roul'&&typeof d.t==='string')sys(`${n} 님이 행운의 룰렛에서 ${d.t.slice(0,40)}을(를) 뽑았어요!`);
   else if(d.k==='ent'&&(d.n===2||d.n===3))sys(`${n} 님이 보스에게서 +${d.n} 장비 강화권을 얻었어요!`);
   else if(d.k==='enh'&&typeof d.i==='string'&&ITEMS[d.i]&&Number.isInteger(d.e))sys(`${n} 님이 ${nameOf(d.i,clamp(d.e,0,LEG_CAP))} 강화에 성공했어요!`);
   else if(d.k==='pk'&&Number.isInteger(d.d)&&TIERS[d.d])sys(`${n} 님이 ${TIERS[d.d].name}에서 PK를 처치했어요!`);
