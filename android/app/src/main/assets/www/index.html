@@ -4887,13 +4887,15 @@ function pushLine(el){log.appendChild(el);while(log.children.length>60)log.first
 /* ---------- 운영자 명령어 (채팅창에 /운영자 비밀번호 로 켜기) ---------- */
 const gm={on:false,god:false},GM_KEY=-1;
 const gmHash=t=>{let h=5381;for(const c of t)h=((h*33)^c.charCodeAt(0))>>>0;return h};
-const GM_HELP='';const _GM_HELP_REMOVED=' /레벨 N · /가루 N · /골드 N · /아이템 코드 [개수] · /이동 층(0=마을) · /무적 · /회복 · /전직초기화 · /펫전부 · /운영자세트 · /초월 N · /오의 · /증표 · /자동사냥 · /도움말 · /운영자끄기';
+const GM_HELP='';const _GM_HELP_REMOVED=' /레벨 N · /가루 N · /골드 N · /아이템 코드 [개수] · /이동 층(0=마을) · /무적 · /회복 · /전직초기화 · /펫전부 · /운영자세트 · /초월 N · /환생 (바로 1회) · /환생 N (환생 횟수를 N으로) · /오의 · /증표 · /자동사냥 · /도움말 · /운영자끄기';
 function gmCmd(t){const [c,...a]=t.slice(1).trim().split(/\s+/),n=parseInt(a[0],10);
   /* 공개용 앱: 운영자 기능 없음 */
   if(!gm.on){sys('알 수 없는 명령어예요.');return}
   const okN=v=>Number.isFinite(v)&&v>=0;
   switch(c){
     case '도움말':sys(GM_HELP);break;
+    case '환생':if(a[0]==null){me.lvl=LV_MAX;me.tlv=TLV_MAX;doRebirth();sys(`[운영자] 조건 없이 바로 환생했어요 → 환생 ${me.rb}회`);break}
+      if(!okN(n)){sys('사용법: /환생 (바로 1회) 또는 /환생 50 (환생 횟수를 50으로)');break}me.rb=Math.min(9999,n);recalc();me.hp=me.maxHp;me.mp=me.maxMp;hudKey='';towerPost();try{grantRbMs()}catch(e){}persist();sys(`[운영자] 환생 횟수를 ${me.rb}회로 바꿨어요 (레벨·초월 레벨은 그대로). 환생 보너스·균열 단계·수련장 단계가 새 횟수 기준으로 바뀌어요.`);break;
     case '레벨':if(!okN(n)||n<1){sys('사용법: /레벨 300');break}me.lvl=Math.min(LV_MAX,n);me.exp=0;recalc();me.hp=me.maxHp;me.mp=me.maxMp;buildSkillBar();hudKey='';persist();sys(`레벨을 Lv.${me.lvl}로 바꿨어요.`);break;
     case '가루':if(!okN(n)){sys('사용법: /가루 50000');break}addItem('dust',n);invChanged();sys(`마력 가루 ${n.toLocaleString()}개 지급 (보유 ${countItem('dust').toLocaleString()}).`);break;
     case '골드':if(!okN(n)){sys('사용법: /골드 100000');break}me.gold+=n;hudKey='';persist();sys(`금화 ${n.toLocaleString()} 지급.`);break;
