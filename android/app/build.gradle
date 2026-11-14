@@ -14,6 +14,13 @@ android {
         versionName "1.0.${vc}"
     }
     signingConfigs {
+        // 폰 시험용 고정 키 (공개돼도 되는 테스트 키). 플레이스토어용은 아래 release(비밀값) 키를 써요.
+        test {
+            storeFile file('test.keystore')
+            storePassword 'mudun-test'
+            keyAlias 'test'
+            keyPassword 'mudun-test'
+        }
         release {
             if (ks.exists()) {
                 storeFile ks
@@ -26,8 +33,8 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            // 서명 키가 없으면 테스트용(디버그) 키로 서명 → 폰에 바로 설치는 되지만 플레이스토어엔 못 올림
-            signingConfig ks.exists() ? signingConfigs.release : signingConfigs.debug
+            // 서명 키 비밀값이 없으면 테스트 키로 서명 → 폰에 바로 설치(업데이트해도 저장 유지), 플레이스토어엔 못 올림
+            signingConfig ks.exists() ? signingConfigs.release : signingConfigs.test
         }
     }
     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
