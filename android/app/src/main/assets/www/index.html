@@ -1882,7 +1882,7 @@ function populate(z){
 /* ---------- 가방 ---------- */
 const BAG_MAX=100,LOOT_R=120;
 const stackable=id=>ITEMS[id].kind==='potion'||ITEMS[id].kind==='mat';
-const capOf=id=>id==='dust'||ITEMS[id].kind==='potion'?9e12:ITEMS[id].kind==='mat'?999:99;
+const capOf=id=>id==='dust'||ITEMS[id].kind==='potion'||ITEMS[id].kind==='mat'?9e12:99;
 const isGear=id=>!!EQ_KINDS.find(([k])=>k===ITEMS[id]?.kind);
 function addItem(id,n=1,e=0,o){const it=ITEMS[id];if(!it)return false;if(it.kind==='coin'){me.gold+=n;return true}
   if(stackable(id)){const cap=capOf(id);const s=me.bag.find(x=>x.id===id&&x.n<cap);if(s){const add=Math.min(n,cap-s.n);s.n+=add;n-=add;if(n<=0)return true}}
@@ -2074,8 +2074,9 @@ function setAutoBtns(){if(!$('opt').hidden)renderOpt()}
 const nextStep=v=>AUTO_STEPS[(AUTO_STEPS.indexOf(v)+1)%AUTO_STEPS.length]??0;
 function quickMana(){for(const id of ['mp_s','mp_l']){const i=me.bag.findIndex(s=>s.id===id);if(i>=0){useAt(i);return}}
   sys('마나 포션이 없어요. 마을 상인에게서 살 수 있어요.')}
-/* 마력 가루와 물약은 종류마다 한 칸에 모두 합쳐요 (개수 제한 없음) */
-function mergeDust(){const first={};for(let i=0;i<me.bag.length;i++){const b=me.bag[i],id=b.id;if(id!=='dust'&&ITEMS[id]?.kind!=='potion')continue;if(first[id]==null){first[id]=i;continue}me.bag[first[id]].n+=b.n;me.bag.splice(i,1);i--}}
+/* 마력 가루·물약·주문서·재료는 종류마다 한 칸에 모두 합쳐요 (개수 제한 없음) */
+function mergeStacks(a){const first={};for(let i=0;i<a.length;i++){const b=a[i],id=b&&b.id;if(!ITEMS[id]||!stackable(id))continue;if(first[id]==null){first[id]=i;continue}a[first[id]].n+=b.n;a.splice(i,1);i--}return a}
+function mergeDust(){mergeStacks(me.bag)}
 function invChanged(){mergeDust();persist();hudKey='';if(!$('bag').hidden)renderBag();if(!$('shop').hidden)renderShop()}
 
 
@@ -3548,7 +3549,7 @@ function rbScore(r){return (r.rb||0)*1000+(r.tlv||0)}
 const STASH_KEY='slime-hill-stash',STASH_TABS=5,STASH_N=100;
 let stash={tabs:[[],[],[],[],[]],ts:0},stashTab=0,stashSaveT=0;
 function cleanSlot(x){if(!x||typeof x!=='object'||!ITEMS[x.id])return null;const o={id:x.id,n:Math.max(1,Math.min(capOf(x.id),Math.round(+x.n||1)))};if(x.e)o.e=clamp(Math.round(+x.e||0),0,LEG_CAP);if(OPTPOOL[ITEMS[x.id].kind])o.o=Array.isArray(x.o)?x.o.slice(0,5):[];return o}
-function cleanStash(v){const out={tabs:[],ts:+(v&&v.ts)||0,enhV:ENH_VER};const old=!(v&&v.enhV>=ENH_VER);for(let t=0;t<STASH_TABS;t++){const a=v&&Array.isArray(v.tabs)&&Array.isArray(v.tabs[t])?v.tabs[t]:[];out.tabs.push(a.map(x=>{if(old&&x&&x.e)x={...x,e:convE(+x.e||0)};return cleanSlot(x)}).filter(Boolean).slice(0,STASH_N))}return out}
+function cleanStash(v){const out={tabs:[],ts:+(v&&v.ts)||0,enhV:ENH_VER};const old=!(v&&v.enhV>=ENH_VER);for(let t=0;t<STASH_TABS;t++){const a=v&&Array.isArray(v.tabs)&&Array.isArray(v.tabs[t])?v.tabs[t]:[];out.tabs.push(a.map(x=>{if(old&&x&&x.e)x={...x,e:convE(+x.e||0)};return cleanSlot(x)}).filter(Boolean).slice(0,STASH_N));mergeStacks(out.tabs[t])}return out}
 function loadStash(){try{stash=cleanStash(JSON.parse(localStorage.getItem(STASH_KEY)||'null'))}catch{stash=cleanStash(null)}}
 function saveStash(){stash.ts=Date.now();try{localStorage.setItem(STASH_KEY,JSON.stringify(stash))}catch{}
   clearTimeout(stashSaveT);stashSaveT=setTimeout(()=>{try{if(cloud.db&&cloud.uid)cloud.db.doc('data/users/'+cloud.uid+'/stash').set({json:JSON.stringify(stash),ts:stash.ts}).catch(()=>{})}catch{}},1500)}
