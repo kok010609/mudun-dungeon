@@ -1853,7 +1853,7 @@ function spawnMon0(m,z){
     if(z.id==='town'){tx=2+Math.floor(Math.random()*(z.W-4));ty=2+Math.floor(Math.random()*(z.H-4));const t=z.at(tx,ty),d=Math.hypot(tx-CX,ty-CY);
       if((t!==G&&t!==FL)||d<13||z.safe(tx*16+8,ty*16+8))continue;type=MONIDX[pick(FIELD[d<19?0:d<26?1:2])]}
     else{const rooms=z.rooms.filter(r=>r!==z.startRoom);const r=pick(rooms);tx=r.x+1+Math.floor(Math.random()*(r.w-2));ty=r.y+1+Math.floor(Math.random()*(r.h-2));
-      const t=z.at(tx,ty);if(t!==STONE&&t!==RUBBLE)continue;type=MONIDX[`${z.T}-${pick(ROSTER[z.T])[0]}`]}
+      const t=z.at(tx,ty);if(t!==STONE&&t!==RUBBLE)continue;type=z.monPool?pick(z.monPool):MONIDX[`${z.T}-${pick(ROSTER[z.T])[0]}`]}
     const x=tx*16+8,y=ty*16+12;
     if(z===Z&&Math.hypot(me.x-x,me.y-y)<150)continue;
     const el=Math.random()<(z.id==='town'?.06:.14);Object.assign(m,{type,x,y,elite:el,hp:MONLIST[type].hp*(el?3:1),maxHp:MONLIST[type].hp*(el?3:1)});return m;
@@ -3198,7 +3198,7 @@ function genN(){let n=0;for(const [k] of EQ_KINDS){const it=eqItem(k);if(it&&it.
 function extraSum(f){let t=(udOn()?(f==='atkp'?15*pk_('atk'):f==='hpp'?15*pk_('hp'):f==='crit'?8*pk_('crit'):f==='spd'?.1*pk_('spd'):f==='sk'?.2*pk_('sk'):0):0)+(f==='spd'&&mountOn()?MOUNT_BY[mountOn()][3]:0)+(me.ins?(f==='atkp'?me.ins.a:f==='hpp'?me.ins.h:f==='defp'?me.ins.d:0)*INS_PER:0)+(()=>{const n=genN();let v=0;for(const [k,fx] of GEN_SET)if(n>=k&&fx[f])v+=fx[f];return v})()+(f==='atkp'&&Z&&Z.bless==='atk'?30:0)+rogueSum(f)+archerSum(f)+altarSum(f)+traitSum(f)+((f==='atkp'||f==='hpp')?(me.achN||0):0);{const em=eqItem('emblem');if(em&&em.emb&&(f==='atkp'||f==='hpp'||f==='defp'))t+=[0,5,10,15,25,35,50][em.emb]}const n=legN();for(const [k,fx] of LEG_SET)if(n>=k&&fx[f])t+=fx[f];if(adv5On()&&(f==='atkp'||f==='hpp'))t+=30;if(me.rb&&(f==='atkp'||f==='hpp'||f==='defp'))t+=me.rb*RB_BONUS.atk;if(adv6On()){if(f==='atkp'||f==='hpp')t+=50;if(f==='sk')t+=.5;if(f==='crit')t+=15}return t}
 /* ---------- 무한의 탑 (Lv.999 · 끝없이 올라가며 층마다 강해짐 · 최고층 랭킹) ---------- */
 const TOWERP={x:(CX+8)*TILE+8,y:(CY)*TILE+12},TW_NEED=40;
-const _avgT={};function avgOfT(T){if(!_avgT[T]){const ns=MONLIST.filter(D=>D.T===T&&!D.boss&&!D.pk);_avgT[T]=[ns.reduce((a,D)=>a+D.hp,0)/ns.length,ns.reduce((a,D)=>a+D.dmg,0)/ns.length]}return _avgT[T]}
+const _avgT={};function avgOfT(T){if(!_avgT[T]){const ns=MONLIST.filter(D=>D.T===T&&!D.boss&&!D.pk&&!D.tr);_avgT[T]=[ns.reduce((a,D)=>a+D.hp,0)/ns.length,ns.reduce((a,D)=>a+D.dmg,0)/ns.length]}return _avgT[T]}
 /* 탑 전용 아레나: 넓은 원형 광장 하나 + 아래쪽 시작 방 (막힌 길 없음) */
 function makeArena(T){const SEED=nextSeed||1000+T*7919,W=50,H=42,map=new Uint8Array(W*H).fill(VOID),rnd=mulberry32(SEED);
   const at=(x,y)=>(x<0||y<0||x>=W||y>=H)?VOID:map[y*W+x],set=(x,y,v)=>{if(x>=0&&y>=0&&x<W&&y<H)map[y*W+x]=v};
@@ -3290,20 +3290,20 @@ function drawPortalG(c,t,P,on,c1,c2,lo){const x=P.x-cam.x,y=P.y-cam.y;if(lo)retu
 function drawEndPortals(c,t,lo){if(Z.id!=='town')return;drawPortalG(c,t,TRAINP,endOK(),'#5affd8','#ffffff',lo);drawPortalG(c,t,TOWERP,endOK(),'#7ff0ff','#ffffff',lo);drawPortalG(c,t,WBP,wbNow().active,'#ffd35a','#ff7a3a',lo)}
 
 /* ---------- 초월의 수련장 (Lv.999 · 초월 레벨 올리는 전용 던전 10단계 · 초월 0/30/60…270에 열림) ---------- */
-const TRAINP={x:(CX-8)*TILE+8,y:(CY)*TILE+12},TR_N=34,TR_STEP=30,TR_KILLS=400;
+const TRAINP={x:(CX-8)*TILE+8,y:(CY)*TILE+12},TR_N=50,TR_STEP=30,TR_KILLS=400;
 const TR_NAMES_X=[];{const a=['별','달','태양','혜성','성운','은하','차원','시간','공허','혼돈','창세','영원'];for(let i=0;i<24;i++)TR_NAMES_X.push(`${a[i%12]}의 시련${i>=12?' II':''}`)}
 const TR_NAMES=['시작의 시련','인내의 회랑','고통의 계단','망각의 시험장','강철의 정원','영혼의 용광로','별빛 단련장','신들의 연무장','초월의 문턱','무한의 정점'];
-const trOpen=k=>endOK()&&(me.rb>0||(me.tlv||0)>=(k-1)*TR_STEP);   // 환생한 사람은 모든 단계
-function makeTrain(k){k=Math.max(1,Math.min(TR_N,k));const T=ABYSS_FROM+((k-1)%10),z=makeDungeon(T),[ah,ad,ae]=avgOfT3(T),tgt=needT(Math.min(TLV_MAX,TR_STEP*(k-1)+15))/TR_KILLS;
-  z.id='tr'+k;z.train=k;z.expMul=tgt/ae;if(k<=10){z.hpMul=1.2+.1*(k-1);z.dmgMul=1.1+.05*(k-1)}else{const [th,td]=avgOfT3(ABYSS_FROM+9);z.hpMul=th*2.1*Math.pow(1.12,k-10)/ah;z.dmgMul=td*1.55*Math.pow(1.06,k-10)/ad}
-  z.title=`초월의 수련장 ${k}단계 · ${TR_NAMES[k-1]||TR_NAMES_X[k-11]}`;z.sub=`초월 ${(k-1)*TR_STEP}부터 · ${k<=10?`심연 ${k}단계보다 체력 x${z.hpMul.toFixed(1)}`:`심연 10단계보다 체력 x${(2.1*Math.pow(1.12,k-10)).toFixed(1)}`} · 경험치 x${Math.round(z.expMul)} (초월 레벨 한 칸에 약 ${TR_KILLS}마리)`;return z}
-function avgOfT3(T){const ns=MONLIST.filter(D=>D.T===T&&!D.boss&&!D.pk);return [ns.reduce((a,D)=>a+D.hp,0)/ns.length,ns.reduce((a,D)=>a+D.dmg,0)/ns.length,ns.reduce((a,D)=>a+D.exp,0)/ns.length]}
+const trOpen=k=>endOK()&&(k>34?(me.rb||0)>=(k-34)*2:(me.rb>0||(me.tlv||0)>=(k-1)*TR_STEP));   // 환생한 사람은 모든 단계
+function makeTrain(k){k=Math.max(1,Math.min(TR_N,k));const T=k>34?ABYSS_FROM+9:ABYSS_FROM+((k-1)%10),z=makeDungeon(T),[ah,ad,ae]=avgOfT3(T),tgt=needT(Math.min(TLV_MAX,TR_STEP*(k-1)+15))/TR_KILLS;
+  z.id='tr'+k;z.train=k;z.expMul=tgt/ae*(k>34?Math.pow(1.15,k-34):1);if(k>34)z.monPool=trMons(k);if(k<=10){z.hpMul=1.2+.1*(k-1);z.dmgMul=1.1+.05*(k-1)}else{const [th,td]=avgOfT3(ABYSS_FROM+9);z.hpMul=th*2.1*Math.pow(1.12,k-10)/ah;z.dmgMul=td*1.55*Math.pow(1.06,k-10)/ad}
+  z.title=`초월의 수련장 ${k}단계 · ${TR_NAMES[k-1]||TR_NAMES_X[k-11]||TR_NAMES_Y[k-35]}`;z.sub=`초월 ${(k-1)*TR_STEP}부터 · ${k<=10?`심연 ${k}단계보다 체력 x${z.hpMul.toFixed(1)}`:`심연 10단계보다 체력 x${(2.1*Math.pow(1.12,k-10)).toFixed(1)}`} · 경험치 x${Math.round(z.expMul)} (초월 레벨 한 칸에 약 ${TR_KILLS}마리)`;return z}
+function avgOfT3(T){const ns=MONLIST.filter(D=>D.T===T&&!D.boss&&!D.pk&&!D.tr);return [ns.reduce((a,D)=>a+D.hp,0)/ns.length,ns.reduce((a,D)=>a+D.dmg,0)/ns.length,ns.reduce((a,D)=>a+D.exp,0)/ns.length]}
 function renderTrain(){const ul=$('trl');ul.textContent='';
   $('trsum').textContent=!endOK()?`초월의 수련장은 Lv.${LV_MAX}부터 들어갈 수 있어요. (지금 Lv.${me.lvl})`:`초월 레벨을 올리는 전용 던전이에요. 경험치가 심연보다 수십 배 많고, 초월 레벨 한 칸에 몬스터 약 ${TR_KILLS}마리가 필요해요. 초월 ${TR_STEP}레벨마다 다음 단계가 열려요 (1~${TR_N}단계, 초월 999까지). 지금 초월 ${me.tlv||0}`;
-  let shown=0;for(let k=1;k<=TR_N;k++){const ok=trOpen(k);if(!ok&&shown++>=2)break;const li=document.createElement('li');li.className=ok?'':'lock';
+  let shown=0;for(let k=1;k<=TR_N;k++){const ok=trOpen(k);if(!ok&&shown++>=2)break;if(k===35){const hd=document.createElement('li');hd.style.cssText='display:block;color:#ffd35a;border:0;background:none';hd.textContent='★ 35단계부터: 새 몬스터 7종 · 환생 2회마다 1단계씩 열려요';ul.appendChild(hd)}const li=document.createElement('li');li.className=ok?'':'lock';
     const no=document.createElement('div');no.className='no';no.textContent='T'+k;no.style.color='#5affd8';
-    const mid=document.createElement('div');const dn=document.createElement('div');dn.className='dn';dn.textContent=`${k}단계 · ${TR_NAMES[k-1]||TR_NAMES_X[k-11]}`;
-    const sm=document.createElement('small');sm.textContent=`추천 초월 ${(k-1)*TR_STEP}~${Math.min(TLV_MAX,k*TR_STEP)} · ${k<=10?`심연 ${k}단계 몬스터 강화판`:`심연 10단계보다 체력 x${(2.1*Math.pow(1.12,k-10)).toFixed(1)}`}`+(ok?'':` · 초월 ${(k-1)*TR_STEP}에 열림`);mid.append(dn,sm);
+    const mid=document.createElement('div');const dn=document.createElement('div');dn.className='dn';dn.textContent=`${k}단계 · ${TR_NAMES[k-1]||TR_NAMES_X[k-11]||TR_NAMES_Y[k-35]}`+(k>34?' ★새 몬스터':'');
+    const sm=document.createElement('small');sm.textContent=(k>34?`환생 ${(k-34)*2}회 이상 · `:`추천 초월 ${(k-1)*TR_STEP}~${Math.min(TLV_MAX,k*TR_STEP)} · `)+`${k<=10?`심연 ${k}단계 몬스터 강화판`:`심연 10단계보다 체력 x${(2.1*Math.pow(1.12,k-10)).toFixed(1)}`}`+(k>34?` · 경험치 x${Math.pow(1.15,k-34).toFixed(1)} 더 · 한계돌파석·별의 돌 드롭`:'')+(ok?'':k>34?` · 환생 ${(k-34)*2}회에 열림`:` · 초월 ${(k-1)*TR_STEP}에 열림`);mid.append(dn,sm);
     const b=document.createElement('button');b.type='button';b.className='btn sm';b.style.background='#5affd8';b.textContent='입장';b.disabled=!ok;
     b.addEventListener('click',()=>{for(const id in zones)if(id.startsWith('tr')&&id!=='tr'+k)delete zones[id];enterZone('tr'+k);sys(`초월의 수련장 ${k}단계에 들어왔어요. 돌아갈 땐 시작 방 포털(E) 또는 귀환(G).`)});li.append(no,mid,b);ul.appendChild(li)}}
 
@@ -3776,6 +3776,51 @@ function castAstral(id,x,y,dir,mine,a,col,own,isMe,dx,dy,A){
   case 'v_ult':fxs.push({k:'genesis',x,y:y-30,t:0,dur:2.4,col,mine,dmg:Math.round(a*18),done:false});for(let i=0;i<16;i++)boom(x+(Math.random()-.5)*420,y+(Math.random()-.5)*280,60,Math.round(a*2),i%2?col:'#ffe88a',.2+i*.08,mine);if(isMe)me.iframe=Math.max(me.iframe,2);break;
   }
 }
+
+/* ================= 초월의 수련장 35~50단계 (환생 2회마다 1단계) + 새 몬스터 7종 ================= */
+const TR_OLD=34;
+const TR_NAMES_Y=['성운의 바다','혜성의 둥지','룬 채석장','프리즘의 탑','균열의 틈','별빛 숲','천상의 눈','은하의 끝','시간의 폭포','차원의 미로','빛의 심장','어둠의 왕관','창세의 대지','영겁의 회랑','무한의 문','초월의 끝'];
+const trRbNeed=k=>k>TR_OLD?(k-TR_OLD)*2:0;
+function hslHex(h,s,l){s/=100;l/=100;const f=n=>{const k=(n+h/30)%12,a=s*Math.min(l,1-l),c=l-a*Math.max(-1,Math.min(k-3,9-k,1));return Math.round(c*255).toString(16).padStart(2,'0')};return '#'+f(0)+f(8)+f(4)}
+const NEWMON=[['nebjelly','성운 해파리'],['cometimp','혜성 꼬마'],['runegolem','룬 골렘'],['prism','프리즘 정령'],['riftmaw','균열 아귀'],['starbeetle','별 딱정벌레'],['eyewing','천상의 눈']];
+Object.assign(SPECIES,{
+  nebjelly:{hpM:1.1,dmgM:1.3,sp:26,move:'float',hover:6,glow:1,pal:P=>({o:P.o,a:P.a,A:P.A,l:P.l,e:P.e,w:'#ffffff'})},
+  cometimp:{hpM:.9,dmgM:1.5,sp:70,move:'fly',glow:1,pal:P=>({o:P.o,a:P.a,A:P.A,l:'#fff3b0',e:P.e,w:'#ffffff'})},
+  runegolem:{hpM:2.0,dmgM:1.2,sp:22,move:'walk',pal:P=>({o:'#140f1e',A:mix(P.A,'#6a6a7a',.5),a:mix(P.a,'#9a9aaa',.5),l:P.l,e:P.e})},
+  prism:{hpM:1.2,dmgM:1.5,sp:28,move:'float',hover:7,glow:1,caster:{col:null,cd:2.6},pal:P=>({o:shade(P.A,-.5),a:P.a,A:P.A,l:mix(P.l,'#ffffff',.5),e:'#ffffff',w:P.e})},
+  riftmaw:{hpM:1.5,dmgM:1.4,sp:36,move:'hop',pal:P=>({o:P.o,a:P.a,A:P.A,l:P.l,e:P.e,w:'#ffffff',k:'#0a0614'})},
+  starbeetle:{hpM:1.6,dmgM:1.3,sp:40,move:'walk',pal:P=>({o:P.o,a:P.a,A:P.A,l:P.l,e:'#fff3b0'})},
+  eyewing:{hpM:1.2,dmgM:1.6,sp:32,move:'float',hover:8,glow:1,caster:{col:null,cd:2.2},pal:P=>({o:P.o,a:P.a,l:P.l,w:'#f4efe6',k:'#140f1e',e:P.e})}});
+Object.assign(SHAPES,{
+  nebjelly:{w:16,frames:[
+    ["....oooo","..oollaa",".olllaaa",".ollaaaa","oaaaaaaa","oaaewaaa","oaaeeaaa","oAAAAAAA",".oAoAAoA",".o.oAo.o","..o.o..o","...o...."].map(M),
+    ["....oooo","..oollaa",".olllaaa",".ollaaaa","oaaaaaaa","oaaewaaa","oaaeeaaa","oAAAAAAA",".oAAoAoA","..oAo.oA","..o..o.o",".o......"].map(M)]},
+  cometimp:{w:16,frames:[
+    ["........","...o....","..olo...","o.oaaooo","oooaaaaa","olaaewaa","olaaaaaa",".oaaAAAA","..oAAAoo","...oo..."].map(M),
+    ["o.......","oo.o....","ololo...",".ooaaooo","..oaaaaa","..oaewaa",".olaaaaa","olaAAAAA","oo.oAAoo","...oo..."].map(M)]},
+  runegolem:{w:16,frames:[
+    ["...ooooo","..oAAAAA","..oAeAAA","..oAAAAA","ooooAAAA","oaaoAlAl","oaaoAAlA","oaaoAAAA",".oooAAAA","...oAAoo","...oAAo.","...ooo.."].map(M),
+    ["...ooooo","..oAAAAA","..oAeAAA","..oAAAAA","ooooAAAA","oaaoAlAl","oaaoAAlA","oaaoAAAA",".oooAAAA","....oAAo","...oAAo.","...ooo.."].map(M)]},
+  prism:{w:16,frames:[
+    [".......o","......ol",".....oll","....olla","...ollaa","..olaaaa",".olaaaee","..oAaaaa","...oAAaa","....oAAA",".....oAA","......oA",".......o"].map(M),
+    [".......o","......ol",".....oll","....olla","...ollaa","..olaaww",".olaaaww","..oAaaaa","...oAAaa","....oAAA",".....oAA","......oA",".......o"].map(M)]},
+  riftmaw:{w:16,frames:[
+    ["...ooooo","..oaaaaa",".oaalaaa","oaaewaaa","oaaaaaaa","okkkkkkk","okwkwkwk","okkkkkkk","oaaaaaaa",".oAAAAAA","..oooooo"].map(M),
+    ["...ooooo","..oaaaaa",".oaalaaa","oaaewaaa","oaaaaaaa","oaaaaaaa","okkkkkkk","oaaaaaaa","oaaaaaaa",".oAAAAAA","..oooooo"].map(M)]},
+  starbeetle:{w:16,frames:[
+    ["....o...","...o.ooo","...oAAAA","..oaaaal",".oaaaela",".oaalaaa",".oaaaaaa","ooaaaaaa",".oAaaaaa","..oAAAAA",".o.o.o.o"].map(M),
+    ["....o...","...o.ooo","...oAAAA","..oaaaal",".oaaaela",".oaalaaa",".oaaaaaa","ooaaaaaa",".oAaaaaa","..oAAAAA","..o.o..o"].map(M)]},
+  eyewing:{w:16,frames:[
+    ["o.......","oo......","olo..ooo","ollooaaa","olloawww",".oloawwk",".oloawwk","..oloaww","...ooaaa","......oo"].map(M),
+    ["........","........","o....ooo","oo..oaaa","oloooaww","ollooawk",".olloawk","..oloaww","...ooaaa","......oo"].map(M)]}});
+const TRM={};
+function trPal(k){const j=k-TR_OLD-1,h=(200+j*23)%360;return {o:hslHex(h,45,8),a:hslHex(h,70,56),A:hslHex(h,62,32),l:hslHex((h+25)%360,90,82),e:hslHex((h+170)%360,95,62),x:hslHex((h+60)%360,70,50)}}
+function trMons(k){if(!TRM._all){TRM._all=1;for(let q=TR_OLD+1;q<=TR_N;q++)trMons(q)}if(TRM[k])return TRM[k];const T=ABYSS_FROM+9,[ah,ad,ae]=avgOfT3(T),j=k-TR_OLD-1,P=trPal(k),pre=TR_NAMES_Y[j].split(' ')[0].replace(/의$/,'');const pool=[];
+  NEWMON.forEach(([sp,nm],i)=>{if((i+j)%7>=5)return;const S=SPECIES[sp],id=`tr${k}-${sp}`;
+    if(MONIDX[id]==null){MONIDX[id]=MONLIST.length;const D={id,T,tr:k,sp,name:`${pre} ${nm}`,hp:Math.round(ah*S.hpM),dmg:Math.round(ad*S.dmgM),exp:Math.round(ae*S.hpM),speed:S.sp*1.4,move:S.move,glow:!!S.glow,pal:S.pal(P),lvl:LV_MAX};
+      D.rad=7;D.hgt=12;MONLIST.push(D)}pool.push(MONIDX[id])});return TRM[k]=pool}
+/* 새 단계 처치 보너스: 한계돌파석 1% · 별의 돌 0.3% */
+function onKillTr2(m){if(!Z.train||Z.train<=TR_OLD||isBossM(m))return;const r=Math.random();if(r<.003){addItem('star_st',1);floatText(m.x,m.y-30,'별의 돌!','#ff6ad5',true);invChanged()}else if(r<.013){addItem('lb_stone',1);floatText(m.x,m.y-30,'한계돌파석','#ffa31a');invChanged()}}
 
 function makeDuel(k){k=Math.max(1,Math.min(DUEL_MAX,k));const T=ABYSS_FROM+9,z=makeArena(T);
   z.id='pv'+k;z.duel=k;z.hpMul=duelHp(k);z.dmgMul=duelDmg(k);z.expMul=3;
@@ -4483,7 +4528,7 @@ function gainExp(n){if(me.buffs.exp>0)n*=2;if(x10On())n*=10;if(Z&&Z.expMul)n*=Z.
   persist()}
 function killMon(m){if(m.dead||m._dying)return;m._dying=1;if(m.rboss)raidClear(m);
   {const D=MONLIST[m.type];if(D.boss&&!m.bsr){kick(D.god?10:7,D.god?.25:.16);hitstop(D.god?.14:.1);sfx('boss')}}
-  onKill2(m);onKill3(m);onKillPK(m,MONLIST[m.type]);onKillTW(m);onKillDuel(m);onKillUD(m);onKillQ(m);onKillBsr(m);entDrop(m,MONLIST[m.type]);
+  onKill2(m);onKill3(m);onKillPK(m,MONLIST[m.type]);onKillTW(m);onKillDuel(m);onKillUD(m);onKillQ(m);onKillBsr(m);onKillTr2(m);entDrop(m,MONLIST[m.type]);
   const D=MONLIST[m.type];m.dead=true;m._dying=0;m.respawn=m.bsr?8:m.rboss||m.rmin?1e9:Z.ud&&(m.raid||m.evName||MONLIST[m.type].boss)?1e9:Z.duel?(m===Z.champM?60:12):Z.pkFloor&&m.isPK?1e9:Z.arena?(D.boss?60:2):D.god?300:D.boss?180:(Z.T>=0?5:4);
   if(m.minion){burst(m.x,m.y-6,10,[D.pal.a||'#ffffff','#ffffff'],60,.4);me.kills[D.id]=(me.kills[D.id]||0)+1;gainExp(Math.round(D.exp*.3));return}
   const cols=[D.pal.a||D.pal.b||D.pal.w||D.pal.S||'#ffffff',D.pal.l||D.pal.L||'#ffffff'];
@@ -5089,7 +5134,7 @@ function renderDex(){
   const body=$('dexbody');body.textContent='';let found=0;
   TIERS.forEach((T,ti)=>{const sec=document.createElement('section');sec.className='dexsec';
     const h=document.createElement('h3');h.textContent=`${ti+1}층 · ${T.name}`;const g=document.createElement('div');g.className='dexgrid';
-    MONLIST.filter(D=>D.T===ti&&!D.pk).forEach(D=>{const k=me.kills[D.id]||0;if(k)found++;
+    MONLIST.filter(D=>D.T===ti&&!D.pk&&!D.tr).forEach(D=>{const k=me.kills[D.id]||0;if(k)found++;
       const cell=document.createElement('div');cell.className='dexcell'+(k?'':' unk')+(D.god?' god':D.boss?' boss':'');
       const img=document.createElement('img');img.src=monThumb(D);img.alt='';
       const nm=document.createElement('div');nm.className='nm';nm.textContent=k?D.name:'???';
