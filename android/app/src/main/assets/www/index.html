@@ -629,7 +629,7 @@ body.mobile #act{top:auto;bottom:calc(120px + env(safe-area-inset-bottom,0px))}
       <label><input type="radio" name="cls" id="cls_m" value="mage"><span><b>마법사</b><small>원거리 마법 · 높은 마나 · 화염구, 메테오</small></span></label>
       <label><input type="radio" name="cls" id="cls_r" value="rogue"><span><b>도적</b><small>쌍단검 연타 · 표창 · 높은 치명타 · 순간이동, 분신</small></span></label>
       <label><input type="radio" name="cls" id="cls_a" value="archer"><span><b>궁수</b><small>원거리 활 · 관통 화살 · 폭발 덫 · 늑대·매 동료</small></span></label>
-      <label><input type="radio" name="cls" id="cls_s" value="samurai"><span><b>사무라이 <em style="font-style:normal;color:#ff6a8a;font-size:11px">NEW</em></b><small>카타나 발도 · 기를 모아 한 방 · 궁극기 일도양단</small></span></label>
+      <label><input type="radio" name="cls" id="cls_s" value="samurai"><span><b>사무라이 <em style="font-style:normal;color:#ff6a8a;font-size:11px">NEW</em></b><small>카타나 발도 · 한 칼에 끝내기 · 궁극기 일도양단</small></span></label>
     </div>
     <label for="nick">닉네임<input id="nick" maxlength="12" placeholder="모험가" autocomplete="off"></label>
     <div class="look">
@@ -2201,7 +2201,6 @@ function useSkill(i){
   if((me.lvl<S.lv&&!me.rb)){sys(`${skName(S)}은(는) Lv.${S.lv}에 배워요.`);return}
   const now=performance.now()/1000;if(now-lastCast<GCD)return;
   if(me.mp<mpCost(S)){floatText(me.x,me.y-32,'마나 부족','#8fc0ff');return}
-  if(/^z_(ult|tk8|rk8|ys8|ok8)$/.test(S.id)&&(me.ki||0)<KI_MAX){floatText(me.x,me.y-32,`기 부족 (${Math.floor(me.ki||0)}/${KI_MAX})`,'#ffd35a');return}
   if((S.id==='star'||S.id==='chain')&&!starTargets().length){floatText(me.x,me.y-32,'주변에 적이 없어요','#98a2cc');return}
   lastCast=now;dqAdd('skill');if(adv2Id()==='chrono'&&Math.random()<.1)floatText(me.x,me.y-30,'마나 소모 없음!','#b07aff');else me.mp-=mpCost(S);
   if((me.echoT||0)>0&&S.adv2&&!/_(ult|echo|portal|rewind|haste)$/.test(S.id))echoQ.push({id:S.id,x:me.x,y:me.y,dir:aimDir(),at:now+2,z:zoneId});{const e=rbEcho();if(e&&Math.random()<e&&!/_(ult|echo|portal|rewind|haste)$/.test(S.id))echoQ.push({id:S.id,x:me.x,y:me.y,dir:aimDir(),at:now+.3,z:zoneId})}me.skill=S.id;me.skillAim=aimDir();me.skillAt=Date.now();hudKey='';
@@ -3973,20 +3972,20 @@ function spinRoul(card){if(roulBusy||!payDust(ROUL_PRICE))return;roulBusy=true;c
 
 /* ================= 사무라이 (발도 한방형 · 기 게이지 · 궁극기 일도양단) : 1단계 ================= */
 const SAM_SKILLS=[
-  {id:'z_iai',  name:'발도',      lv:1, mp:8, desc:'칼을 뽑으며 앞쪽을 한 번에 베어요 300% · 모인 기를 모두 써서 최대 ×2'},
-  {id:'z_dash', name:'질풍 베기', lv:5, mp:12,desc:'앞으로 돌진하며 지나간 적을 모두 베어요 350% · 0.4초 무적 · 기 사용'},
-  {id:'z_cross',name:'십자 베기', lv:10,mp:14,desc:'십자로 두 번 베어 주변 적에게 각 300% · 기 사용'},
-  {id:'z_moon', name:'월광참',    lv:15,mp:22,desc:'초승달 검기를 날려 꿰뚫어요 550% · 기 사용'},
-  {id:'z_wind', name:'칼바람',    lv:20,mp:28,desc:'3초 동안 주위를 계속 베어 0.25초마다 150% · 기 사용'},
-  {id:'z_focus',name:'명경지수',  lv:30,mp:30,desc:'숨을 고르며 기를 50 바로 채우고, 6초 동안 치명타 +30%'},
-  {id:'z_ilsum',name:'일섬',      lv:35,mp:45,desc:'눈 깜짝할 사이 앞쪽 적 6마리 사이를 지나가며 각 700% · 기 사용'},
-  {id:'z_ult',  name:'일도양단',  lv:40,mp:0, mpPct:.4,desc:'궁극기 · 기 100 필요: 화면을 한 칼에 반으로 갈라, 바라보는 쪽 화면 절반의 모든 적에게 3000%'}];
+  {id:'z_iai',  name:'발도',      lv:1, mp:8, desc:'칼을 뽑으며 앞쪽을 한 번에 베어요 300%'},
+  {id:'z_dash', name:'질풍 베기', lv:5, mp:12,desc:'앞으로 돌진하며 지나간 적을 모두 베어요 350% · 0.4초 무적'},
+  {id:'z_cross',name:'십자 베기', lv:10,mp:14,desc:'십자로 두 번 베어 주변 적에게 각 300%'},
+  {id:'z_moon', name:'월광참',    lv:15,mp:22,desc:'초승달 검기를 날려 꿰뚫어요 550%'},
+  {id:'z_wind', name:'칼바람',    lv:20,mp:28,desc:'3초 동안 주위를 계속 베어 0.25초마다 150%'},
+  {id:'z_focus',name:'명경지수',  lv:30,mp:30,desc:'숨을 고르며 6초 동안 치명타 +30% · 공격력 +20%'},
+  {id:'z_ilsum',name:'일섬',      lv:35,mp:45,desc:'눈 깜짝할 사이 앞쪽 적 6마리 사이를 지나가며 각 700%'},
+  {id:'z_ult',  name:'일도양단',  lv:40,mp:0, mpPct:.4,desc:'궁극기: 화면을 한 칼에 반으로 갈라, 바라보는 쪽 화면 절반의 모든 적에게 3000%'}];
 for(const S of SAM_SKILLS)ALL_SKILLS.add(S.id);
 const KI_MAX=100;
-function samKi(n){if(me.cls!=='samurai')return;me.ki=Math.max(0,Math.min(KI_MAX,(me.ki||0)+n))}
-function samTakeKi(){const k=me.ki||0;me.ki=0;return 1+k/KI_MAX}
+function samKi(n){}
+function samTakeKi(){return 1.3}
 function samSum(f){if(me.cls!=='samurai')return 0;let t=f==='crit'?5:0;for(const A of [advOf(),adv2Of(),adv3Of()])if(A&&A.fx&&A.fx[f])t+=A.fx[f];
-  if((me.samFocusT||0)>Date.now()&&f==='crit')t+=30;if((me.samOathT||0)>Date.now()&&f==='atkp')t+=40;
+  if((me.samFocusT||0)>Date.now()){if(f==='crit')t+=30;if(f==='atkp')t+=20}if((me.samOathT||0)>Date.now()&&f==='atkp')t+=40;
   if(hasB('b_bushido')){if(f==='atkp')t+=15;if(f==='crit')t+=10}if(hasB('b_zen')){if(f==='dmgRed')t+=.15;if(f==='spd')t+=.15}if(hasB('b_blade')){if(f==='hpp')t+=15;if(f==='ls')t+=.05}return t}
 /* 사무라이 외형 (처음부터 따로 그림): 상투 · 머리띠 · 기모노(V 깃) · 붉은 오비 · 하카마 · 하오리(망토 색, 등에 가문 문장) · 짚신 · 허리 칼집 */
 const samCache=new Map();
@@ -4018,6 +4017,7 @@ function samSlashHits(list,dmg,col,mine){if(!mine)return;for(const m of list){hi
 function castSam(id,x,y,dir,mine,a,col){const [dx,dy]=DV(dir),ang=Math.atan2(dy,dx),C='#e8f4ff',isMe=mine&&castOwner==null;
   const front=(r,cone)=>Z.mons.filter(m=>{if(m.dead)return false;const vx=m.x-x,vy=monCY(m)-(y-8),d=Math.hypot(vx,vy);return d<r&&(d<14||(vx*dx+vy*dy)/d>cone)});
   const kiM=(/^z_(focus|ult|rk6|ys3|ok6|tk8|rk8|ys8|ok8)$/.test(id)||!isMe)?1:samTakeKi(),A=Math.round(a*kiM);if(isMe&&kiM>1.5)floatText(me.x,me.y-44,`기 해방 ×${kiM.toFixed(1)}`,'#ffd35a',true);
+  if(id==='z_kyo'){castKyo(x,y,dir,mine,a,isMe);return}
   if(/^z_(tk|rk|ys|ok)\d$/.test(id)){castSam2(id,x,y,dir,mine,A,col,isMe,front,dx,dy,ang);return}
   switch(id){
   case 'z_iai':{samArc(x,y-8,ang,46,C,1.9,.28);samArc(x,y-8,ang,40,col||'#9ad0ff',1.6,.22);samSlashHits(front(64,.2),Math.round(A*3),C,mine);if(isMe){shakeT=Math.max(shakeT,.12);hitstop(.04)}try{sfx('swing')}catch(e){}break}
@@ -4060,7 +4060,7 @@ function drawSamFx(c){for(const f of samFx){const k=1-f.t/f.dur;c.save();c.globa
     c.restore()}drawIldo(c)}
 {const r0=render;render=function(t){r0(t);const n=performance.now()/1000,dt=Math.min(.05,n-(samLast||n));samLast=n;try{samTick(dt);drawSamFx(ctx)}catch(e){console.error(e)}}}
 /* 기 게이지 (스킬 줄 위) */
-function updKi(){const el=$('kibar');if(!el)return;const on=me.cls==='samurai'&&started;el.hidden=!on;if(!on)return;const k=me.ki||0;el.firstChild.style.width=k+'%';el.lastChild.textContent=`기 ${Math.floor(k)} / ${KI_MAX}${k>=KI_MAX?' · 일도양단 가능!':''}`;el.classList.toggle('full',k>=KI_MAX)}
+function updKi(){const el=$('kibar');if(!el)return;const on=false;el.hidden=true;if(!on)return;const k=me.ki||0;el.firstChild.style.width=k+'%';el.lastChild.textContent=`기 ${Math.floor(k)} / ${KI_MAX}${k>=KI_MAX?' · 일도양단 가능!':''}`;el.classList.toggle('full',k>=KI_MAX)}
 setInterval(()=>{try{updKi()}catch(e){}},120);
 
 /* ================= 사무라이 1차 2갈래 · 2차 4갈래 ================= */
@@ -4068,28 +4068,28 @@ Object.assign(ADV,{
   kensei:{id:'kensei',cls:'samurai',name:'검성',col:'#e8f4ff',desc:'치명타 +15% · 공격력 +20% · 모든 스킬 피해 ×2 · 칼끝이 더 날카로워져요',fx:{crit:15,atkp:20}},
   ronin:{id:'ronin',cls:'samurai',name:'낭인',col:'#ff6a5a',desc:'최대 체력 +25% · 이동 속도 +15% · 흡혈 3% · 모든 스킬 피해 ×2',fx:{hpp:25,spd:.15,ls:.03}}});
 Object.assign(ADV_SK,{z_iai:'신속 발도',z_dash:'뇌광 질풍',z_cross:'만자 베기',z_moon:'만월참',z_wind:'폭풍 칼바람',z_focus:'명경지수·극',z_ilsum:'섬광 일섬',z_ult:'천지 일도양단'});
-const ZK=(id,name,mp,desc,mpPct)=>SK2(id,name,mp,desc+(id.endsWith('8')?'':' · 기 사용'),mpPct);
+const ZK=(id,name,mp,desc,mpPct)=>SK2(id,name,mp,desc+(id.endsWith('8')?'':''),mpPct);
 Object.assign(ADV2,{
   tenken:{id:'tenken',from:'kensei',name:'천검',col:'#cfe6ff',desc:'공격력 +25% · 치명타 +10% · 수많은 비검을 부려요 · 스킬 피해 한 번 더 ×2',fx:{atkp:25,crit:10},skills:[
     ZK('z_tk1','비검',30,'검 5자루를 부채꼴로 날려 꿰뚫어요, 각 300%'),ZK('z_tk2','검의 비',45,'하늘에서 검 16자루가 적을 따라 떨어져요, 각 260%'),
     ZK('z_tk3','검진',40,'검 8자루가 3초 동안 내 주위를 돌며 0.3초마다 180%'),ZK('z_tk4','천검 발도',35,'앞쪽 부채꼴 600% + 비검 3자루 각 300%'),
     ZK('z_tk5','만검귀종',50,'주변 적 10마리에게 검이 내리꽂혀요, 각 500%'),ZK('z_tk6','검기 폭발',45,'나를 중심으로 검기가 두 번 터져요 (400% · 400%)'),
-    ZK('z_tk7','천검 일섬',55,'앞쪽 적 8마리 사이를 지나가며 각 900%'),ZK('z_tk8','천검 일도양단',0,'궁극기 · 기 100: 일도양단 3000% + 잘린 쪽에 검 20자루가 떨어져요 (각 400%)',.4)]},
+    ZK('z_tk7','천검 일섬',55,'앞쪽 적 8마리 사이를 지나가며 각 900%'),ZK('z_tk8','천검 일도양단',0,'궁극기: 일도양단 3000% + 잘린 쪽에 검 20자루가 떨어져요 (각 400%)',.4)]},
   raiko:{id:'raiko',from:'kensei',name:'뇌광검사',col:'#fff27a',desc:'치명타 +20% · 공격력 +15% · 번개를 실은 발도 · 스킬 피해 한 번 더 ×2',fx:{crit:20,atkp:15},skills:[
     ZK('z_rk1','뇌섬',30,'번개처럼 돌진하며 600% + 끝에서 번개가 3마리에게 튀어요 (300%)'),ZK('z_rk2','낙뢰 발도',40,'앞쪽 적 6마리에게 벼락이 떨어져요, 각 500%'),
     ZK('z_rk3','뇌운',50,'4초 동안 0.4초마다 주변 적 3마리에게 낙뢰 300%'),ZK('z_rk4','뇌전 십자',35,'번개 십자 베기 400%×2 + 1초 기절'),
     ZK('z_rk5','천둥 질주',45,'세 번 연달아 돌진, 각 450%'),ZK('z_rk6','뇌신의 가호',40,'8초 동안 공격 속도 +40% · 치명타 +30% (기는 쓰지 않아요)'),
-    ZK('z_rk7','번개 일섬',55,'앞쪽 적 8마리 사이를 지나가며 각 900% + 낙뢰'),ZK('z_rk8','뇌신 일도양단',0,'궁극기 · 기 100: 일도양단 3000% + 잘린 쪽에 낙뢰 15번 (각 500%)',.4)]},
+    ZK('z_rk7','번개 일섬',55,'앞쪽 적 8마리 사이를 지나가며 각 900% + 낙뢰'),ZK('z_rk8','뇌신 일도양단',0,'궁극기: 일도양단 3000% + 잘린 쪽에 낙뢰 15번 (각 500%)',.4)]},
   yasha:{id:'yasha',from:'ronin',name:'야차',col:'#ff3a4a',desc:'최대 체력 +30% · 흡혈 5% · 피를 마시는 귀신의 칼 · 스킬 피해 한 번 더 ×2',fx:{hpp:30,ls:.05},skills:[
     ZK('z_ys1','혈인',30,'앞쪽 부채꼴 500%, 벤 만큼 체력 회복'),ZK('z_ys2','귀신 베기',40,'크게 두 바퀴 돌며 주변 적에게 450%×2'),
     ZK('z_ys3','피의 맹세',30,'체력 10%를 바치고 8초 동안 공격력 +40% (기는 쓰지 않아요)'),ZK('z_ys4','귀곡참',45,'거대한 핏빛 초승달 검기, 꿰뚫어 900%'),
     ZK('z_ys5','나찰 난무',50,'3초 동안 주위를 마구 베어 0.2초마다 200% + 흡혈'),ZK('z_ys6','오니의 포효',40,'주변 적 2초 기절 + 300%'),
-    ZK('z_ys7','혈풍 일섬',55,'앞쪽 적 8마리 사이를 지나가며 각 900% + 체력 10% 회복'),ZK('z_ys8','야차 일도양단',0,'궁극기 · 기 100: 일도양단 3000% + 체력 30% 회복',.4)]},
+    ZK('z_ys7','혈풍 일섬',55,'앞쪽 적 8마리 사이를 지나가며 각 900% + 체력 10% 회복'),ZK('z_ys8','야차 일도양단',0,'궁극기: 일도양단 3000% + 체력 30% 회복',.4)]},
   ouka:{id:'ouka',from:'ronin',name:'앵화무사',col:'#ff9ad8',desc:'최대 체력 +15% · 이동 속도 +15% · 받는 피해 -10% · 벚꽃의 검무 · 스킬 피해 한 번 더 ×2',fx:{hpp:15,spd:.15,dmgRed:.1},skills:[
     ZK('z_ok1','꽃잎 베기',25,'앞쪽 부채꼴 450%, 벚꽃잎이 흩날려요'),ZK('z_ok2','앵화 폭풍',45,'5초 동안 벚꽃 장판: 안의 적 200%씩, 나는 체력 회복'),
     ZK('z_ok3','벚꽃 질풍',35,'돌진 600%, 지나간 자리가 꽃잎으로 터져요 (300%)'),ZK('z_ok4','화무',40,'꽃잎과 함께 세 바퀴 돌며 각 350%'),
     ZK('z_ok5','천본앵',50,'주변 적 12마리에게 꽃잎 칼날, 각 450%'),ZK('z_ok6','봄바람',40,'8초 동안 받는 피해 -25% · 이동 속도 +15% (기는 쓰지 않아요)'),
-    ZK('z_ok7','낙화 일섬',55,'앞쪽 적 8마리 사이를 지나가며 각 900%'),ZK('z_ok8','앵화 일도양단',0,'궁극기 · 기 100: 일도양단 3000% + 잘린 쪽이 벚꽃으로 터져요 (각 600%)',.4)]}});
+    ZK('z_ok7','낙화 일섬',55,'앞쪽 적 8마리 사이를 지나가며 각 900%'),ZK('z_ok8','앵화 일도양단',0,'궁극기: 일도양단 3000% + 잘린 쪽이 벚꽃으로 터져요 (각 600%)',.4)]}});
 for(const k of ['tenken','raiko','yasha','ouka'])for(const S of ADV2[k].skills)ALL_SKILLS.add(S.id);
 const SAM_AB=[['kensei',1,'검성의 기백',{crit:12,atkp:12},'#e8f4ff'],['ronin',1,'떠돌이의 끈기',{hpp:20,spd:.1},'#ff6a5a'],
   ['tenken',2,'천 자루의 검',{atkp:20,sk:.25},'#cfe6ff'],['raiko',2,'뇌신의 숨결',{crit:15,sk:.25},'#fff27a'],['yasha',2,'귀신의 피',{hpp:20,ls:.03},'#ff3a4a'],['ouka',2,'벚꽃 바람',{spd:.15,dmgRed:.1},'#ff9ad8']];
@@ -4144,6 +4144,36 @@ function castSam2(id,x,y,dir,mine,a,col,isMe,front,dx,dy,ang){const C='#e8f4ff',
   case 'z_ok7':ilsum(8,9,'#ff9ad8',tg=>tg.forEach(m=>samPetals(m.x,monCY(m),6)));break;
   case 'z_ok8':ultExtra(half=>half.forEach((m,k)=>setTimeout(()=>{if(m.dead)return;samPetals(m.x,monCY(m),8);if(mine)hitMon(m,Math.round(a*6),0,0,'#ff9ad8')},k*25)));break;
   }}
+
+/* ================= 사무라이 9번 스킬: 거합 발도 (납도 자세 → 발도 → 찰칵, 늦게 갈라짐) ================= */
+const KYO={id:'z_kyo',name:'거합 발도',lv:25,mp:30,desc:'칼을 칼집에 넣고 0.7초 자세를 잡아요. 그 사이 맞으면 피해 없이 바로 반격(×2). 앞쪽 넓게 발도 800% → 칼을 넣는 "찰칵" 소리와 함께 벤 적이 한 번 더 갈라져요 800%'};
+ALL_SKILLS.add('z_kyo');
+let kyo=null;const kyoFx=[];
+function kyoHits(x,y,dx,dy){return Z.mons.filter(m=>{if(m.dead)return false;const vx=m.x-x,vy=monCY(m)-(y-8),d=Math.hypot(vx,vy);return d<150&&(d<18||(vx*dx+vy*dy)/d>-.15)})}
+function castKyo(x,y,dir,mine,a,isMe){const [dx,dy]=DV(dir);
+  if(!isMe){kyoFx.push({k:'draw',x,y:y-8,ang:Math.atan2(dy,dx),t:-.7,dur:.5});return}
+  kyo={x,y,dx,dy,dir,a,mine,t:0,wait:.7,counter:false,phase:0,hit:[]};floatText(me.x,me.y-44,'납도…','#cfe6ff',true);try{sfx('swing')}catch(e){}}
+function kyoRelease(counter){const K=kyo;if(!K||K.phase)return;K.phase=1;K.t=0;K.counter=counter;const x=me.x,y=me.y,[dx,dy]=counter?DV(aimDir()):[K.dx,K.dy],mul=counter?2:1;
+  K.hit=kyoHits(x,y,dx,dy);const d1=Math.round(K.a*8*mul);if(K.mine)for(const m of K.hit){hitMon(m,d1,dx*40,dy*40,'#ffffff');for(let k=0;k<3;k++)spark(m.x,monCY(m),(Math.random()-.5)*160,(Math.random()-.5)*160,k?'#cfe6ff':'#ffffff',.4)}
+  kyoFx.push({k:'draw',x,y:y-8,ang:Math.atan2(dy,dx),t:0,dur:.45});me.iframe=Math.max(me.iframe||0,.5);shakeT=Math.max(shakeT,.25);hitstop(.08);flashT=Math.max(flashT,.12);flashCol='#ffffff';
+  floatText(me.x,me.y-48,counter?'반격 발도!':'발도!','#ffffff',true);K.mul=mul;try{sfx('swing')}catch(e){}}
+function kyoTick(dt){for(let i=kyoFx.length-1;i>=0;i--){const f=kyoFx[i];f.t+=dt;if(f.t>=f.dur)kyoFx.splice(i,1)}
+  const K=kyo;if(!K)return;if(me.dead){kyo=null;return}K.t+=dt;
+  if(!K.phase){if(K.t>=K.wait)kyoRelease(false);return}
+  if(K.phase===1&&K.t>=.42){K.phase=2;const d2=Math.round(K.a*8*K.mul);if(K.mine)for(const m of K.hit){if(m.dead)continue;hitMon(m,d2,0,0,'#ff5a6a');kyoFx.push({k:'cut',x:m.x,y:monCY(m),ang:Math.random()*3.14,t:0,dur:.35})}
+    floatText(me.x,me.y-40,'찰칵','#ffd35a',true);shakeT=Math.max(shakeT,.18);try{sfx('hit')}catch(e){};kyo=null}}
+function drawKyo(c){const K=kyo;
+  if(K&&!K.phase){const p=Math.min(1,K.t/K.wait),sx=me.x-cam.x,sy=me.y-8-cam.y;c.save();c.globalAlpha=.25+.5*p;c.strokeStyle='#cfe6ff';c.lineWidth=2;c.beginPath();c.arc(sx,sy,40-22*p,0,6.283);c.stroke();
+    c.globalAlpha=.8;c.fillStyle='#ffffff';c.fillRect(sx-9,sy+5,18*p,1);c.restore()}
+  for(const f of kyoFx){if(f.t<0)continue;const k=1-f.t/f.dur;c.save();c.globalAlpha=Math.max(0,k);
+    if(f.k==='draw'){const sx=f.x-cam.x,sy=f.y-cam.y,r=150*(.7+.3*(1-k));c.strokeStyle='#9ad0ff';c.lineWidth=10*k;c.beginPath();c.arc(sx,sy,r*.85,f.ang-1.9,f.ang+1.9);c.stroke();c.strokeStyle='#ffffff';c.lineWidth=3;c.beginPath();c.arc(sx,sy,r*.85,f.ang-1.9,f.ang+1.9);c.stroke()}
+    else{const sx=f.x-cam.x,sy=f.y-cam.y,L=18,cx=Math.cos(f.ang)*L,cy=Math.sin(f.ang)*L;c.strokeStyle='#ff5a6a';c.lineWidth=3;c.beginPath();c.moveTo(sx-cx,sy-cy);c.lineTo(sx+cx,sy+cy);c.stroke();c.strokeStyle='#ffffff';c.lineWidth=1;c.stroke()}
+    c.restore()}}
+{const r0=render;let last=0;render=function(t){r0(t);const n=performance.now()/1000,dt=Math.min(.05,n-(last||n));last=n;try{kyoTick(dt);drawKyo(ctx)}catch(e){console.error(e)}}}
+/* 납도 자세 중에 맞으면: 피해 없이 바로 반격 */
+{const h0=hurtPlayer;hurtPlayer=function(d,fx,fy){if(kyo&&!kyo.phase&&!me.dead&&!(me.iframe>0)&&!gm.god){kyoRelease(true);return false}return h0(d,fx,fy)}}
+/* 사무라이는 어느 전직이든 9번 칸에 거합 발도 */
+{const rs=refreshSkills;refreshSkills=function(){rs();if(me.cls==='samurai'&&!SKILLS.some(S=>S.id==='z_kyo'))SKILLS=[...SKILLS,KYO]}}
 
 function makeDuel(k){k=Math.max(1,Math.min(DUEL_MAX,k));const T=ABYSS_FROM+9,z=makeArena(T);
   z.id='pv'+k;z.duel=k;z.hpMul=duelHp(k);z.dmgMul=duelDmg(k);z.expMul=3;
@@ -4612,7 +4642,7 @@ const SKICON={
  SKICON.b_eagle=SKICON.b_focus;SKICON.b_windstep=SKICON.b_haste;SKICON.b_nature=SKICON.b_vow;SKICON.b_rapid=SKICON.b_berserk}
 {const IC={z_iai:'wave',z_dash:'dash',z_cross:'swords',z_moon:'wave',z_wind:'spin',z_focus:'b_focus',z_ilsum:'dash',z_ult:'nova'};for(const [id,base] of Object.entries(IC)){const src=SKICON[base]||SKICON.nova;SKICON[id]=src.map(r=>r.replace(/[^.w]/g,id==='z_ult'?'y':'c'))}
  const IC2={1:'wave',2:'star',3:'spin',4:'swords',5:'chain',6:'nova',7:'dash',8:'nova'},CH={tk:'c',rk:'y',ys:'D',ok:'p'};for(const j of ['tk','rk','ys','ok'])for(let n=1;n<=8;n++){const src=SKICON[IC2[n]]||SKICON.nova;SKICON[`z_${j}${n}`]=src.map(r=>r.replace(/[^.w]/g,n===8?'y':CH[j]))}
- SKICON.b_bushido=SKICON.b_berserk;SKICON.b_zen=SKICON.b_haste;SKICON.b_blade=SKICON.b_vow;SKICON.b_rush=SKICON.b_berserk}
+ {const src=SKICON.swords||SKICON.nova;SKICON.z_kyo=src.map(r=>r.replace(/[^.w]/g,'y'))}SKICON.b_bushido=SKICON.b_berserk;SKICON.b_zen=SKICON.b_haste;SKICON.b_blade=SKICON.b_vow;SKICON.b_rush=SKICON.b_berserk}
 SKICON.b_venom=SKICON.b_berserk;SKICON.b_shadowstep=SKICON.b_haste;SKICON.b_evade=SKICON.b_marmor||SKICON.b_steel;SKICON.b_frenzy=SKICON.b_warcry;
 
 /* ---------- 전직 버프: 1차(F) · 2차(K) · 3차(L), 10분 지속 ---------- */
@@ -4794,7 +4824,7 @@ addEventListener('keydown',e=>{
   if(e.code==='KeyR'){quickMana();return}
   if(e.code==='KeyY'||e.code==='KeyU'){if(adv4Of())useAdv4(e.code==='KeyY'?1:2);else sys('Y·U: 4차 스킬 (Lv.999 4차 전직 후)');return}
   if(e.code==='Digit0'){finalOugi();return}
-  const dg=/^Digit([1-8])$/.exec(e.code);if(dg){useSkill(+dg[1]-1);return}
+  const dg=/^Digit([1-9])$/.exec(e.code);if(dg){useSkill(+dg[1]-1);return}
   const bk={KeyZ:0,KeyX:1,KeyC:2,KeyV:3}[e.code];if(bk!==undefined){useBuff(bk);return}
   {const ak={KeyF:'F',KeyK:'K',KeyL:'L',Semicolon:';'}[e.code];if(ak){const i=BSK.findIndex(B=>B.key===ak);if(i>=0)useBuff(i);else sys(ak==='F'?'F: 1차 전직 버프 (Lv.300 전직 후)':ak==='K'?'K: 2차 전직 버프 (Lv.650 2차 전직 후)':ak===';'?'; : 4차 버프 (Lv.999 4차 전직 후)':'L: 3차 전직 버프 (Lv.900 3차 전직 후)');return}}
   const k=KEYMAP[e.code];if(k){keys[k]=1;e.preventDefault()}
@@ -5673,7 +5703,7 @@ function enter(){
   setTimeout(()=>{sys('[공지] 초월의 증표(3차 전직 재료)는 90~100층 신화 보스(10%), 헬 층 보스(20%), 헬 신화 보스(50%)가 떨어뜨려요. 자세한 내용은 공지(N) 또는 마을 분수대 왼쪽 아래 게시판.');toast('공지: 초월의 증표 얻는 곳 → 공지(N)',3500)},1500);
   sys('숫자키 1~7로 스킬을 써요. 쿨타임은 없고 마나만 있으면 계속 쓸 수 있어요. 마나가 모자라면 R.');
   if(me.cls==='mage')sys('마법사는 스페이스로 마법탄을 쏴요. 지팡이를 장착하면 더 강해져요.');
-  if(me.cls==='samurai')sys('사무라이는 스페이스로 카타나를 휘둘러요. 칠 때마다 기(氣)가 모이고, 스킬을 쓰면 모인 기를 모두 써서 최대 2배로 강해져요. 기 100이면 40레벨 궁극기 8번 [일도양단]으로 화면을 반으로 가릅니다.');
+  if(me.cls==='samurai')sys('사무라이는 스페이스로 카타나를 휘둘러요. 25레벨 9번 [거합 발도]는 칼을 넣고 자세를 잡았다가 크게 뽑아 베요 (자세 중에 맞으면 반격). 40레벨 8번 [일도양단]은 화면을 반으로 가릅니다.');
   if(me.cls==='archer')sys('궁수는 스페이스로 화살을 쏴요. 기본 치명타 +6%. 1번 멀티 샷, 3번 백스텝 샷(뒤로 뛰며 무적), 4번 폭발 덫. 30레벨에 매를 불러요.');
   if(me.cls==='rogue')sys('도적은 쌍단검으로 아주 빠르게 연타해요. 기본 치명타 +10%. 1번 스킬은 표창 투척, 2번은 그림자 습격(순간이동)이에요.');
   sys('장비는 가방에서 [강화](최대 +20)·[분해]할 수 있어요.');
