@@ -4375,6 +4375,9 @@ Object.assign(JOB_BAL,{mangeom:1,mugeom:.92,raijin:.9,raiken:1.13,shura:.92,onio
 /* 2차 직업 사이 피해 맞추기 (3차 이후에도 그대로 곱해짐) */
 const SAM_BAL2={tenken:.5,raiko:.8,yasha:1.4,ouka:.75};
 
+/* 전체 직업 균형 (2026-11-15 측정: 적 30마리 광역 + 1마리 단일, 2차 스킬 7개 피해의 중앙값에 맞춤) */
+Object.assign(JOB_BAL,{"stareye":0.81,"beastking":0.38,"stormbow":0.63,"blastking":0.32,"skyhawk":0.45,"bowgod":0.94,"trapper":0.36,"forestsage":0.75,"swordgod":0.62,"bloodlord":2.47,"punisher":0.98,"asura":0.74,"archangel":3.34,"crusader":0.67,"bloodking":2.75,"guardian":3.33,"archwiz":0.45,"starlord":0.43,"cursekin":0.82,"timelord":2.04,"voidstar":0.48,"demonking":0.49,"elemlord":0.21,"voidlord":0.93,"hades":0.84,"infernal":0.25,"starsaint":0.76,"venomking":0.99,"windgod":1.45,"darklord":0.64,"shadowking":0.8,"thunderwind":1.33,"deathgod":1.15,"illusion":0.78,"raijin":0.85,"oniou":1.31,"mangeom":1.1,"raiken":0.98,"oukaken":1.4,"mugeom":0.89,"shura":0.93,"hanagami":1.5});
+
 function makeDuel(k){k=Math.max(1,Math.min(DUEL_MAX,k));const T=ABYSS_FROM+9,z=makeArena(T);
   z.id='pv'+k;z.duel=k;z.hpMul=duelHp(k);z.dmgMul=duelDmg(k);z.expMul=3;
   z.title=`대련장 ${k}단계`;z.sub=`PK ${DUEL_N}명 + 챔피언 · 체력 x${duelHp(k).toFixed(1)} · 공격 x${duelDmg(k).toFixed(1)} (심연 10단계 PK 기준) · 챔피언을 쓰러뜨리면 다음 단계`;return z}
