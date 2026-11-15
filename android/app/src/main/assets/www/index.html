@@ -2201,7 +2201,7 @@ function useSkill(i){
   if((me.lvl<S.lv&&!me.rb)){sys(`${skName(S)}은(는) Lv.${S.lv}에 배워요.`);return}
   const now=performance.now()/1000;if(now-lastCast<GCD)return;
   if(me.mp<mpCost(S)){floatText(me.x,me.y-32,'마나 부족','#8fc0ff');return}
-  if(S.id==='z_ult'&&(me.ki||0)<KI_MAX){floatText(me.x,me.y-32,`기 부족 (${Math.floor(me.ki||0)}/${KI_MAX})`,'#ffd35a');return}
+  if(/^z_(ult|tk8|rk8|ys8|ok8)$/.test(S.id)&&(me.ki||0)<KI_MAX){floatText(me.x,me.y-32,`기 부족 (${Math.floor(me.ki||0)}/${KI_MAX})`,'#ffd35a');return}
   if((S.id==='star'||S.id==='chain')&&!starTargets().length){floatText(me.x,me.y-32,'주변에 적이 없어요','#98a2cc');return}
   lastCast=now;dqAdd('skill');if(adv2Id()==='chrono'&&Math.random()<.1)floatText(me.x,me.y-30,'마나 소모 없음!','#b07aff');else me.mp-=mpCost(S);
   if((me.echoT||0)>0&&S.adv2&&!/_(ult|echo|portal|rewind|haste)$/.test(S.id))echoQ.push({id:S.id,x:me.x,y:me.y,dir:aimDir(),at:now+2,z:zoneId});{const e=rbEcho();if(e&&Math.random()<e&&!/_(ult|echo|portal|rewind|haste)$/.test(S.id))echoQ.push({id:S.id,x:me.x,y:me.y,dir:aimDir(),at:now+.3,z:zoneId})}me.skill=S.id;me.skillAim=aimDir();me.skillAt=Date.now();hudKey='';
@@ -3986,7 +3986,7 @@ const KI_MAX=100;
 function samKi(n){if(me.cls!=='samurai')return;me.ki=Math.max(0,Math.min(KI_MAX,(me.ki||0)+n))}
 function samTakeKi(){const k=me.ki||0;me.ki=0;return 1+k/KI_MAX}
 function samSum(f){if(me.cls!=='samurai')return 0;let t=f==='crit'?5:0;for(const A of [advOf(),adv2Of(),adv3Of()])if(A&&A.fx&&A.fx[f])t+=A.fx[f];
-  if((me.samFocusT||0)>Date.now()&&f==='crit')t+=30;
+  if((me.samFocusT||0)>Date.now()&&f==='crit')t+=30;if((me.samOathT||0)>Date.now()&&f==='atkp')t+=40;
   if(hasB('b_bushido')){if(f==='atkp')t+=15;if(f==='crit')t+=10}if(hasB('b_zen')){if(f==='dmgRed')t+=.15;if(f==='spd')t+=.15}if(hasB('b_blade')){if(f==='hpp')t+=15;if(f==='ls')t+=.05}return t}
 /* 사무라이 외형 (처음부터 따로 그림): 상투 · 머리띠 · 기모노(V 깃) · 붉은 오비 · 하카마 · 하오리(망토 색, 등에 가문 문장) · 짚신 · 허리 칼집 */
 const samCache=new Map();
@@ -4017,7 +4017,8 @@ function segHit(px,py,x1,y1,x2,y2){const vx=x2-x1,vy=y2-y1,l2=vx*vx+vy*vy||1,t=M
 function samSlashHits(list,dmg,col,mine){if(!mine)return;for(const m of list){hitMon(m,dmg,0,0,col);for(let k=0;k<3;k++)spark(m.x,monCY(m),(Math.random()-.5)*120,(Math.random()-.5)*120,k?col:'#ffffff',.35)}}
 function castSam(id,x,y,dir,mine,a,col){const [dx,dy]=DV(dir),ang=Math.atan2(dy,dx),C='#e8f4ff',isMe=mine&&castOwner==null;
   const front=(r,cone)=>Z.mons.filter(m=>{if(m.dead)return false;const vx=m.x-x,vy=monCY(m)-(y-8),d=Math.hypot(vx,vy);return d<r&&(d<14||(vx*dx+vy*dy)/d>cone)});
-  const kiM=(id==='z_focus'||id==='z_ult'||!isMe)?1:samTakeKi(),A=Math.round(a*kiM);if(isMe&&kiM>1.5)floatText(me.x,me.y-44,`기 해방 ×${kiM.toFixed(1)}`,'#ffd35a',true);
+  const kiM=(/^z_(focus|ult|rk6|ys3|ok6|tk8|rk8|ys8|ok8)$/.test(id)||!isMe)?1:samTakeKi(),A=Math.round(a*kiM);if(isMe&&kiM>1.5)floatText(me.x,me.y-44,`기 해방 ×${kiM.toFixed(1)}`,'#ffd35a',true);
+  if(/^z_(tk|rk|ys|ok)\d$/.test(id)){castSam2(id,x,y,dir,mine,A,col,isMe,front,dx,dy,ang);return}
   switch(id){
   case 'z_iai':{samArc(x,y-8,ang,46,C,1.9,.28);samArc(x,y-8,ang,40,col||'#9ad0ff',1.6,.22);samSlashHits(front(64,.2),Math.round(A*3),C,mine);if(isMe){shakeT=Math.max(shakeT,.12);hitstop(.04)}try{sfx('swing')}catch(e){}break}
   case 'z_dash':{let nx=x,ny=y;for(let k=0;k<14;k++){const tx=nx+dx*6,ty=ny+dy*6;if(blocked(tx,ty,5,4))break;nx=tx;ny=ty}
@@ -4034,7 +4035,7 @@ function castSam(id,x,y,dir,mine,a,col){const [dx,dy]=DV(dir),ang=Math.atan2(dy,
   case 'z_ult':startIldo(x,y,dir,Math.round(a*30),mine,isMe);break}
 }
 /* 일도양단: 바라보는 방향과 수직으로 화면을 가르는 한 줄 → 앞쪽 절반이 미끄러지며 베어짐 */
-function startIldo(x,y,dir,dmg,mine,isMe){const [dx,dy]=DV(dir);ildo={x,y:y-8,dx,dy,t:0,dur:1.3,dmg,mine,done:false,isMe};if(isMe){me.iframe=Math.max(me.iframe||0,1.2);flashT=Math.max(flashT,.1);flashCol='#ffffff'}try{sfx('legend')}catch(e){}}
+function startIldo(x,y,dir,dmg,mine,isMe){if(isMe)me.ki=0;const [dx,dy]=DV(dir);ildo={x,y:y-8,dx,dy,t:0,dur:1.3,dmg,mine,done:false,isMe};if(isMe){me.iframe=Math.max(me.iframe||0,1.2);flashT=Math.max(flashT,.1);flashCol='#ffffff'}try{sfx('legend')}catch(e){}}
 function ildoTick(dt){if(!ildo)return;ildo.t+=dt;const I=ildo;
   if(!I.done&&I.t>=.16){I.done=true;const hit=Z.mons.filter(m=>{if(m.dead)return false;const vx=m.x-I.x,vy=monCY(m)-I.y;return vx*I.dx+vy*I.dy>-6&&Math.abs(vx)<view.w*.75&&Math.abs(vy)<view.h*.75});
     if(I.mine)for(const m of hit){hitMon(m,I.dmg,I.dx*60,I.dy*60,'#ffffff');for(let k=0;k<5;k++)spark(m.x,monCY(m),(Math.random()-.5)*200,(Math.random()-.5)*200,k%2?'#ffffff':'#ffd35a',.6)}
@@ -4049,17 +4050,100 @@ function drawIldo(c){if(!ildo)return;const I=ildo,sx=I.x-cam.x,sy=I.y-cam.y,px=-
   c.globalAlpha=fade;c.strokeStyle='#ffffff';c.lineWidth=t<.3?4:2;c.beginPath();c.moveTo(sx-px*half,sy-py*half);c.lineTo(sx+px*half,sy+py*half);c.stroke();c.restore()}
 function samTick(dt){for(let i=samFx.length-1;i>=0;i--){const f=samFx[i];f.t+=dt;
     if(f.k==='moon'){f.x+=f.vx*dt;f.y+=f.vy*dt;if(f.mine)for(const m of Z.mons){if(m.dead||f.hit.has(m))continue;if(Math.hypot(m.x-f.x,monCY(m)-f.y)<22){f.hit.add(m);hitMon(m,f.dmg,f.vx*.1,f.vy*.1,f.col)}}if(blocked(f.x,f.y+8,2,2))f.t=f.dur}
-    else if(f.k==='wind'){f.tick-=dt;if(f.tick<=0){f.tick=.25;if(f.own)samArc(me.x,me.y-8,Math.random()*6.283,44,f.col,2.4,.2);if(f.mine)samSlashHits(monsNear(me.x,me.y-8,58),f.dmg,f.col,true)}}
+    else if(f.k==='wind'){f.tick-=dt;if(f.tick<=0){f.tick=f.iv||.25;if(f.own)samArc(me.x,me.y-8,Math.random()*6.283,44,f.col,2.4,.2);if(f.mine){const l=monsNear(me.x,me.y-8,58);samSlashHits(l,f.dmg,f.col,true);if(f.ls&&l.length&&f.own)me.hp=Math.min(me.maxHp,me.hp+Math.round(me.maxHp*.004*l.length))}}}
+    else if(f.k==='cloud'){f.tick-=dt;if(f.tick<=0){f.tick=.4;if(f.mine){const l=monsNear(me.x,me.y-8,220);for(let q=0;q<3&&l.length;q++)samBolt(l[Math.floor(Math.random()*l.length)],f.dmg,true)}}}
     if(f.t>=f.dur)samFx.splice(i,1)}ildoTick(dt)}
 function drawSamFx(c){for(const f of samFx){const k=1-f.t/f.dur;c.save();c.globalAlpha=Math.max(0,k);
     if(f.k==='line'){c.strokeStyle=f.col;c.lineWidth=f.w;c.beginPath();c.moveTo(f.x1-cam.x,f.y1-cam.y);c.lineTo(f.x2-cam.x,f.y2-cam.y);c.stroke();c.globalAlpha*=.4;c.lineWidth=f.w+3;c.stroke()}
     else if(f.k==='arc'){c.strokeStyle=f.col;c.lineWidth=3;c.beginPath();c.arc(f.x-cam.x,f.y-cam.y,f.r*(.8+.2*(1-k)),f.ang-f.spread/2,f.ang+f.spread/2);c.stroke();c.lineWidth=1;c.strokeStyle='#ffffff';c.stroke()}
-    else if(f.k==='moon'){c.translate(f.x-cam.x,f.y-cam.y);c.rotate(f.ang);c.strokeStyle=f.col;c.lineWidth=4;c.beginPath();c.arc(-6,0,16,-1.1,1.1);c.stroke();c.strokeStyle='#ffffff';c.lineWidth=1.5;c.stroke()}
+    else if(f.k==='moon'){c.translate(f.x-cam.x,f.y-cam.y);c.rotate(f.ang);c.strokeStyle=f.col;c.lineWidth=4;c.beginPath();if(f.big)c.scale(1.8,1.8);c.arc(-6,0,16,-1.1,1.1);c.stroke();c.strokeStyle='#ffffff';c.lineWidth=1.5;c.stroke()}
     c.restore()}drawIldo(c)}
 {const r0=render;render=function(t){r0(t);const n=performance.now()/1000,dt=Math.min(.05,n-(samLast||n));samLast=n;try{samTick(dt);drawSamFx(ctx)}catch(e){console.error(e)}}}
 /* 기 게이지 (스킬 줄 위) */
 function updKi(){const el=$('kibar');if(!el)return;const on=me.cls==='samurai'&&started;el.hidden=!on;if(!on)return;const k=me.ki||0;el.firstChild.style.width=k+'%';el.lastChild.textContent=`기 ${Math.floor(k)} / ${KI_MAX}${k>=KI_MAX?' · 일도양단 가능!':''}`;el.classList.toggle('full',k>=KI_MAX)}
 setInterval(()=>{try{updKi()}catch(e){}},120);
+
+/* ================= 사무라이 1차 2갈래 · 2차 4갈래 ================= */
+Object.assign(ADV,{
+  kensei:{id:'kensei',cls:'samurai',name:'검성',col:'#e8f4ff',desc:'치명타 +15% · 공격력 +20% · 모든 스킬 피해 ×2 · 칼끝이 더 날카로워져요',fx:{crit:15,atkp:20}},
+  ronin:{id:'ronin',cls:'samurai',name:'낭인',col:'#ff6a5a',desc:'최대 체력 +25% · 이동 속도 +15% · 흡혈 3% · 모든 스킬 피해 ×2',fx:{hpp:25,spd:.15,ls:.03}}});
+Object.assign(ADV_SK,{z_iai:'신속 발도',z_dash:'뇌광 질풍',z_cross:'만자 베기',z_moon:'만월참',z_wind:'폭풍 칼바람',z_focus:'명경지수·극',z_ilsum:'섬광 일섬',z_ult:'천지 일도양단'});
+const ZK=(id,name,mp,desc,mpPct)=>SK2(id,name,mp,desc+(id.endsWith('8')?'':' · 기 사용'),mpPct);
+Object.assign(ADV2,{
+  tenken:{id:'tenken',from:'kensei',name:'천검',col:'#cfe6ff',desc:'공격력 +25% · 치명타 +10% · 수많은 비검을 부려요 · 스킬 피해 한 번 더 ×2',fx:{atkp:25,crit:10},skills:[
+    ZK('z_tk1','비검',30,'검 5자루를 부채꼴로 날려 꿰뚫어요, 각 300%'),ZK('z_tk2','검의 비',45,'하늘에서 검 16자루가 적을 따라 떨어져요, 각 260%'),
+    ZK('z_tk3','검진',40,'검 8자루가 3초 동안 내 주위를 돌며 0.3초마다 180%'),ZK('z_tk4','천검 발도',35,'앞쪽 부채꼴 600% + 비검 3자루 각 300%'),
+    ZK('z_tk5','만검귀종',50,'주변 적 10마리에게 검이 내리꽂혀요, 각 500%'),ZK('z_tk6','검기 폭발',45,'나를 중심으로 검기가 두 번 터져요 (400% · 400%)'),
+    ZK('z_tk7','천검 일섬',55,'앞쪽 적 8마리 사이를 지나가며 각 900%'),ZK('z_tk8','천검 일도양단',0,'궁극기 · 기 100: 일도양단 3000% + 잘린 쪽에 검 20자루가 떨어져요 (각 400%)',.4)]},
+  raiko:{id:'raiko',from:'kensei',name:'뇌광검사',col:'#fff27a',desc:'치명타 +20% · 공격력 +15% · 번개를 실은 발도 · 스킬 피해 한 번 더 ×2',fx:{crit:20,atkp:15},skills:[
+    ZK('z_rk1','뇌섬',30,'번개처럼 돌진하며 600% + 끝에서 번개가 3마리에게 튀어요 (300%)'),ZK('z_rk2','낙뢰 발도',40,'앞쪽 적 6마리에게 벼락이 떨어져요, 각 500%'),
+    ZK('z_rk3','뇌운',50,'4초 동안 0.4초마다 주변 적 3마리에게 낙뢰 300%'),ZK('z_rk4','뇌전 십자',35,'번개 십자 베기 400%×2 + 1초 기절'),
+    ZK('z_rk5','천둥 질주',45,'세 번 연달아 돌진, 각 450%'),ZK('z_rk6','뇌신의 가호',40,'8초 동안 공격 속도 +40% · 치명타 +30% (기는 쓰지 않아요)'),
+    ZK('z_rk7','번개 일섬',55,'앞쪽 적 8마리 사이를 지나가며 각 900% + 낙뢰'),ZK('z_rk8','뇌신 일도양단',0,'궁극기 · 기 100: 일도양단 3000% + 잘린 쪽에 낙뢰 15번 (각 500%)',.4)]},
+  yasha:{id:'yasha',from:'ronin',name:'야차',col:'#ff3a4a',desc:'최대 체력 +30% · 흡혈 5% · 피를 마시는 귀신의 칼 · 스킬 피해 한 번 더 ×2',fx:{hpp:30,ls:.05},skills:[
+    ZK('z_ys1','혈인',30,'앞쪽 부채꼴 500%, 벤 만큼 체력 회복'),ZK('z_ys2','귀신 베기',40,'크게 두 바퀴 돌며 주변 적에게 450%×2'),
+    ZK('z_ys3','피의 맹세',30,'체력 10%를 바치고 8초 동안 공격력 +40% (기는 쓰지 않아요)'),ZK('z_ys4','귀곡참',45,'거대한 핏빛 초승달 검기, 꿰뚫어 900%'),
+    ZK('z_ys5','나찰 난무',50,'3초 동안 주위를 마구 베어 0.2초마다 200% + 흡혈'),ZK('z_ys6','오니의 포효',40,'주변 적 2초 기절 + 300%'),
+    ZK('z_ys7','혈풍 일섬',55,'앞쪽 적 8마리 사이를 지나가며 각 900% + 체력 10% 회복'),ZK('z_ys8','야차 일도양단',0,'궁극기 · 기 100: 일도양단 3000% + 체력 30% 회복',.4)]},
+  ouka:{id:'ouka',from:'ronin',name:'앵화무사',col:'#ff9ad8',desc:'최대 체력 +15% · 이동 속도 +15% · 받는 피해 -10% · 벚꽃의 검무 · 스킬 피해 한 번 더 ×2',fx:{hpp:15,spd:.15,dmgRed:.1},skills:[
+    ZK('z_ok1','꽃잎 베기',25,'앞쪽 부채꼴 450%, 벚꽃잎이 흩날려요'),ZK('z_ok2','앵화 폭풍',45,'5초 동안 벚꽃 장판: 안의 적 200%씩, 나는 체력 회복'),
+    ZK('z_ok3','벚꽃 질풍',35,'돌진 600%, 지나간 자리가 꽃잎으로 터져요 (300%)'),ZK('z_ok4','화무',40,'꽃잎과 함께 세 바퀴 돌며 각 350%'),
+    ZK('z_ok5','천본앵',50,'주변 적 12마리에게 꽃잎 칼날, 각 450%'),ZK('z_ok6','봄바람',40,'8초 동안 받는 피해 -25% · 이동 속도 +15% (기는 쓰지 않아요)'),
+    ZK('z_ok7','낙화 일섬',55,'앞쪽 적 8마리 사이를 지나가며 각 900%'),ZK('z_ok8','앵화 일도양단',0,'궁극기 · 기 100: 일도양단 3000% + 잘린 쪽이 벚꽃으로 터져요 (각 600%)',.4)]}});
+for(const k of ['tenken','raiko','yasha','ouka'])for(const S of ADV2[k].skills)ALL_SKILLS.add(S.id);
+const SAM_AB=[['kensei',1,'검성의 기백',{crit:12,atkp:12},'#e8f4ff'],['ronin',1,'떠돌이의 끈기',{hpp:20,spd:.1},'#ff6a5a'],
+  ['tenken',2,'천 자루의 검',{atkp:20,sk:.25},'#cfe6ff'],['raiko',2,'뇌신의 숨결',{crit:15,sk:.25},'#fff27a'],['yasha',2,'귀신의 피',{hpp:20,ls:.03},'#ff3a4a'],['ouka',2,'벚꽃 바람',{spd:.15,dmgRed:.1},'#ff9ad8']];
+/* 2차 스킬 */
+const SAKURA=['#ff9ad8','#ffd0ea','#ffffff'];
+function samBolt(m,dmg,mine){const cx=m.x,cy=monCY(m);let px=cx+(Math.random()-.5)*20,py=cy-150;for(let k=0;k<5;k++){const nx=cx+(Math.random()-.5)*16*(1-k/5),ny=py+30;samLine(px,py,nx,ny,'#fff27a',2,.3);px=nx;py=ny}samLine(px,py,cx,cy,'#ffffff',2,.3);
+  if(mine){hitMon(m,dmg,0,0,'#fff27a');stopMon(m,.3,'stun')}for(let k=0;k<4;k++)spark(cx,cy,(Math.random()-.5)*160,-Math.random()*120,'#fff27a',.4)}
+function samSword(x,y,dmg,mine,col,delay){setTimeout(()=>{samLine(x,y-90,x,y,col||'#cfe6ff',2,.25);boom(x,y,34,dmg,col||'#cfe6ff',0,mine)},delay||0)}
+function samFan(x,y,ang,n,spread,dmg,col,mine,speed){for(let k=0;k<n;k++){const a=ang+(n>1?(k/(n-1)-.5)*spread:0);samFx.push({k:'moon',x,y,vx:Math.cos(a)*(speed||340),vy:Math.sin(a)*(speed||340),ang:a,t:0,dur:.9,col,dmg,mine,hit:new Set()})}}
+function samPetals(x,y,n){for(let k=0;k<n;k++)spark(x+(Math.random()-.5)*30,y+(Math.random()-.5)*20,(Math.random()-.5)*120,-30-Math.random()*60,SAKURA[k%3],.9,1,40)}
+function castSam2(id,x,y,dir,mine,a,col,isMe,front,dx,dy,ang){const C='#e8f4ff',near=r=>monsNear(x,y-8,r),hits=(l,m,c)=>samSlashHits(l,Math.round(a*m),c||C,mine);
+  const dashTo=(dist,c)=>{let nx=x,ny=y;for(let k=0;k<Math.round(dist/6);k++){const tx=nx+dx*6,ty=ny+dy*6;if(blocked(tx,ty,5,4))break;nx=tx;ny=ty}if(isMe){me.x=nx;me.y=ny;me.iframe=Math.max(me.iframe||0,.4)}samLine(x,y-8,nx,ny-8,c||C,3,.4);return [nx,ny,Z.mons.filter(m=>!m.dead&&segHit(m.x,monCY(m),x,y-8,nx,ny-8)<20)]};
+  const ilsum=(n,m,c,after)=>{const tg=front(240,.05).sort((p,q)=>Math.hypot(p.x-x,p.y-y)-Math.hypot(q.x-x,q.y-y)).slice(0,n);let px=x,py=y-8;for(const t of tg){samLine(px,py,t.x,monCY(t),c,2,.5);px=t.x;py=monCY(t)}hits(tg,m,c);if(after)after(tg);
+    if(isMe&&tg.length){const L=tg[tg.length-1];const [fx2,fy2]=freeSpot(L.x+dx*14,L.y+dy*10);me.x=fx2;me.y=fy2;me.iframe=Math.max(me.iframe||0,.5);hitstop(.06);shakeT=Math.max(shakeT,.2)}};
+  const heal=p=>{if(isMe){me.hp=Math.min(me.maxHp,me.hp+Math.round(me.maxHp*p));floatText(me.x,me.y-30,'+'+Math.round(me.maxHp*p),'#6ee77a')}};
+  const ultExtra=f=>{startIldo(x,y,dir,Math.round(a*30),mine,isMe);setTimeout(()=>{const half=Z.mons.filter(m=>!m.dead&&((m.x-x)*dx+(monCY(m)-y+8)*dy)>-6&&Math.abs(m.x-x)<view.w*.75&&Math.abs(m.y-y)<view.h*.75);f(half)},380)};
+  switch(id){
+  /* 천검 */
+  case 'z_tk1':samFan(x,y-8,ang,5,.9,Math.round(a*3),'#cfe6ff',mine);break;
+  case 'z_tk2':{const pool=near(240);for(let k=0;k<16;k++){const m=pool.length?pool[k%pool.length]:null;samSword(m?m.x+(Math.random()-.5)*16:x+(Math.random()-.5)*300,m?m.y:y+(Math.random()-.5)*200,Math.round(a*2.6),mine,'#cfe6ff',k*70)}break}
+  case 'z_tk3':samFx.push({k:'wind',t:0,dur:3,tick:0,dmg:Math.round(a*1.8),mine,col:'#cfe6ff',own:isMe});break;
+  case 'z_tk4':samArc(x,y-8,ang,50,C,1.9,.3);hits(front(70,.15),6);samFan(x,y-8,ang,3,.5,Math.round(a*3),'#cfe6ff',mine);break;
+  case 'z_tk5':{const tg=near(240).slice(0,10);tg.forEach((m,k)=>samSword(m.x,m.y,Math.round(a*5),mine,'#e8f4ff',k*50));break}
+  case 'z_tk6':boom(x,y,110,Math.round(a*4),'#cfe6ff',0,mine);boom(x,y,150,Math.round(a*4),'#ffffff',.3,mine,{big:1});break;
+  case 'z_tk7':ilsum(8,9,'#cfe6ff');break;
+  case 'z_tk8':ultExtra(half=>{for(let k=0;k<20;k++){const m=half.length?half[k%half.length]:null;if(m)samSword(m.x+(Math.random()-.5)*20,m.y,Math.round(a*4),mine,'#cfe6ff',k*40)}});break;
+  /* 뇌광검사 */
+  case 'z_rk1':{const [nx,ny,l]=dashTo(90,'#fff27a');hits(l,6,'#fff27a');monsNear(nx,ny-8,120).slice(0,3).forEach(m=>samBolt(m,Math.round(a*3),mine));break}
+  case 'z_rk2':front(220,.1).slice(0,6).forEach((m,k)=>setTimeout(()=>samBolt(m,Math.round(a*5),mine),k*60));break;
+  case 'z_rk3':samFx.push({k:'cloud',t:0,dur:4,tick:0,dmg:Math.round(a*3),mine});break;
+  case 'z_rk4':{const L=60;for(const o of [Math.PI/4,-Math.PI/4]){const cx=Math.cos(ang+o)*L,cy=Math.sin(ang+o)*L;samLine(x-cx,y-8-cy,x+cx,y-8+cy,'#fff27a',3,.35)}const n2=near(64);hits(n2,4,'#fff27a');n2.forEach(m=>stopMon(m,1,'stun'));setTimeout(()=>hits(n2.filter(m=>!m.dead),4,'#ffffff'),140);break}
+  case 'z_rk5':{let cx=x,cy=y;for(let k=0;k<3;k++)setTimeout(()=>{if(!isMe&&k)return;const sx=isMe?me.x:cx,sy=isMe?me.y:cy;let nx=sx,ny=sy;for(let q=0;q<12;q++){const tx=nx+dx*6,ty=ny+dy*6;if(blocked(tx,ty,5,4))break;nx=tx;ny=ty}if(isMe){me.x=nx;me.y=ny;me.iframe=Math.max(me.iframe||0,.4)}samLine(sx,sy-8,nx,ny-8,'#fff27a',3,.35);hits(Z.mons.filter(m=>!m.dead&&segHit(m.x,monCY(m),sx,sy-8,nx,ny-8)<20),4.5,'#fff27a')},k*160);break}
+  case 'z_rk6':if(isMe){me.sbuf.b_rush=Math.max(me.sbuf.b_rush||0,8);me.samFocusT=Date.now()+8000;recalc();floatText(me.x,me.y-44,'뇌신의 가호','#fff27a',true)}fxs.push({k:'ring',x,y,t:0,dur:.8,col:'#fff27a',r:50});break;
+  case 'z_rk7':ilsum(8,9,'#fff27a',tg=>tg.forEach((m,k)=>setTimeout(()=>{if(!m.dead)samBolt(m,Math.round(a*3),mine)},200+k*50)));break;
+  case 'z_rk8':ultExtra(half=>{for(let k=0;k<15;k++){const m=half.length?half[k%half.length]:null;if(m)setTimeout(()=>{if(!m.dead)samBolt(m,Math.round(a*5),mine)},k*60)}});break;
+  /* 야차 */
+  case 'z_ys1':{samArc(x,y-8,ang,48,'#ff3a4a',1.9,.3);const l=front(70,.15);hits(l,5,'#ff3a4a');heal(Math.min(.15,.015*l.length));break}
+  case 'z_ys2':samArc(x,y-8,ang,60,'#ff3a4a',6.2,.3);hits(near(72),4.5,'#ff3a4a');setTimeout(()=>{samArc(me.x,me.y-8,ang+3,64,'#ff9a9a',6.2,.3);hits(near(72).filter(m=>!m.dead),4.5,'#ff3a4a')},180);break;
+  case 'z_ys3':if(isMe){me.hp=Math.max(1,me.hp-Math.round(me.maxHp*.1));me.samOathT=Date.now()+8000;recalc();floatText(me.x,me.y-44,'피의 맹세','#ff3a4a',true)}fxs.push({k:'ring',x,y,t:0,dur:.8,col:'#ff3a4a',r:46});break;
+  case 'z_ys4':samFx.push({k:'moon',x,y:y-8,vx:dx*300,vy:dy*300,ang,t:0,dur:1.1,col:'#ff3a4a',dmg:Math.round(a*9),mine,hit:new Set(),big:1});break;
+  case 'z_ys5':samFx.push({k:'wind',t:0,dur:3,tick:0,iv:.2,dmg:Math.round(a*2),mine,col:'#ff3a4a',own:isMe,ls:1});break;
+  case 'z_ys6':{fxs.push({k:'ring',x,y,t:0,dur:.7,col:'#ff3a4a',r:90},{k:'ring',x,y,t:-.15,dur:.7,col:'#ffffff',r:70});const l=near(100);l.forEach(m=>stopMon(m,2,'stun'));hits(l,3,'#ff3a4a');if(isMe)shakeT=Math.max(shakeT,.3);break}
+  case 'z_ys7':ilsum(8,9,'#ff3a4a');heal(.1);break;
+  case 'z_ys8':ultExtra(()=>heal(.3));break;
+  /* 앵화무사 */
+  case 'z_ok1':samArc(x,y-8,ang,48,'#ff9ad8',1.9,.3);hits(front(70,.15),4.5,'#ff9ad8');samPetals(x+dx*30,y-8+dy*30,14);break;
+  case 'z_ok2':fxs.push({k:'zone',x,y,r:100,t:0,dur:5,col:'#ff9ad8',mine,mode:'holy',tick:0,dmg:Math.round(a*2)});samPetals(x,y-8,20);break;
+  case 'z_ok3':{const [nx,ny,l]=dashTo(90,'#ff9ad8');hits(l,6,'#ff9ad8');for(let k=0;k<4;k++){const px=x+(nx-x)*k/3,py=y+(ny-y)*k/3;setTimeout(()=>{boom(px,py,40,Math.round(a*3),'#ff9ad8',0,mine);samPetals(px,py-8,8)},200+k*60)}break}
+  case 'z_ok4':for(let k=0;k<3;k++)setTimeout(()=>{const cx=isMe?me.x:x,cy=isMe?me.y:y;samArc(cx,cy-8,ang+k*2,56,SAKURA[k%2],6.2,.28);samPetals(cx,cy-8,10);samSlashHits(monsNear(cx,cy-8,66),Math.round(a*3.5),'#ff9ad8',mine)},k*170);break;
+  case 'z_ok5':near(240).slice(0,12).forEach((m,k)=>setTimeout(()=>{if(m.dead)return;samLine(x,y-8,m.x,monCY(m),'#ff9ad8',1,.3);samPetals(m.x,monCY(m),6);if(mine)hitMon(m,Math.round(a*4.5),0,0,'#ff9ad8')},k*45));break;
+  case 'z_ok6':if(isMe){me.shieldT=8;me.shieldMul=.75;me.sbuf.b_zen=Math.max(me.sbuf.b_zen||0,8);recalc();floatText(me.x,me.y-44,'봄바람','#ff9ad8',true)}samPetals(x,y-8,24);break;
+  case 'z_ok7':ilsum(8,9,'#ff9ad8',tg=>tg.forEach(m=>samPetals(m.x,monCY(m),6)));break;
+  case 'z_ok8':ultExtra(half=>half.forEach((m,k)=>setTimeout(()=>{if(m.dead)return;samPetals(m.x,monCY(m),8);if(mine)hitMon(m,Math.round(a*6),0,0,'#ff9ad8')},k*25)));break;
+  }}
 
 function makeDuel(k){k=Math.max(1,Math.min(DUEL_MAX,k));const T=ABYSS_FROM+9,z=makeArena(T);
   z.id='pv'+k;z.duel=k;z.hpMul=duelHp(k);z.dmgMul=duelDmg(k);z.expMul=3;
@@ -4527,6 +4611,7 @@ const SKICON={
  for(const [id,base] of Object.entries(ICON3)){const ch={q:'o',i:'y',o:'r',l:'H',g:'g'}[id[0]],src=SKICON[base]||SKICON.nova;SKICON[id]=src.map(r=>r.replace(/[^.w]/g,id.endsWith('_ult')?(m=>m===ch?'w':ch):ch))}
  SKICON.b_eagle=SKICON.b_focus;SKICON.b_windstep=SKICON.b_haste;SKICON.b_nature=SKICON.b_vow;SKICON.b_rapid=SKICON.b_berserk}
 {const IC={z_iai:'wave',z_dash:'dash',z_cross:'swords',z_moon:'wave',z_wind:'spin',z_focus:'b_focus',z_ilsum:'dash',z_ult:'nova'};for(const [id,base] of Object.entries(IC)){const src=SKICON[base]||SKICON.nova;SKICON[id]=src.map(r=>r.replace(/[^.w]/g,id==='z_ult'?'y':'c'))}
+ const IC2={1:'wave',2:'star',3:'spin',4:'swords',5:'chain',6:'nova',7:'dash',8:'nova'},CH={tk:'c',rk:'y',ys:'D',ok:'p'};for(const j of ['tk','rk','ys','ok'])for(let n=1;n<=8;n++){const src=SKICON[IC2[n]]||SKICON.nova;SKICON[`z_${j}${n}`]=src.map(r=>r.replace(/[^.w]/g,n===8?'y':CH[j]))}
  SKICON.b_bushido=SKICON.b_berserk;SKICON.b_zen=SKICON.b_haste;SKICON.b_blade=SKICON.b_vow;SKICON.b_rush=SKICON.b_berserk}
 SKICON.b_venom=SKICON.b_berserk;SKICON.b_shadowstep=SKICON.b_haste;SKICON.b_evade=SKICON.b_marmor||SKICON.b_steel;SKICON.b_frenzy=SKICON.b_warcry;
 
@@ -4542,7 +4627,7 @@ const AB=[
  ['elemlord',3,'원소 공명',{sk:.5,mpr:15},'#5affd8'],['archwiz',3,'마도의 정점',{sk:.6},'#7ab0ff'],['timelord',3,'시간 지배',{spd:.4,sk:.3},'#b07aff'],['voidlord',3,'차원 균열',{sk:.4,crit:10},'#8a5aff'],
  ['hades',3,'명계의 왕좌',{ls:.08,sk:.35},'#c43aff'],['cursekin',3,'저주 증폭',{sk:.45,crit:5},'#9a2aff'],['demonking',3,'마왕의 위압',{sk:.4,dmgRed:.15},'#ff4a1a'],['infernal',3,'지옥 군주의 불꽃',{sk:.5,atkp:10},'#ff8a2a'],
  ['astral',2,'성운의 숨결',{sk:.3,mpr:10},'#8ab4ff'],['starlord',3,'성좌 공명',{sk:.5,mpr:10},'#9ac8ff'],['voidstar',3,'공허의 인력',{sk:.45,crit:8},'#7a6aff']];
-AB.push(...ROGUE_AB,...ARCHER_AB);initAdv4();for(const k in ADV4)AB.push([k,4,ADV4[k].bn,ADV4[k].bfx,ADV4[k].col]);
+AB.push(...ROGUE_AB,...ARCHER_AB,...SAM_AB);initAdv4();for(const k in ADV4)AB.push([k,4,ADV4[k].bn,ADV4[k].bfx,ADV4[k].col]);
 const AB_BY={};
 for(const [path,st,name,fx,col] of AB){const id='b_'+st+'_'+path,B={id,name,key:['F','K','L',';'][st-1],lv:[ADV_LV,ADV2_LV,ADV3_LV,LV_MAX][st-1],mp:[50,70,90,120][st-1],col,fx,desc:abDesc(fx),stage:st,path};
   BUFF_BY_ID[id]=B;ALL_SKILLS.add(id);AB_BY[st+'_'+path]=B;
