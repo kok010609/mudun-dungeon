@@ -4016,7 +4016,7 @@ function segHit(px,py,x1,y1,x2,y2){const vx=x2-x1,vy=y2-y1,l2=vx*vx+vy*vy||1,t=M
 function samSlashHits(list,dmg,col,mine){if(!mine)return;for(const m of list){hitMon(m,dmg,0,0,col);for(let k=0;k<3;k++)spark(m.x,monCY(m),(Math.random()-.5)*120,(Math.random()-.5)*120,k?col:'#ffffff',.35)}}
 function castSam(id,x,y,dir,mine,a,col){const [dx,dy]=DV(dir),ang=Math.atan2(dy,dx),C='#e8f4ff',isMe=mine&&castOwner==null;
   const front=(r,cone)=>Z.mons.filter(m=>{if(m.dead)return false;const vx=m.x-x,vy=monCY(m)-(y-8),d=Math.hypot(vx,vy);return d<r&&(d<14||(vx*dx+vy*dy)/d>cone)});
-  const kiM=(/^z_(focus|ult|rk6|ys3|ok6|tk8|rk8|ys8|ok8)$/.test(id)||!isMe)?1:samTakeKi(),A=Math.round(a*kiM);if(isMe&&kiM>1.5)floatText(me.x,me.y-44,`기 해방 ×${kiM.toFixed(1)}`,'#ffd35a',true);
+  const kiM=(/^z_(focus|ult|rk6|ys3|ok6|tk8|rk8|ys8|ok8)$/.test(id)||!isMe)?1:samTakeKi(),A=Math.round(a*kiM*(isMe&&typeof SAM_BAL2!=='undefined'?(SAM_BAL2[adv2Id()]||1):1));if(isMe&&kiM>1.5)floatText(me.x,me.y-44,`기 해방 ×${kiM.toFixed(1)}`,'#ffd35a',true);
   if(SAMV2.has(id)&&castSamV2(id,x,y,dir,mine,A,col,isMe,front,dx,dy,ang))return;
   if(id==='z_kyo'){castKyo(x,y,dir,mine,a,isMe);return}
   if(/^z_(tk|rk|ys|ok)\d$/.test(id)){castSam2(id,x,y,dir,mine,A,col,isMe,front,dx,dy,ang);return}
@@ -4179,7 +4179,7 @@ function drawKyo(c){const K=kyo;
 /* ================= 사무라이 스킬 개편 (기본 8 + 2차 32): 붓 칼선 · 잔상 · 늦게 갈라짐 · 날아가는 카타나 ================= */
 const S2=[],P2=[];let s2Last=0,s2Zone='';
 const s2Dir=(x,y)=>Math.abs(x)>Math.abs(y)?(x>0?'right':'left'):(y>0?'down':'up');
-function s2(o){o.t=-(o.delay||0);S2.push(o);return o}
+function s2(o){o.t=-(o.delay||0);o.z=zoneId;S2.push(o);return o}
 function s2Later(ms,f){const z=zoneId;setTimeout(()=>{if(zoneId===z)try{f()}catch(e){console.error(e)}},ms)}
 function s2Cres(x,y,ang,r,w,spread,col,dur,delay){s2({k:'cres',x,y,ang,r,w,spread,col,dur:dur||.32,delay})}
 function s2Brush(x1,y1,x2,y2,w,col,dur,delay){s2({k:'brush',x1,y1,x2,y2,w,col,dur:dur||.4,delay})}
@@ -4197,7 +4197,7 @@ function s2Hits(list,dmg,col,mine){samSlashHits(list.filter(m=>!m.dead),dmg,col,
 function s2Heal(p,isMe){if(!isMe)return;const h=Math.round(me.maxHp*p);me.hp=Math.min(me.maxHp,me.hp+h);floatText(me.x,me.y-30,'+'+h,'#6ee77a')}
 function s2Kat(o){return s2(Object.assign({k:'kat',hit:new Set(),phase:0,len:20},o))}
 
-function s2Tick(dt){if(s2Zone!==zoneId){S2.length=0;P2.length=0;s2Zone=zoneId}
+function s2Tick(dt){if(s2Zone!==zoneId){P2.length=0;s2Zone=zoneId;for(let i=S2.length-1;i>=0;i--)if(S2[i].z!==zoneId)S2.splice(i,1)}
   for(let i=S2.length-1;i>=0;i--){const f=S2[i];f.t+=dt;if(f.t<0)continue;
     if(f.k==='kat'||f.k==='wave'){
       if(f.home){if(f.home.dead){const n=monsNear(f.x,f.y,160).find(m=>!f.hit.has(m));f.home=n||null}if(f.home){const tx=f.home.x-f.x,ty=monCY(f.home)-f.y,d=Math.hypot(tx,ty)||1,sp=f.sp||360;f.vx+=(tx/d*sp-f.vx)*Math.min(1,dt*9);f.vy+=(ty/d*sp-f.vy)*Math.min(1,dt*9)}}
@@ -4347,6 +4347,33 @@ function castSamV2(id,x,y,dir,mine,A,col,isMe,front,dx,dy,ang){
  z_ok4:'벚꽃을 날리며 3바퀴 회전 베기 각 350%',z_ok5:'꽃잎 칼날 12장이 적 12마리를 쫓아가요 각 450%',z_ok6:'8초 동안 받는 피해 -25% · 이동 속도 증가 · 꽃잎이 내 주위를 돌아요',
  z_ok7:'적 8마리 사이를 지나가며 "찰칵" 각 900% + 벚꽃 폭발',z_ok8:'궁극기: 일도양단 3000% + 잘린 쪽이 벚꽃으로 터져요 (각 600%)'};
  const L=[...SAM_SKILLS];for(const k of ['tenken','raiko','yasha','ouka'])L.push(...ADV2[k].skills);for(const S of L)if(DS[S.id])S.desc=DS[S.id]}
+
+/* ================= 사무라이 3차~6차 전직 ================= */
+const SAM3={
+  mangeom:{from:'tenken',name:'만검제',col:'#cfe6ff',style:'swords',form:'blades',fin:'만검귀천',passive:'공격력 +30%, 치명타 +15%',fx:{atkp:30,crit:15}},
+  mugeom:{from:'tenken',name:'무검성',col:'#e8f4ff',style:'pillars',form:'halo',fin:'무검일섬',passive:'스킬 피해 +45%, 치명타 +10%',fx:{sk:.45,crit:10}},
+  raijin:{from:'raiko',name:'뇌제',col:'#fff27a',style:'bolts',form:'halo',fin:'뇌제강림',passive:'치명타 +15%, 스킬 피해 +35%',fx:{crit:15,sk:.35}},
+  raiken:{from:'raiko',name:'뇌신검',col:'#ffe14a',style:'swords',form:'wings',fin:'천뢰일도',passive:'공격력 +30%, 이동 속도 +20%',fx:{atkp:30,spd:.2}},
+  shura:{from:'yasha',name:'수라야차',col:'#ff1a3a',style:'spikes',form:'flames',fin:'혈귀멸천',passive:'공격력 +35%, 흡혈 5%',fx:{atkp:35,ls:.05}},
+  oniou:{from:'yasha',name:'귀신왕',col:'#c8102e',style:'tentacles',form:'shadow',fin:'백귀야행',passive:'최대 체력 +30%, 받는 피해 -20%',fx:{hpp:30,dmgRed:.2}},
+  oukaken:{from:'ouka',name:'앵화검성',col:'#ff9ad8',style:'swords',form:'wings',fin:'천본앵 만개',passive:'스킬 피해 +45%, 이동 속도 +15%',fx:{sk:.45,spd:.15}},
+  hanagami:{from:'ouka',name:'화신',col:'#ffd0ea',style:'pillars',form:'orbs',fin:'춘풍만개',passive:'받는 피해 -20%, 스킬 피해 +35%',fx:{dmgRed:.2,sk:.35}}};
+for(const k in SAM3){SAM3[k].id=k;ADV3[k]=SAM3[k]}
+const SAM4={
+  mangeom:{name:'만검천제',s1:['만검난무','카타나 30자루가 하늘에서 쏟아져요 (500%) + 폭발 1000%'],s2:['천검귀일','검기둥이 솟고 세상을 가르는 일섬 (800% ×24 + 2500% 대폭발)'],st2:'pillars',bn:'만검의 경지',bfx:{atkp:40,crit:20}},
+  mugeom:{name:'무극검성',s1:['무형검','보이지 않는 칼날이 번개처럼 30번 (500%) + 폭발 1000%'],s2:['무검일도','하늘이 갈라지며 빛의 칼이 내려와요 (800% ×24 + 2500% 대폭발)'],st2:'bolts',bn:'무검의 깨달음',bfx:{sk:.7}},
+  raijin:{name:'천뢰제',s1:['천뢰 난무','번개 30줄기 (500%) + 폭발 1000%'],s2:['뇌제 강림','번개 기둥이 하늘을 찢어요 (800% ×24 + 2500% 대폭발)'],st2:'pillars',bn:'천뢰의 분노',bfx:{crit:20,sk:.45}},
+  raiken:{name:'뇌신검황',s1:['뇌검비','번개 검 30자루가 꽂혀요 (500%) + 폭발 1000%'],s2:['천뢰일도','천둥 유성이 쏟아져요 (800% ×24 + 2500% 대폭발)'],st2:'meteors',bn:'뇌신검의 기세',bfx:{atkp:40,spd:.4}},
+  shura:{name:'혈해수라',s1:['혈해 만도','피의 가시 30개가 솟아요 (500%) + 폭발 1000%'],s2:['수라 혈천','피의 촉수가 대지를 뒤덮어요 (800% ×24 + 2500% 대폭발), 체력 20% 회복'],st2:'tentacles',bn:'수라의 피',bfx:{ls:.12,atkp:35},heal:.2},
+  oniou:{name:'백귀야왕',s1:['백귀 행렬','오니의 촉수 30개가 솟아요 (500%) + 폭발 1000%'],s2:['백귀야행','오니의 블랙홀이 적을 삼키고 5초 무적 (800% + 2500% 대폭발)'],st2:'holes',bn:'오니왕의 가죽',bfx:{dmgRed:.35,hpp:40},guard:5},
+  oukaken:{name:'천본앵제',s1:['천본앵 만개','꽃잎 검 30자루가 쏟아져요 (500%) + 폭발 1000%'],s2:['앵화 난무','벚꽃 기둥이 솟아올라요 (800% ×24 + 2500% 대폭발)'],st2:'pillars',bn:'만개한 벚꽃',bfx:{sk:.6,spd:.3}},
+  hanagami:{name:'춘신',s1:['꽃비','빛의 꽃비 30줄기 (500%) + 폭발 1000%'],s2:['춘풍만개','봄바람이 세상을 덮고 체력 전부 회복 (800% ×24 + 2500% 대폭발)'],st2:'bolts',bn:'봄의 가호',bfx:{dmgRed:.35,sk:.4},heal:1}};
+for(const k in SAM4){const A=SAM4[k];A.id=k;A.from=k;A.col=SAM3[k].col;A.st1=SAM3[k].style;ADV4[k]=A}
+SAM_AB.push(['mangeom',3,'만검의 기백',{atkp:30,crit:10},'#cfe6ff'],['mugeom',3,'무검의 고요',{sk:.45,crit:5},'#e8f4ff'],['raijin',3,'뇌제의 눈',{crit:12,sk:.35},'#fff27a'],['raiken',3,'뇌신검의 바람',{atkp:25,spd:.2},'#ffe14a'],
+  ['shura',3,'수라의 갈증',{atkp:30,ls:.04},'#ff1a3a'],['oniou',3,'오니의 가죽',{hpp:25,dmgRed:.15},'#c8102e'],['oukaken',3,'만개의 검',{sk:.45,spd:.1},'#ff9ad8'],['hanagami',3,'꽃의 가호',{dmgRed:.15,sk:.4},'#ffd0ea']);
+Object.assign(JOB_BAL,{mangeom:1,mugeom:.92,raijin:.9,raiken:1.13,shura:.92,oniou:1.1,oukaken:1,hanagami:1.03});
+/* 2차 직업 사이 피해 맞추기 (3차 이후에도 그대로 곱해짐) */
+const SAM_BAL2={tenken:.5,raiko:.8,yasha:1.4,ouka:.75};
 
 function makeDuel(k){k=Math.max(1,Math.min(DUEL_MAX,k));const T=ABYSS_FROM+9,z=makeArena(T);
   z.id='pv'+k;z.duel=k;z.hpMul=duelHp(k);z.dmgMul=duelDmg(k);z.expMul=3;
@@ -4549,10 +4576,10 @@ function drawBoard(c,t){const x=BOARD.x-cam.x,y=BOARD.y-cam.y;rect(c,x-1,y-14,2,
   for(let k=0;k<3;k++)rect(c,x-7,y-19+k*3,k===0?12:9,1,'#3a2a1a');rect(c,x+4,y-22,4,4,'#ff4a6a');if(Math.floor(t*3)%2)rect(c,x+5,y-21,2,2,'#ffffff');frameLights.push({x,y:y-18,r:26,col:'#ffd35a',i:.5})}
 /* ---------- PK AI 모험가: 던전을 돌아다니며 플레이어를 노리는 AI 캐릭터 ---------- */
 const PK_NAMES=['그림자사냥꾼','붉은늑대','검은칼날','피의장미','어둠의기사','학살자','망령검객','독사','심판자','무명검사','혈귀','야차','흑룡','칼바람','저승사자','광전사','암살단장','핏빛달','사신','악몽'];
-function pkIdent(z,fc){const T=TIERS[z.T],lv=T.lv,cls=fc||pick(['knight','mage','rogue','archer']),k1=cls==='knight'?pick(['sword','paladin']):cls==='rogue'?pick(['assassin','phantom']):cls==='archer'?pick(['sniper','hunter']):pick(['arch','dark']);
+function pkIdent(z,fc){const T=TIERS[z.T],lv=T.lv,cls=fc||pick(['knight','mage','rogue','archer','samurai']),k1=cls==='samurai'?pick(['kensei','ronin']):cls==='knight'?pick(['sword','paladin']):cls==='rogue'?pick(['assassin','phantom']):cls==='archer'?pick(['sniper','hunter']):pick(['arch','dark']);
   const k2=Object.values(ADV2).filter(A=>a2From(A,k1)).map(A=>A.id),a2=pick(k2),k3=Object.values(ADV3).filter(A=>A.from===a2).map(A=>A.id),a3=pick(k3);
   const tier=lv>=ADV3_LV?3:lv>=ADV2_LV?2:lv>=ADV_LV?1:0,A=tier===3?ADV3[a3]:tier===2?ADV2[a2]:tier===1?ADV[k1]:null;
-  const skills=tier>=2?ADV2[a2].skills.slice(0,7).map(S=>S.id):(cls==='knight'?KNIGHT_SKILLS:cls==='rogue'?ROGUE_SKILLS:cls==='archer'?ARCHER_SKILLS:MAGE_SKILLS).map(S=>S.id);
+  const skills=tier>=2?ADV2[a2].skills.slice(0,7).map(S=>S.id):(cls==='knight'?KNIGHT_SKILLS:cls==='rogue'?ROGUE_SKILLS:cls==='archer'?ARCHER_SKILLS:cls==='samurai'?SAM_SKILLS.slice(0,7):MAGE_SKILLS).map(S=>S.id);
   return {nick:pick(PK_NAMES)+(Math.random()<.5?Math.floor(Math.random()*99):''),cls,color:Math.floor(Math.random()*COLORS.length),hair:Math.floor(Math.random()*3),title:A?A.name:'',col:A?A.col:'#ff5a5a',
     w:'',gear:pkGear(z.T,cls),skills,fx:A&&tier>=1?(tier>=2?a2:k1):''}}
 /* PK 장비: 층에 맞는 무기·방어구·장신구를 모두 착용 (강화 +3~+20, 랜덤 접두어, 45층부터 초월 장비 확률). 쓰러뜨리면 그중 하나(25%로 둘)를 떨어뜨림 */
