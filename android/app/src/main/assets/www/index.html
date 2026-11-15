@@ -3906,7 +3906,7 @@ function gCell(id,seen,note){const it=ITEMS[id],cell=document.createElement('div
 function renderGearDex(body){const seen=gseenAll(),wp=WPRE[me.cls]||'w',R=recTier(),eqW=me.eq.weapon,eqA=me.eq.armor,wT=tierOf(eqW),aT=tierOf(eqA);
   /* 추천 카드 */
   const card=document.createElement('section');card.className='gdrec';
-  const h=document.createElement('h3');h.textContent=`Lv.${me.lvl} 추천 장비 · ${R+1}층 ${TIERS[R].name}`;
+  const h=document.createElement('h3');h.textContent=`Lv.${LVT()} 추천 장비 · ${R+1}층 ${TIERS[R].name}`;
   const best=R>=TRANS_FROM?`초월 장비(${ITEMS['x'+wp+R].name}) · 운이 좋으면 레전드`:ITEMS[wp+R].name;
   const verdict=(t,lab)=>t<0?`${lab}: 없음 → ${R+1}층에서 구해요`:t>=R?`${lab}: ${t+1}층 장비 · 충분해요`:t>=R-4?`${lab}: ${t+1}층 장비 · 괜찮아요 (조금만 더)`:`${lab}: ${t+1}층 장비 · 약해요! ${R+1}층 장비로 바꾸면 훨씬 강해져요`;
   const p1=document.createElement('p');p1.textContent=`노릴 장비: ${best} (${R+1}층 몬스터·보스가 떨어뜨려요)`;
@@ -5794,10 +5794,10 @@ function render(t){
     if(D.boss){label(X,Y,`${mLv(lv)} ${D.name}`,D.god?GODS[D.T].col:'#c9a8ff',14);continue}
     if(D.pk&&m.pk){label(X,sy(m.y-31),`PK ${m.pk.title?`[${m.pk.title}] `:''}${mLv(lv)} ${m.pk.nick}`,'#ff4a4a',12);if(m.bubble&&now<m.bubbleUntil)bubble(X,sy(m.y-42),m.bubble);continue}
     if(m.evName)label(X,Y,`★ ${m.evName} ${Math.max(0,Math.ceil(m.goldT||0))}초`,'#ffd35a',13);else if(m.elite)label(X,Y,`정예 ${mLv(lv)} ${D.name}`,'#ffd35a',12);else if(m.hp<m.maxHp)label(X,Y,`${mLv(lv)} ${D.name}`,lc,11);else label(X,Y,`${mLv(lv)}`,lc,10)}
-  for(const r of remotes.values()){if(isNaN(r.rx)||!r.nick||r.z!==zoneId)continue;label(sx(r.rx),sy(r.ry-29),(r.av?`[${((r.a4&&(r.a4>=2?mythOf(r.a3,r.a4):ADV4[r.a3]))||ADV3[r.a3]||ADV2[r.a2]||ADV[r.av]).name}] `:'')+rbTag(r.rb)+`Lv.${r.lvl}${r.tl?'+'+r.tl:''} ${r.nick}`,r.av?((r.a4&&(r.a4>=2?mythOf(r.a3,r.a4):ADV4[r.a3]))||ADV3[r.a3]||ADV2[r.a2]||ADV[r.av]).col:'#eef0ff');
+  for(const r of remotes.values()){if(isNaN(r.rx)||!r.nick||r.z!==zoneId)continue;label(sx(r.rx),sy(r.ry-29),(r.av?`[${((r.a4&&(r.a4>=2?mythOf(r.a3,r.a4):ADV4[r.a3]))||ADV3[r.a3]||ADV2[r.a2]||ADV[r.av]).name}] `:'')+rbTag(r.rb)+`Lv.${(r.lvl||1)+(r.tl||0)} ${r.nick}`,r.av?((r.a4&&(r.a4>=2?mythOf(r.a3,r.a4):ADV4[r.a3]))||ADV3[r.a3]||ADV2[r.a2]||ADV[r.av]).col:'#eef0ff');
     if(r.bubble&&now<r.bubbleUntil)bubble(sx(r.rx),sy(r.ry-40),r.bubble)}
   if(started&&!me.dead&&PET_BY[me.pet])label(sx(pet.x),sy(pet.y-24),PET_BY[me.pet].name,'#ff9ae8',10);
-  if(started&&!me.dead){label(sx(me.x),sy(me.y-29),(advShow()?`[${advShow().name}] `:'')+rbTag(me.rb)+`Lv.${me.lvl}${me.tlv?'+'+me.tlv:''} ${me.nick}`,(me.cos&&nameCol(me.cos.name,t))||(advShow()?advShow().col:'#ffcc4d'));if(me.bubble&&now<me.bubbleUntil)bubble(sx(me.x),sy(me.y-40),me.bubble)}
+  if(started&&!me.dead){label(sx(me.x),sy(me.y-29),(advShow()?`[${advShow().name}] `:'')+rbTag(me.rb)+`Lv.${LVT()} ${me.nick}`,(me.cos&&nameCol(me.cos.name,t))||(advShow()?advShow().col:'#ffcc4d'));if(me.bubble&&now<me.bubbleUntil)bubble(sx(me.x),sy(me.y-40),me.bubble)}
   for(const f of floats){octx.globalAlpha=1-Math.max(0,f.t-0.5)/0.4;const ko=/[가-힣]/.test(f.txt);
     octx.font=ko?`${(f.big?19:16)*dpr}px "Do Hyeon",sans-serif`:`${(f.big?17:13)*dpr}px "Press Start 2P",monospace`;octx.lineWidth=4*dpr;octx.strokeStyle='#0b0e1c';
     const y=sy(f.y-f.t*16);octx.strokeText(f.txt,sx(f.x),y);octx.fillStyle=f.col;octx.fillText(f.txt,sx(f.x),y)}
@@ -5842,7 +5842,7 @@ function gmCmd(t){const [c,...a]=t.slice(1).trim().split(/\s+/),n=parseInt(a[0],
     case '도움말':sys(GM_HELP);break;
     case '환생':if(a[0]==null){me.lvl=LV_MAX;me.tlv=TLV_MAX;doRebirth();sys(`[운영자] 조건 없이 바로 환생했어요 → 환생 ${me.rb}회`);break}
       if(!okN(n)){sys('사용법: /환생 (바로 1회) 또는 /환생 50 (환생 횟수를 50으로)');break}me.rb=Math.min(9999,n);recalc();me.hp=me.maxHp;me.mp=me.maxMp;hudKey='';towerPost();try{grantRbMs()}catch(e){}persist();sys(`[운영자] 환생 횟수를 ${me.rb}회로 바꿨어요 (레벨은 그대로). 환생 보너스·균열 단계·수련장 단계가 새 횟수 기준으로 바뀌어요.`);break;
-    case '레벨':if(!okN(n)||n<1){sys('사용법: /레벨 300 (최대 5000)');break}me.lvl=Math.min(LV_MAX,n);me.exp=0;me.tlv=n>LV_MAX?Math.min(TLV_MAX,n-LV_MAX):0;me.texp=0;checkLvMs();recalc();me.hp=me.maxHp;me.mp=me.maxMp;buildSkillBar();hudKey='';persist();sys(`레벨을 Lv.${me.lvl}로 바꿨어요.`);break;
+    case '레벨':if(!okN(n)||n<1){sys('사용법: /레벨 300 (최대 5000)');break}me.lvl=Math.min(LV_MAX,n);me.exp=0;me.tlv=n>LV_MAX?Math.min(TLV_MAX,n-LV_MAX):0;me.texp=0;checkLvMs();recalc();me.hp=me.maxHp;me.mp=me.maxMp;buildSkillBar();hudKey='';persist();sys(`레벨을 Lv.${LVT()}로 바꿨어요.`);break;
     case '가루':if(!okN(n)){sys('사용법: /가루 50000');break}addItem('dust',n);invChanged();sys(`마력 가루 ${n.toLocaleString()}개 지급 (보유 ${countItem('dust').toLocaleString()}).`);break;
     case '골드':if(!okN(n)){sys('사용법: /골드 100000');break}me.gold+=n;hudKey='';persist();sys(`금화 ${n.toLocaleString()} 지급.`);break;
     case '아이템':{const id=a[0],k=Math.max(1,Math.min(999,parseInt(a[1],10)||1));if(!ITEMS[id]){sys('없는 아이템 코드예요. 엑셀의 [운영자 명령어] 시트에서 코드를 확인하세요.');break}
@@ -6021,7 +6021,7 @@ function renderBag(){
     cell.appendChild(slotEl(me.eq[k],1,sel&&sel.from==='eq'&&sel.k===k,()=>{sel={from:'eq',k};renderBag()},label+' 칸 비어 있음',me.eqE[k]||0,(me.eqO[k]||[]).length,!!(me.eqLk&&me.eqLk[k])));
     const cap=document.createElement('span');cap.className='cap';cap.textContent=label;cell.appendChild(cap);return cell};
   const L=$('dsl'),Rr=$('dsr');L.textContent='';Rr.textContent='';for(const k of DOLL_L)L.appendChild(mkSlot(k));for(const k of DOLL_R)Rr.appendChild(mkSlot(k));
-  {const A=advShow&&advShow();$('dname').textContent=`${A?`[${A.name}] `:''}${rbTag(me.rb)}Lv.${me.lvl}${me.tlv?'+'+me.tlv:''}\n${me.nick}`;$('dname').style.whiteSpace='pre-line';$('dname').style.color=A?A.col:'#ffcc4d'}
+  {const A=advShow&&advShow();$('dname').textContent=`${A?`[${A.name}] `:''}${rbTag(me.rb)}Lv.${LVT()}\n${me.nick}`;$('dname').style.whiteSpace='pre-line';$('dname').style.color=A?A.col:'#ffcc4d'}
   drawDoll();
   {const c=cpNow(),el=$('dcp');el.textContent='';const l=document.createElement('span');l.className='l';l.textContent='전투력';const v=document.createElement('span');v.className='v';v.textContent=c.toLocaleString();
     if(renderBag.cp&&renderBag.cp!==c&&Date.now()-(renderBag.cpT||0)<15000){const d=document.createElement('span');d.className='dlt';d.style.color=c>renderBag.cp?'#6ee7b7':'#ff8a9a';d.textContent=(c>renderBag.cp?'▲ +':'▼ ')+(c-renderBag.cp).toLocaleString();v.appendChild(d)}
