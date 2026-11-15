@@ -625,7 +625,7 @@ body.mobile #act{top:auto;bottom:calc(120px + env(safe-area-inset-bottom,0px))}
     <p style="word-break:keep-all">기사·마법사·도적·궁수·사무라이가 되어 마을 분수대에서 1~100층 던전, 헬·심연, 무한의 탑, 월드 보스에 도전하세요. 초월·환생으로 끝없이 키워요.</p>
     <div class="slotrow" id="slots" role="radiogroup" aria-label="캐릭터 선택"></div>
     <div class="clsrow" role="radiogroup" aria-label="직업">
-      <label><input type="radio" name="cls" id="cls_k" value="knight" checked><span><b>기사</b><small>근접 검술 · 높은 체력 · 회전 베기, 돌진</small></span></label>
+      <label><input type="radio" name="cls" id="cls_k" value="knight" checked><span><b>기사</b><small>근접 검술 · 높은 체력 · 방패로 막고 강타</small></span></label>
       <label><input type="radio" name="cls" id="cls_m" value="mage"><span><b>마법사</b><small>원거리 마법 · 높은 마나 · 화염구, 메테오</small></span></label>
       <label><input type="radio" name="cls" id="cls_r" value="rogue"><span><b>도적</b><small>쌍단검 연타 · 표창 · 높은 치명타 · 순간이동, 분신</small></span></label>
       <label><input type="radio" name="cls" id="cls_a" value="archer"><span><b>궁수</b><small>원거리 활 · 관통 화살 · 폭발 덫 · 늑대·매 동료</small></span></label>
@@ -4378,6 +4378,126 @@ const SAM_BAL2={tenken:.5,raiko:.8,yasha:1.4,ouka:.75};
 /* 전체 직업 균형 (2026-11-15 측정: 적 30마리 광역 + 1마리 단일, 2차 스킬 7개 피해의 중앙값에 맞춤) */
 Object.assign(JOB_BAL,{"stareye":0.81,"beastking":0.38,"stormbow":0.63,"blastking":0.32,"skyhawk":0.45,"bowgod":0.94,"trapper":0.36,"forestsage":0.75,"swordgod":0.62,"bloodlord":2.47,"punisher":0.98,"asura":0.74,"archangel":3.34,"crusader":0.67,"bloodking":2.75,"guardian":3.33,"archwiz":0.45,"starlord":0.43,"cursekin":0.82,"timelord":2.04,"voidstar":0.48,"demonking":0.49,"elemlord":0.21,"voidlord":0.93,"hades":0.84,"infernal":0.25,"starsaint":0.76,"venomking":0.99,"windgod":1.45,"darklord":0.64,"shadowking":0.8,"thunderwind":1.33,"deathgod":1.15,"illusion":0.78,"raijin":0.85,"oniou":1.31,"mangeom":1.1,"raiken":0.98,"oukaken":1.4,"mugeom":0.89,"shura":0.93,"hanagami":1.5});
 
+/* ================= PK가 말하면서 달려듦: 말풍선 + 채팅 + 돌진 ================= */
+const PKL={
+  see:['어이, 거기 너! 장비 좀 두고 가라','오늘 사냥감은 너다','이 층은 내 구역이야','쉿… 도망쳐도 소용없어','레벨 좀 올렸다고 까부는 거냐?','딱 기다리고 있었지','혼자 다니면 위험하다고 안 배웠어?'],
+  taunt:['그게 다야?','간지럽네 ㅋㅋ','장비가 아깝다','어디서 배운 칼질이냐','더 세게 쳐 봐!','도망가려고? 늦었어','귀환 주문서는 챙겼냐?','이 정도로 PK 이기겠다고?'],
+  charge:['거기 서!','잡았다!','도망 못 가!','간다아아!','이쪽이야!'],
+  rage:['이게… 진짜 화나게 하네','좋아, 이제부터 진심이다','피를 봤으면 각오해라','크윽… 제법인데?'],
+  heal:['물약 한 병이면 충분하지','아직 안 끝났어!','후… 다시 시작이다'],
+  low:['체력 바닥났네? ㅋㅋ','물약 다 떨어졌냐?','이제 끝이다!','마지막으로 할 말 있어?'],
+  gloat:['GG ㅋㅋ','장비 잘 쓸게~','다음엔 동료 데려와라','분수대에서 다시 보자','이게 PK의 맛이지'],
+  die:['크윽… 이번엔 내가 졌다','기억해 두겠어…','다음엔… 안 봐준다','내 장비… 가져가라…','말도 안 돼…'],
+  cls:{knight:['기사의 검을 받아라!','방패 따위 필요 없어'],mage:['불태워 주마!','마나는 넘쳐나거든'],rogue:['뒤를 조심해야지','그림자 속에서 기다렸다'],archer:['이 거리에선 안 빗나가','화살 맛 좀 봐라'],samurai:['한 칼이면 충분하다','칼집에서 뽑는 순간 끝이야']}};
+function pkSay(m,kind,chat,force){if(!m.pk)return;const t=performance.now();if(!force&&t<(m.sayNext||0))return;let pool=PKL[kind];if(kind==='taunt'&&Math.random()<.35)pool=PKL.cls[m.pk.cls]||pool;const txt=pick(pool);
+  m.bubble=txt;m.bubbleUntil=t+2600;m.sayNext=t+3200;if(chat){const d=document.createElement('div');d.className='line';const n=document.createElement('span');n.className='n';n.style.color='#ff4a4a';n.textContent='[PK] '+m.pk.nick;const s=document.createElement('span');s.textContent=txt;d.append(n,s);pushLine(d)}}
+{const t0=pkThink;pkThink=function(m,dt,D){
+  const d=Math.hypot(me.x-m.x,me.y-m.y);
+  if(me.dead){if(!m.pkGloat&&d<320&&m.pkSeen){m.pkGloat=1;pkSay(m,'gloat',true,true)}return}m.pkGloat=0;
+  if(started&&!Z.safe(me.x,me.y)&&d<=(Z.duel?2000:260)){
+    if(!m.pkSeen)pkSay(m,'see',true,true);
+    const rage=m.hp<m.maxHp*.5;if(rage&&!m.pkRageSaid){m.pkRageSaid=1;pkSay(m,'rage',true,true)}
+    if(m.pkHeal&&m.hp<m.maxHp*.3)s2Later(50,()=>pkSay(m,'heal',false,true));
+    if(me.hp<me.maxHp*.25&&!m.pkLowSaid){m.pkLowSaid=1;pkSay(m,'low',false,true)}else if(me.hp>me.maxHp*.6)m.pkLowSaid=0;
+    m.talkCd=(m.talkCd??(3+Math.random()*3))-dt;if(m.talkCd<=0){m.talkCd=5+Math.random()*4;pkSay(m,'taunt',false)}
+    /* 돌진: 떨어져 있으면 땅을 차고 달려듦 */
+    m.chargeCd=(m.chargeCd??(1.5+Math.random()*1.5))-dt;
+    if(m.chargeT>0){m.chargeT-=dt;const vx=me.x-m.x,vy=me.y-m.y,L=Math.hypot(vx,vy)||1;if(L>22){const sp=(rage?460:380)*dt;moveBody(m,vx/L*sp,vy/L*sp,5,4)}else m.chargeT=0;
+      if(Math.random()<.6)spark(m.x,m.y,(Math.random()-.5)*40,-Math.random()*30,'#c8b89a',.35);if(Math.random()<.3)s2Ghost(m.x,m.y,m.dir||'down',m.pk.col,.25)}
+    else if(m.chargeCd<=0&&d>60&&d<250&&!(m.stopT>0)){m.chargeCd=(rage?2.2:3.5)+Math.random()*1.5;m.chargeT=.42;if(Math.random()<.6)pkSay(m,'charge',false,true);fxs.push({k:'ring',x:m.x,y:m.y,t:0,dur:.35,col:'#ff3a3a',r:18})}}
+  return t0(m,dt,D)}}
+{const k0=onKillPK;onKillPK=function(m,D){if(D&&D.pk&&m.pk)pkSay(m,'die',true,true);return k0(m,D)}}
+
+/* ================= 기사 개편: 방패 막기(패시브) · 9번 방패 강타 · 모든 기사 스킬에 묵직한 연출 ================= */
+const KN_ALL=new Set(KNIGHT_SKILLS.map(S=>S.id));
+const KBASH={id:'kn_bash',name:'방패 강타',lv:25,mp:30,desc:'방패를 앞세워 돌진해요 (무적). 부딪힌 적을 밀어붙이며 끌고 가다가 끝에서 충격파 600% + 1.5초 기절'};
+ALL_SKILLS.add('kn_bash');
+const KNFX=[];let knLast=0;
+/* 기사 잔상: 사무라이 잔상 그리기를 기사 그림으로 */
+function knGhost(x,y,dir,dur,delay){s2({k:'ghost',x,y,dir,col:'#ffffff',dur:dur||.35,delay,cls:'knight'})}
+function knGhosts(x0,y0,x1,y1,dir,n){for(let k=0;k<n;k++){const f=k/Math.max(1,n-1);knGhost(x0+(x1-x0)*f,y0+(y1-y0)*f,dir,.3+f*.15)}}
+function knCrack(x,y,r,col,delay){KNFX.push({k:'crack',x,y,r,col:col||'#ffd35a',t:-(delay||0),dur:.9,lines:Array.from({length:7},(_,i)=>{const a=i/7*6.283+Math.random()*.5;const pts=[[0,0]];let px=0,py=0;for(let q=0;q<4;q++){px+=Math.cos(a+(Math.random()-.5)*.6)*r/4;py+=Math.sin(a+(Math.random()-.5)*.6)*r/4*.55;pts.push([px,py])}return pts})})}
+function knShield(x,y,ang,col,dur,own){KNFX.push({k:'shield',x,y,ang,col:col||'#bff6ff',t:0,dur:dur||.35,own})}
+function knDome(dur,col,own,x,y){KNFX.push({k:'dome',x,y,col:col||'#bff6ff',t:0,dur,own})}
+function knFeathers(x,y,n,col){for(let k=0;k<n;k++){if(P2.length>260)break;const a=Math.random()*6.283,v=40+Math.random()*80;P2.push({x:x+(Math.random()-.5)*20,y:y+(Math.random()-.5)*14,vx:Math.cos(a)*v,vy:Math.sin(a)*v-40,rot:Math.random()*6,vr:(Math.random()-.5)*6,t:0,life:1.2+Math.random()*.8,col:k%3?'#ffffff':(col||'#ffe88a'),s:1.3+Math.random()*.8})}}
+function knTick(dt){if(KNFX.zone!==zoneId){KNFX.length=0;KNFX.zone=zoneId}
+  for(let i=KNFX.length-1;i>=0;i--){const f=KNFX[i];f.t+=dt;
+    if(f.k==='bash'&&f.t>=0){if(f.own){const sp=420*dt;moveBody(me,f.dx*sp,f.dy*sp,5,4);me.iframe=Math.max(me.iframe||0,.15);f.x=me.x;f.y=me.y}else{f.x+=f.dx*420*dt;f.y+=f.dy*420*dt}
+      if(f.mine)for(const m of Z.mons){if(m.dead)continue;const vx=m.x-f.x,vy=m.y-f.y,d=Math.hypot(vx,vy);if(d<26+(isBossM(m)?10:0)&&(vx*f.dx+vy*f.dy)>-4){if(!f.got.has(m)){f.got.add(m);hitMon(m,Math.round(f.a*1.5),0,0,'#bff6ff')}if(!isBossM(m)){moveBody(m,f.dx*420*dt,f.dy*420*dt,6,5)}stopMon(m,.3,'stun')}}
+      if(Math.random()<.7)spark(f.x,f.y,(Math.random()-.5)*50,-Math.random()*30,'#c8b89a',.35);if(Math.random()<.5)knGhost(f.x,f.y,f.dir,.25);
+      if(f.t>=f.dur){const cx=f.x+f.dx*14,cy=f.y-8+f.dy*10;s2({k:'shock',x:cx,y:cy,r:80,col:'#bff6ff',dur:.45});s2({k:'shock',x:cx,y:cy,r:50,col:'#ffffff',dur:.35,delay:.06});knCrack(cx,cy+8,60,'#bff6ff');
+        if(f.mine){const l=monsNear(cx,cy,70);for(const m of l){hitMon(m,Math.round(f.a*6),f.dx*80,f.dy*80,'#bff6ff');stopMon(m,1.5,'stun')}}if(f.own){shakeT=Math.max(shakeT,.35);hitstop(.09);flashT=Math.max(flashT,.12);flashCol='#bff6ff';floatText(me.x,me.y-48,'방패 강타!','#bff6ff',true)}try{sfx('slam')}catch(e){}}}
+    if(f.t>=f.dur)KNFX.splice(i,1)}}
+function knDraw(c){const cx=cam.x,cy=cam.y;for(const f of KNFX){if(f.t<0)continue;const k=Math.max(0,1-f.t/f.dur);c.save();
+  if(f.k==='crack'){const g=Math.min(1,f.t/.12);c.globalAlpha=Math.min(1,k*1.6);c.lineJoin='round';for(const L of f.lines){c.beginPath();L.forEach(([px,py],i)=>{const X=f.x-cx+px*g,Y=f.y-cy+py*g;i?c.lineTo(X,Y):c.moveTo(X,Y)});c.strokeStyle='#0b0e1c';c.lineWidth=3;c.stroke();c.strokeStyle=f.col;c.lineWidth=1;c.stroke()}}
+  else if(f.k==='shield'||f.k==='bash'){const X=(f.own?me.x:f.x)-cx,Y=(f.own?me.y:f.y)-cy-10,a=f.k==='bash'?Math.atan2(f.dy,f.dx):f.ang,ox=Math.cos(a)*12,oy=Math.sin(a)*8;c.translate(X+ox,Y+oy);c.globalAlpha=f.k==='bash'?1:Math.min(1,k*2);
+    c.fillStyle='#0b0e1c';c.beginPath();c.moveTo(-8,-10);c.lineTo(8,-10);c.lineTo(8,2);c.lineTo(0,12);c.lineTo(-8,2);c.closePath();c.fill();c.fillStyle='#8aa0c8';c.beginPath();c.moveTo(-6,-8);c.lineTo(6,-8);c.lineTo(6,1);c.lineTo(0,9);c.lineTo(-6,1);c.closePath();c.fill();
+    c.fillStyle='#d8b04a';c.fillRect(-1,-7,2,14);c.fillRect(-5,-3,10,2);c.globalCompositeOperation='lighter';c.globalAlpha*=.6;c.fillStyle=f.col||'#bff6ff';c.beginPath();c.arc(0,0,14+4*(1-k),0,6.283);c.fill()}
+  else if(f.k==='dome'){const X=(f.own?me.x:f.x)-cx,Y=(f.own?me.y:f.y)-cy-10;c.globalAlpha=Math.min(.55,k*3)*(.75+.25*Math.sin(f.t*8));c.strokeStyle=f.col;c.lineWidth=2;c.beginPath();for(let q=0;q<=6;q++){const a=q/6*6.283+f.t;const px=X+Math.cos(a)*20,py=Y+Math.sin(a)*16;q?c.lineTo(px,py):c.moveTo(px,py)}c.stroke();c.globalAlpha*=.25;c.fillStyle=f.col;c.fill()}
+  c.restore()}}
+{const r0=render;render=function(t){r0(t);const n=performance.now()/1000,dt=Math.min(.05,n-(knLast||n));knLast=n;try{knTick(dt);knDraw(ctx)}catch(e){console.error(e)}}}
+/* 기사 잔상 그림 */
+{const d0=s2Draw;s2Draw=function(c){for(const f of S2)if(f.k==='ghost'&&f.cls&&f.t>=0&&!f.drawn){f.k='kghost'}d0(c);const cx=cam.x,cy=cam.y;
+  for(const f of S2){if(f.k!=='kghost'||f.t<0)continue;const k=Math.max(0,1-f.t/f.dur);try{const spr=heroSprite(capeColor(),me.hair,f.dir,0,0);c.save();c.globalAlpha=k*.5;c.drawImage(spr,Math.round(f.x-cx-12),Math.round(f.y-cy-(spr.height-1)));c.globalCompositeOperation='lighter';c.globalAlpha=k*.3;c.drawImage(spr,Math.round(f.x-cx-12),Math.round(f.y-cy-(spr.height-1)));c.restore()}catch(e){}}}}
+/* 9번 방패 강타 + 모든 기사 스킬 연출 */
+function knFx(id,x,y,dir,mine,col){const [dx,dy]=DV(dir),ang=Math.atan2(dy,dx),Y=y-8,isMe=mine&&castOwner==null,G='#ffd35a',BL='#ff3030',BD='#ff2a5a',HV='#ffd35a',JD='#fff07a';
+  switch(id){
+  case 'spin':s2Cres(x,Y,ang,44,12,3.1,'#bff6ff',.3);s2Cres(x,Y,ang+3.1,48,10,3.1,'#ffffff',.3,.18);knCrack(x,y,40,'#bff6ff',.2);break;
+  case 'wave':s2Cres(x+dx*10,Y+dy*8,ang,42,14,1.2,'#cfe6ff');break;
+  case 'dash':if(isMe){const x0=x,y0=y;s2Later(230,()=>{knGhosts(x0,y0,me.x,me.y,dir,5);s2Brush(x0,y0-8,me.x,me.y-8,6,'#cfe6ff',.4)})}break;
+  case 'guard':knDome(fxAdvKn?6:4,'#bff6ff',isMe,x,y);knFeathers(x,Y-20,16,'#bff6ff');break;
+  case 'star':knFeathers(x,Y-20,8,'#ffe88a');break;
+  case 'nova':knCrack(x,y,90,'#e0d0ff');for(let k=0;k<3;k++)s2({k:'shock',x,y:Y,r:70+k*35,col:k%2?'#ffffff':'#c9a8ff',dur:.55,delay:k*.1});break;
+  case 'swords':knCrack(x,y,110,G,.7);break;
+  /* 검황 */
+  case 'k_after':if(isMe){const x0=x,y0=y;s2Later(320,()=>{knGhosts(x0,y0,me.x,me.y,dir,6);s2Cres(me.x,me.y-8,ang,46,12,3.1,BD,.3)})}break;
+  case 'k_iai':s2Brush(x+dx*6,Y+dy*6,x+dx*280,Y+dy*210,9,BD,.6,.25);s2Later(260,()=>{if(isMe){shakeT=Math.max(shakeT,.25);hitstop(.06)}});break;
+  case 'k_whirl':s2({k:'orbit',x,y,n:6,r:42,dur:3,tick:99,iv:99,dmg:0,mine:false,own:isMe,col:BD,blade:'cres',spin:8});break;
+  case 'k_weak':s2({k:'aura',type:'blood',x,y,dur:5,own:isMe});break;
+  case 'k_combo':s2Cres(x+dx*18,Y+dy*14,ang+(Math.random()-.5),40,12,1.2,BD,.28);break;
+  case 'k_prison':s2Later(3200,()=>{const t=nearestMons(x,y,1,200)[0];knCrack(t?t.x:x+dx*60,t?t.y:y+dy*50,70,BD)});break;
+  case 'k_rain':s2({k:'shock',x,y:Y,r:120,col:BD,dur:.5});break;
+  case 'k_ult':knCrack(x,y,160,BD,.82);s2Later(820,()=>{if(isMe){flashT=Math.max(flashT,.3);flashCol='#ff2a5a'}});break;
+  /* 천공기사 */
+  case 'p_bash':knShield(x,y,ang,HV,.35,isMe);if(isMe){const x0=x,y0=y;s2Later(330,()=>{knGhosts(x0,y0,me.x,me.y,dir,4);s2({k:'shock',x:me.x+dx*16,y:me.y-8+dy*12,r:60,col:HV,dur:.4});knCrack(me.x+dx*16,me.y+dy*12,50,HV)})}break;
+  case 'p_taunt':knShield(x,y,ang,HV,.6,isMe);for(let k=0;k<3;k++)s2({k:'shock',x,y:Y,r:210-k*50,col:k%2?'#ffffff':HV,dur:.6,delay:k*.12});break;
+  case 'p_hammer':knFeathers(x,Y,6,HV);break;
+  case 'p_sanct':s2({k:'pz',x,y,r:72,dur:6});knFeathers(x,Y,20,HV);break;
+  case 'p_counter':knDome(2,HV,isMe,x,y);knShield(x,y,ang,HV,2,isMe);break;
+  case 'p_wings':knFeathers(x,Y,26,HV);s2Later(450,()=>{const lx=isMe?me.x:x+dx*60,ly=isMe?me.y:y+dy*45;knCrack(lx,ly,95,HV);knFeathers(lx,ly-8,20,HV)});break;
+  case 'p_angel':knFeathers(x,Y-20,30,HV);break;
+  case 'p_ult':knFeathers(x,Y-30,40,HV);if(isMe){flashT=Math.max(flashT,.25);flashCol='#fff3b0'}break;
+  /* 혈검사 */
+  case 'x_slash':s2Cres(x+dx*10,Y+dy*8,ang,56,16,1.2,BL);s2Blood(x+dx*30,Y+dy*20,10);break;
+  case 'x_storm':s2({k:'aura',type:'blood',x,y,dur:3,own:isMe});s2({k:'orbit',x,y,n:3,r:46,dur:3,tick:99,iv:99,dmg:0,mine:false,own:isMe,col:BL,blade:'cres',spin:10});break;
+  case 'x_pact':s2({k:'aura',type:'blood',x,y,dur:10,own:isMe});s2Blood(x,Y,20);if(isMe){flashT=Math.max(flashT,.2);flashCol='#ff3030'}break;
+  case 'x_drain':for(let k=0;k<5;k++)s2Later(k*110,()=>{const cx2=isMe?me.x:x,cy2=(isMe?me.y:y)-8;s2Cres(cx2+dx*14,cy2+dy*10,ang+(k%2?.6:-.6),38,10,1.1,BL,.22);const t=monsNear(cx2+dx*24,cy2+dy*18,40)[0];if(t){s2Blood(t.x,monCY(t),4);s2({k:'drop',x:t.x,y:monCY(t),dur:.45})}});break;
+  case 'x_rush':if(isMe){const x0=x,y0=y;s2Later(300,()=>{knGhosts(x0,y0,me.x,me.y,dir,5);s2Brush(x0,y0-8,me.x,me.y-8,7,BL,.45)})}break;
+  case 'x_spikes':knCrack(x+dx*60,y+dy*45,80,BL);break;
+  case 'x_undying':s2({k:'aura',type:'blood',x,y,dur:5,own:isMe});knDome(5,BL,isMe,x,y);break;
+  case 'x_ult':if(isMe){flashT=Math.max(flashT,.3);flashCol='#8a0a1a'}knCrack(x,y,150,BL,.5);s2Blood(x,Y,30);break;
+  /* 심판관 */
+  case 'j_hammer':{const t=nearestMons(x,y,1,200)[0],hx=t?t.x:x+dx*50,hy=t?t.y:y+dy*40;knCrack(hx,hy,80,JD,.4);s2({k:'shock',x:hx,y:hy-6,r:70,col:JD,dur:.45,delay:.4});break}
+  case 'j_beam':s2Brush(x+dx*8,Y+dy*6,x+dx*260,Y+dy*190,8,JD,.7);break;
+  case 'j_brand':for(const m of monsNear(x,Y,200).slice(0,8))s2({k:'shock',x:m.x,y:monCY(m),r:22,col:JD,dur:.5});break;
+  case 'j_rings':knCrack(x,y,90,JD);break;
+  case 'j_smite':s2({k:'shock',x,y:Y,r:60,col:JD,dur:.4});break;
+  case 'j_banner':knFeathers(x,Y-20,14,JD);break;
+  case 'j_ult':knCrack(x,y,170,JD,.6);s2Later(600,()=>{if(isMe){flashT=Math.max(flashT,.3);flashCol='#fff07a'}});break}}
+let fxAdvKn=false;
+{const c0=castFx;castFx=function(id,x,y,dir,mine,col){
+  if(id==='kn_bash'){const [dx,dy]=DV(dir),isMe=mine&&castOwner==null,a=mine?Math.round(atkOf()*skillMul()*dmgScale):0;KNFX.push({k:'bash',x,y,dx,dy,dir,a,mine,own:isMe,t:0,dur:.38,got:new Set(),col:'#bff6ff'});if(isMe){me.iframe=Math.max(me.iframe||0,.6);floatText(me.x,me.y-44,'방패 돌격!','#bff6ff',true)}try{sfx('swing')}catch(e){}return}
+  fxAdvKn=!!fxAdv;const r=c0(id,x,y,dir,mine,col);if(KN_ALL.has(id)||/^[kpxj]_/.test(id))try{knFx(id,x,y,dir,mine,col)}catch(e){console.error(e)}return r}}
+/* 기사는 어느 전직이든 9번 칸에 방패 강타 */
+{const rs=refreshSkills;refreshSkills=function(){rs();if(me.cls==='knight'&&!SKILLS.some(S=>S.id==='kn_bash'))SKILLS=[...SKILLS,KBASH]}}
+/* 방패 막기 (패시브): 맞을 때 15% 확률(수호 계열 25%)로 막아 피해 0 + 주변에 작은 충격파 */
+{const h0=hurtPlayer;hurtPlayer=function(d,fx,fy){if(me.cls==='knight'&&!me.dead&&!(me.iframe>0)&&!gm.god){const A=advOf(),ch=A&&A.id==='paladin'?.25:.15;
+    if(Math.random()<ch){const ang=Math.atan2((fy||me.y)-me.y,(fx||me.x)-me.x);knShield(me.x,me.y,ang,'#bff6ff',.45,true);s2({k:'shock',x:me.x,y:me.y-8,r:46,col:'#bff6ff',dur:.35});floatText(me.x,me.y-40,'막기!','#bff6ff',true);me.iframe=.35;
+      for(let k=0;k<6;k++)spark(me.x+Math.cos(ang)*12,me.y-10+Math.sin(ang)*8,(Math.random()-.5)*160,(Math.random()-.5)*160,k%2?'#ffffff':'#bff6ff',.35);const a=Math.round(atkOf());for(const m of monsNear(me.x,me.y-8,50))hitMon(m,a,0,0,'#bff6ff');try{sfx('hit')}catch(e){}return false}}
+  return h0(d,fx,fy)}}
+
+Object.assign(ADV_SK,{kn_bash:'방패 강타',z_kyo:'거합 발도'});
+
 function makeDuel(k){k=Math.max(1,Math.min(DUEL_MAX,k));const T=ABYSS_FROM+9,z=makeArena(T);
   z.id='pv'+k;z.duel=k;z.hpMul=duelHp(k);z.dmgMul=duelDmg(k);z.expMul=3;
   z.title=`대련장 ${k}단계`;z.sub=`PK ${DUEL_N}명 + 챔피언 · 체력 x${duelHp(k).toFixed(1)} · 공격 x${duelDmg(k).toFixed(1)} (심연 10단계 PK 기준) · 챔피언을 쓰러뜨리면 다음 단계`;return z}
@@ -4845,7 +4965,7 @@ const SKICON={
  SKICON.b_eagle=SKICON.b_focus;SKICON.b_windstep=SKICON.b_haste;SKICON.b_nature=SKICON.b_vow;SKICON.b_rapid=SKICON.b_berserk}
 {const IC={z_iai:'wave',z_dash:'dash',z_cross:'swords',z_moon:'wave',z_wind:'spin',z_focus:'b_focus',z_ilsum:'dash',z_ult:'nova'};for(const [id,base] of Object.entries(IC)){const src=SKICON[base]||SKICON.nova;SKICON[id]=src.map(r=>r.replace(/[^.w]/g,id==='z_ult'?'y':'c'))}
  const IC2={1:'wave',2:'star',3:'spin',4:'swords',5:'chain',6:'nova',7:'dash',8:'nova'},CH={tk:'c',rk:'y',ys:'D',ok:'p'};for(const j of ['tk','rk','ys','ok'])for(let n=1;n<=8;n++){const src=SKICON[IC2[n]]||SKICON.nova;SKICON[`z_${j}${n}`]=src.map(r=>r.replace(/[^.w]/g,n===8?'y':CH[j]))}
- {const src=SKICON.swords||SKICON.nova;SKICON.z_kyo=src.map(r=>r.replace(/[^.w]/g,'y'))}SKICON.b_bushido=SKICON.b_berserk;SKICON.b_zen=SKICON.b_haste;SKICON.b_blade=SKICON.b_vow;SKICON.b_rush=SKICON.b_berserk}
+ {const src=SKICON.swords||SKICON.nova;SKICON.z_kyo=src.map(r=>r.replace(/[^.w]/g,'y'))}{const src=SKICON.dash||SKICON.nova;SKICON.kn_bash=src.map(r=>r.replace(/[^.w]/g,'c'))}SKICON.b_bushido=SKICON.b_berserk;SKICON.b_zen=SKICON.b_haste;SKICON.b_blade=SKICON.b_vow;SKICON.b_rush=SKICON.b_berserk}
 SKICON.b_venom=SKICON.b_berserk;SKICON.b_shadowstep=SKICON.b_haste;SKICON.b_evade=SKICON.b_marmor||SKICON.b_steel;SKICON.b_frenzy=SKICON.b_warcry;
 
 /* ---------- 전직 버프: 1차(F) · 2차(K) · 3차(L), 10분 지속 ---------- */
@@ -5348,7 +5468,7 @@ function render(t){
     const lv=D.lvl+(m.elite?2:0)+(Z.lvAdd||0),df=lv-me.lvl,lc=df<=-8?'#7a8098':df>=6?'#ff5a5a':df>=3?'#ffa04a':'#e8ecff';
     if(m.rboss&&Z.raidD){label(X,Y,Z.raidD.name,Z.raidD.col,15);continue}
     if(D.boss){label(X,Y,`${mLv(lv)} ${D.name}`,D.god?GODS[D.T].col:'#c9a8ff',14);continue}
-    if(D.pk&&m.pk){label(X,sy(m.y-31),`PK ${m.pk.title?`[${m.pk.title}] `:''}${mLv(lv)} ${m.pk.nick}`,'#ff4a4a',12);continue}
+    if(D.pk&&m.pk){label(X,sy(m.y-31),`PK ${m.pk.title?`[${m.pk.title}] `:''}${mLv(lv)} ${m.pk.nick}`,'#ff4a4a',12);if(m.bubble&&now<m.bubbleUntil)bubble(X,sy(m.y-42),m.bubble);continue}
     if(m.evName)label(X,Y,`★ ${m.evName} ${Math.max(0,Math.ceil(m.goldT||0))}초`,'#ffd35a',13);else if(m.elite)label(X,Y,`정예 ${mLv(lv)} ${D.name}`,'#ffd35a',12);else if(m.hp<m.maxHp)label(X,Y,`${mLv(lv)} ${D.name}`,lc,11);else label(X,Y,`${mLv(lv)}`,lc,10)}
   for(const r of remotes.values()){if(isNaN(r.rx)||!r.nick||r.z!==zoneId)continue;label(sx(r.rx),sy(r.ry-29),(r.av?`[${((r.a4&&(r.a4>=2?mythOf(r.a3,r.a4):ADV4[r.a3]))||ADV3[r.a3]||ADV2[r.a2]||ADV[r.av]).name}] `:'')+rbTag(r.rb)+`Lv.${r.lvl}${r.tl?'+'+r.tl:''} ${r.nick}`,r.av?((r.a4&&(r.a4>=2?mythOf(r.a3,r.a4):ADV4[r.a3]))||ADV3[r.a3]||ADV2[r.a2]||ADV[r.av]).col:'#eef0ff');
     if(r.bubble&&now<r.bubbleUntil)bubble(sx(r.rx),sy(r.ry-40),r.bubble)}
