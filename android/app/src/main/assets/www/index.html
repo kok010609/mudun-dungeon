@@ -1756,9 +1756,12 @@ function drawMon(c,m,t){
 }
 
 /* ---------- 플레이어 ---------- */
-const STORE='slime-hill-v1',SLOT_N=4,SLOT_KEY='slime-hill-slot';
+const STORE='slime-hill-v1',SLOT_KEY='slime-hill-slot';let SLOT_N=4;
+/* 캐릭터 칸 무제한: 쓰고 있는 마지막 칸 다음에 항상 빈 칸 하나 (최소 4칸) */
+function calcSlotN(){let mx=-1;try{for(let k=0;k<localStorage.length;k++){const key=localStorage.key(k);if(key===STORE)mx=Math.max(mx,0);else if(key&&key.startsWith(STORE+':')){const n=+key.slice(STORE.length+1);if(Number.isInteger(n)&&n>=0&&n<1000)mx=Math.max(mx,n)}}}catch{}
+  try{cloud.sum.forEach((sv,i)=>{if(sv&&(sv.nick||sv.lvl))mx=Math.max(mx,i)})}catch{}try{mx=Math.max(mx,slot)}catch{}SLOT_N=Math.max(4,mx+2);return SLOT_N}
 /* 캐릭터 슬롯: 슬롯마다 완전히 따로 저장 (레벨·장비·가방·골드·펫·전직 모두 별개). 1번 슬롯 = 예전 저장 */
-let slot=0;try{slot=Math.max(0,Math.min(SLOT_N-1,Number(localStorage.getItem(SLOT_KEY))||0))}catch{}
+let slot=0;try{slot=Math.max(0,Math.min(999,Math.floor(Number(localStorage.getItem(SLOT_KEY))||0)))}catch{}calcSlotN();
 const slotKey=i=>i?STORE+':'+i:STORE;
 function loadSlot(i){try{return JSON.parse(localStorage.getItem(slotKey(i)))||{}}catch{return{}}}
 function loadSave(){return loadSlot(slot)}
@@ -1782,10 +1785,10 @@ async function initCloud(){try{const C=window.claude;if(!C||!C.use){cloud.why='�
   const [db,user]=await Promise.all([C.use('db'),C.use('user')]);const uid=user?await user.id():null;
   if(!db||!uid){cloud.why='claude.ai에 로그인하지 않아서 이 기기(브라우저)에만 저장돼요';return}
   cloud.db=db;cloud.uid=uid;cloud.ref=db.doc(cloudPath(slot));
-  const snaps=await Promise.race([Promise.all(Array.from({length:SLOT_N},(_,i)=>db.doc(cloudPath(i)).get())),new Promise((_,rj)=>setTimeout(()=>rj(new Error('timeout')),10000))]);
+  const snaps=await Promise.race([(async()=>{const get=i=>db.doc(cloudPath(i)).get(),has=sn=>sn.exists&&((sn.data()||{}).json||'null')!=='null';let out=await Promise.all(Array.from({length:SLOT_N},(_,i)=>get(i))),i=SLOT_N;while(i<300){const b=await Promise.all([get(i),get(i+1),get(i+2)]);out=out.concat(b);i+=3;if(!b.some(has))break}return out})(),new Promise((_,rj)=>setTimeout(()=>rj(new Error('timeout')),15000))]);
   cloud.ok=true;cloud.why='켜짐: 계정에 저장돼서 다른 기기에서도 이어서 할 수 있어요';
   snaps.forEach((sn,i)=>{let sv=null;if(sn.exists){try{sv=JSON.parse((sn.data()||{}).json||'null')}catch{}}cloud.sum[i]=sv});
-  cloudAdopt(slot);renderSlots();cloudStash();
+  calcSlotN();cloudAdopt(slot);renderSlots();cloudStash();
   if(!$('opt').hidden)renderOpt()}catch(e){cloud.ok=false;cloud.why='클라우드 저장 확인 실패 ('+(e&&e.code||e&&e.message||'오류')+'), 이 기기에만 저장돼요'}}
 function cloudAdopt(i){const sv=cloud.sum[i];cloud.remote=sv;if(!sv)return;const lt=(loadSlot(i).ts||0);
   if((sv.ts||0)>lt+3000){if(!started){if(i===slot){resetMe();applySave(sv);persist();sys(`클라우드(계정)에 있던 캐릭터 ${i+1}의 더 최신 저장을 불러왔어요.`)}}else if(i===slot)sys('다른 기기에 더 최신 저장이 있어요. 옵션(O) → 클라우드에서 불러오기로 가져올 수 있어요.')}}
@@ -6384,7 +6387,7 @@ function lockCls(){const lk=clsLocked();let note=$('clsnote');if(!note){note=doc
   else for(const el of document.querySelectorAll('input[name=cls]')){el.disabled=false;el.closest('label').style.opacity='1'}
   note.textContent=lk?`이 캐릭터는 ${CLSN[me.cls]}${me.cls==='rogue'?'이에요':'예요'}. 다른 직업은 빈 캐릭터 칸에서 새로 만들어 따로 키워요.`:'';note.hidden=!lk;
   try{$('nick').dispatchEvent(new Event('input'))}catch{}}
-function renderSlots(){const box=$('slots');if(!box)return;lockCls();box.textContent='';
+function renderSlots(){const box=$('slots');if(!box)return;calcSlotN();lockCls();box.textContent='';
   for(let i=0;i<SLOT_N;i++){const inf=slotInfo(i),b=document.createElement('button');b.type='button';b.setAttribute('role','radio');b.setAttribute('aria-checked',String(i===slot));
     const t=document.createElement('b');t.textContent=`캐릭터 ${i+1}`;const n=document.createElement('span');n.textContent=inf?`${inf.lv} ${inf.nick}`:'비어 있음';const j=document.createElement('small');j.textContent=inf?inf.job:'새로 만들기';
     b.append(t,n,j);b.addEventListener('click',()=>pickSlot(i));box.appendChild(b)}
