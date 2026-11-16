@@ -3966,9 +3966,13 @@ function csCards(g){const tab=cashTab,s=csState(),dust=countItem('dust');
 /* ================= 행운의 룰렛: 가루 100만으로 돌려요 (복불복) ================= */
 const ROUL_PRICE=1e6;
 const ROUL=[['경험치 10배\n2시간','#ffcc4d',10,()=>{addItem('exp10h',1);return '경험치 10배 주문서 (2시간)'}],['가루\n300만','#ff6ad5',4,()=>{addItem('dust',3e6);return '마력 가루 300만 (대박!)'}],
-  ['가루\n150만','#c9a8ff',10,()=>{addItem('dust',15e5);return '마력 가루 150만'}],['가루\n50만','#9a8ac8',22,()=>{addItem('dust',5e5);return '마력 가루 50만'}],
+  ['가루\n150만','#c9a8ff',10,()=>{addItem('dust',15e5);return '마력 가루 150만'}],['가루\n50만','#9a8ac8',15,()=>{addItem('dust',5e5);return '마력 가루 50만'}],
   ['별의 돌\n×2','#ff9ad8',12,()=>{addItem('star_st',2);return '별의 돌 2개'}],['한계돌파석\n×5','#ffa31a',12,()=>{addItem('lb_stone',5);return '한계돌파석 5개'}],
-  ['엘릭서\n×30','#6ee7b7',19.7,()=>{addItem('pot_x',30);return '엘릭서 30병'}],['+1\n강화권','#9dffa8',.3,()=>{addItem('en_1',1);return '+1 장비 강화권 (초대박!)'}],['꽝\n가루 10만','#5a5a6a',10,()=>{addItem('dust',1e5);return '꽝… 마력 가루 10만'}]];
+  ['엘릭서\n×30','#6ee7b7',19.7,()=>{addItem('pot_x',30);return '엘릭서 30병'}],['+1\n강화권','#9dffa8',.3,()=>{addItem('en_1',1);return '+1 장비 강화권 (초대박!)'}],['꽝\n가루 10만','#5a5a6a',5,()=>{addItem('dust',1e5);return '꽝… 마력 가루 10만'}],
+  ['내 무기','#ff7a5a',5,()=>roulGear(['weapon'])],['장신구','#5ae0ff',7,()=>roulGear(['ring','amulet','earring'])]];
+/* 룰렛 장비: 내 직업 · 내가 깬 가장 높은 층 기준, 45층 이상이면 [초월] 등급 */
+function roulGear(kinds){const T=Math.max(0,Math.min(TIERS.length-1,topTier())),pres=GPRE.filter(p=>{const it=ITEMS[p+0];return it&&kinds.includes(it.kind)&&(!it.cls||it.cls===me.cls)});if(!pres.length){addItem('dust',5e5);return '마력 가루 50만'}
+  if(me.bag.length>=bagMax()){addItem('dust',2e6);return '가방이 가득 차서 마력 가루 200만'}const pre=pick(pres);let id=(T>=TRANS_FROM?'x':'')+pre+T;if(!ITEMS[id])id=pre+T;addItem(id,1,0,rollOpts(id));toast(`룰렛에서 장비! ${ITEMS[id].name}`,3000);return ITEMS[id].name}
 let roulBusy=false,roulAng=0;
 function roulPick(){let r=Math.random()*ROUL.reduce((a,x)=>a+x[2],0);for(let i=0;i<ROUL.length;i++){r-=ROUL[i][2];if(r<0)return i}return ROUL.length-1}
 function drawRoul(cv,ang){const c=cv.getContext('2d'),W=cv.width,R=W/2-6,n=ROUL.length;c.clearRect(0,0,W,W);c.save();c.translate(W/2,W/2);
