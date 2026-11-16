@@ -1765,7 +1765,7 @@ let slot=0;try{slot=Math.max(0,Math.min(999,Math.floor(Number(localStorage.getIt
 const slotKey=i=>i?STORE+':'+i:STORE;
 function loadSlot(i){try{return JSON.parse(localStorage.getItem(slotKey(i)))||{}}catch{return{}}}
 function loadSave(){return loadSlot(slot)}
-function saveObj(){return{pkOn:me.pkOn!==false,lvms:me.lvms||0,tlv:me.tlv||0,texp:me.texp||0,ts:Date.now(),rb:me.rb||0,tr:me.tr||{},att:me.att||null,dq:me.dq||null,st:me.st||{},achN:me.achN||0,tlvMax:me.tlvMax||0,revAt:me.revAt||0,cos:me.cos||{own:[]},xb:me.xb||0,db:me.db||0,xb2:me.xb2||0,db2:me.db2||0,pity2:me.pity2||0,bagX:me.bagX||0,pity:me.pity||0,ltd:me.ltd||null,cs:me.cs||null,gseen:me.gseen||null,unl:me.unl||null,gotRd:!!me.gotRd,gotBw:!!me.gotBw,gotKt:!!me.gotKt,gotSp:!!me.gotSp,gotEo:!!me.gotEo,ki:Math.round(me.ki||0),bsrBest:me.bsrBest||0,stree:me.stree||{},altar:me.altar||null,gshop:me.gshop||null,eqLk:me.eqLk||{},eqPre:me.eqPre||[],raidClr:me.raidClr||{},rbTP:me.rbTP||0,adv5:me.adv5,adv6:me.adv6,towerBest:me.towerBest||0,duelBest:me.duelBest||0,udBest:me.udBest||0,enhV:ENH_VER,ins:me.ins||{a:0,h:0,d:0},wbGot:me.wbGot||0,x10:me.x10||0,evX10:!!me.evX10,eqO:me.eqO,adv3:me.adv3,adv4:me.adv4,awk:Math.floor(me.awk||0),adv2:me.adv2,sk1:!!me.sk1,adv:me.adv,pets:me.pets,petLv:me.petLv||{},pet:me.pet,autoDisOther:!!me.autoDisOther,autoDisSet:me.autoDisSet,autoLoot:!!me.autoLoot,autoEq:!!me.autoEq,autoHp:me.autoHp,autoMp:me.autoMp,autoDis:!!me.autoDis,sbuf:me.sbuf,nick:me.nick,color:me.color,hair:me.hair,cls:me.cls,gotStaff:me.gotStaff,eqE:me.eqE,lvl:me.lvl,exp:me.exp,gold:me.gold,bag:me.bag,eq:me.eq,kills:me.kills,cleared:me.cleared,v:2}}
+function saveObj(){return{pkOn:me.pkOn!==false,lvms:me.lvms||0,eqIL:me.eqIL||{},slotE:me.slotE||{},tlv:me.tlv||0,texp:me.texp||0,ts:Date.now(),rb:me.rb||0,tr:me.tr||{},att:me.att||null,dq:me.dq||null,st:me.st||{},achN:me.achN||0,tlvMax:me.tlvMax||0,revAt:me.revAt||0,cos:me.cos||{own:[]},xb:me.xb||0,db:me.db||0,xb2:me.xb2||0,db2:me.db2||0,pity2:me.pity2||0,bagX:me.bagX||0,pity:me.pity||0,ltd:me.ltd||null,cs:me.cs||null,gseen:me.gseen||null,unl:me.unl||null,gotRd:!!me.gotRd,gotBw:!!me.gotBw,gotKt:!!me.gotKt,gotSp:!!me.gotSp,gotEo:!!me.gotEo,ki:Math.round(me.ki||0),bsrBest:me.bsrBest||0,stree:me.stree||{},altar:me.altar||null,gshop:me.gshop||null,eqLk:me.eqLk||{},eqPre:me.eqPre||[],raidClr:me.raidClr||{},rbTP:me.rbTP||0,adv5:me.adv5,adv6:me.adv6,towerBest:me.towerBest||0,duelBest:me.duelBest||0,udBest:me.udBest||0,enhV:ENH_VER,ins:me.ins||{a:0,h:0,d:0},wbGot:me.wbGot||0,x10:me.x10||0,evX10:!!me.evX10,eqO:me.eqO,adv3:me.adv3,adv4:me.adv4,awk:Math.floor(me.awk||0),adv2:me.adv2,sk1:!!me.sk1,adv:me.adv,pets:me.pets,petLv:me.petLv||{},pet:me.pet,autoDisOther:!!me.autoDisOther,autoDisSet:me.autoDisSet,autoLoot:!!me.autoLoot,autoEq:!!me.autoEq,autoHp:me.autoHp,autoMp:me.autoMp,autoDis:!!me.autoDis,sbuf:me.sbuf,nick:me.nick,color:me.color,hair:me.hair,cls:me.cls,gotStaff:me.gotStaff,eqE:me.eqE,lvl:me.lvl,exp:me.exp,gold:me.gold,bag:me.bag,eq:me.eq,kills:me.kills,cleared:me.cleared,v:2}}
 /* ---------- 저장 안전장치 ----------
    ① 다른 창에서 같은 게임이 열리면 이 창은 저장을 멈춤 (옛 창이 새 진행을 덮어써서 아이템이 사라지는 문제 방지)
    ② 15초마다·창을 닫거나 숨길 때 자동 저장  ③ 로그인한 계정은 클라우드(계정)에도 저장 */
@@ -1802,6 +1802,7 @@ const me={x:0,y:0,dir:'down',moving:false,nick:'모험가',color:0,hair:0,lvl:1,
   cls:'knight',adv:{knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''},adv2:{knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''},adv3:{knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''},adv4:{knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''},adv5:{knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''},adv6:{knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''},rb:0,tr:{},revAt:0,att:null,dq:null,st:{},achN:0,tlvMax:0,cos:{own:[]},xb:0,db:0,bagX:0,pity:0,ltd:null,towerBest:0,duelBest:0,ins:{a:0,h:0,d:0},awk:0,sk1:false,gotStaff:false,pets:[],pet:'',autoDisOther:true,autoDisSet:[],autoLoot:true,autoEq:true,autoDis:false,autoHp:.5,autoMp:.3,sbuf:{},eqE:{},eqO:{},gold:0,bag:[],eq:{weapon:null,helm:null,armor:null,glove:null,boots:null,ring:null,amulet:null,belt:null,pants:null,cape:null,shoulder:null,earring:null,sub:null,emblem:null},kills:{},cleared:[],buffs:{atk:0,def:0,spd:0,exp:0}};
 const ME0=JSON.parse(JSON.stringify(me));
 function resetMe(){const c=JSON.parse(JSON.stringify(ME0));for(const k in c)me[k]=c[k];me.awakeT=0;me.t4cd=[0,0];me.tlv=0;me.texp=0;me.sbuf={};me.eqO={};me.pets=[];me.pet=''}
+const IL_PER=.03,ilMul=il=>1+IL_PER*(il||0);   // 아이템 레벨: 1마다 기본 공격·방어·체력·마나 +3%
 const eqItem=k=>{const it=me.eq[k]?ITEMS[me.eq[k]]:null;return it&&it.cls&&it.cls!==me.cls?null:it};
 // 강화 보너스: 무기 공격력 +10%/단계(+1), +10부터 치명타 / 방어구 방어 +10%/단계·체력 +4 / 장신구 체력 +6
 function enhBonus(it,e,f){if(!e||!it)return 0;if(e>LEG_BASE){const s2=e-LEG_BASE;return enhBonus(it,LEG_BASE,f)+(it.kind==='weapon'?(f==='atk'?Math.round((it.atk||0)*.2*s2):f==='crit'?5*s2:0):(it.kind==='ring'||it.kind==='amulet')?(f==='hp'?150*s2:f==='sk'?s2*.1:0):(f==='def'?Math.round((it.def||0)*.2*s2):f==='hp'?100*s2:0))}
@@ -1819,7 +1820,7 @@ function rollOpts(id){const it=ITEMS[id];const pool=OPTPOOL[it&&it.kind];if(!poo
 function cleanOpts(a){if(!Array.isArray(a))return undefined;return a.filter(o=>Array.isArray(o)&&OPTDEF[o[0]]&&Number.isFinite(+o[1])).slice(0,5).map(([k,v])=>[k,Math.max(0,Math.min(OPTDEF[k][2]/OPTDEF[k][3],+v))])}
 const optText=([k,v])=>{const D=OPTDEF[k];if(!D)return '';const sv=+(v*D[3]).toFixed(1);return `${D[0]} +${sv}${D[1]} (최대 ${D[2]}${D[1]})`};
 const optSum=f=>EQ_KINDS.reduce((a,[k])=>{if(!eqItem(k))return a;for(const o of (me.eqO&&me.eqO[k])||[])if(o[0]===f)a+=o[1];return a},0);
-const eqSum0=f=>EQ_KINDS.reduce((a,[k])=>{const it=eqItem(k);return a+(it?.[f]||0)+enhBonus(it,me.eqE[k]||0,f)},0);
+const eqSum0=f=>EQ_KINDS.reduce((a,[k])=>{const it=eqItem(k),b=it?.[f]||0;return a+(b&&(f==='atk'||f==='def'||f==='hp'||f==='mp')?Math.round(b*ilMul(me.eqIL&&me.eqIL[k])):b)+enhBonus(it,me.eqE[k]||0,f)},0);
 const eqSum=f=>eqSum0(f)+optSum(f)+(typeof abSum==='function'?abSum(f):0)+(typeof extraSum==='function'?extraSum(f):0);
 const LV_MAX=999,ADV_LV=300;
 const ADV={
@@ -1929,12 +1930,12 @@ const BAG_MAX=100,LOOT_R=120;
 const stackable=id=>ITEMS[id].kind==='potion'||ITEMS[id].kind==='mat';
 const capOf=id=>id==='dust'||ITEMS[id].kind==='potion'||ITEMS[id].kind==='mat'?9e12:99;
 const isGear=id=>!!EQ_KINDS.find(([k])=>k===ITEMS[id]?.kind);
-function addItem(id,n=1,e=0,o){const it=ITEMS[id];if(!it)return false;if(it.kind==='coin'){me.gold+=n;return true}
+function addItem(id,n=1,e=0,o,il){const it=ITEMS[id];if(!it)return false;if(it.kind==='coin'){me.gold+=n;return true}
   if(stackable(id)){const cap=capOf(id);const s=me.bag.find(x=>x.id===id&&x.n<cap);if(s){const add=Math.min(n,cap-s.n);s.n+=add;n-=add;if(n<=0)return true}}
-  if(me.bag.length>=bagMax())return false;const s0=e?{id,n,e}:{id,n};if(OPTPOOL[it.kind])s0.o=o||(it.gm?rollOpts(id):[]);/* 접두어는 몬스터가 떨어뜨린 장비에만 (운영자 아이템은 예외) */me.bag.push(s0);return true}
+  if(me.bag.length>=bagMax())return false;const s0=e?{id,n,e}:{id,n};if(OPTPOOL[it.kind])s0.o=o||(it.gm?rollOpts(id):[]);/* 접두어는 몬스터가 떨어뜨린 장비에만 (운영자 아이템은 예외) */if(il)s0.il=il;me.bag.push(s0);return true}
 const countItem=id=>me.bag.reduce((a,s)=>a+(s.id===id?s.n:0),0);
 function takeN(id,n){for(let i=me.bag.length-1;i>=0&&n>0;i--){const s=me.bag[i];if(s.id!==id)continue;const k=Math.min(n,s.n);s.n-=k;n-=k;if(s.n<=0)me.bag.splice(i,1)}}
-const nameOf=(id,e)=>(e?`+${e}${e>LEG_BASE?'★':''} `:'')+ITEMS[id].name;
+const nameOf=(id,e,il)=>(e?`+${e}${e>LEG_BASE?'★':''} `:'')+ITEMS[id].name+(il?` ⟨아이템Lv.${il}⟩`:'');
 function takeAt(i,n=1){const s=me.bag[i];s.n-=n;if(s.n<=0)me.bag.splice(i,1)}
 let sel=null;
 function useAt(i){
@@ -1961,12 +1962,14 @@ function useAt(i){
     if(!me.bag[i]||sel&&sel.i>=me.bag.length)sel=null}
   else if(it.kind==='mat'){sys(it.id==='dust'?'마력 가루 15개로 가방 아래에서 강화 주문서를 만들 수 있어요.':'가방에서 강화할 장비를 고른 뒤 [강화] 버튼을 누르세요.');return}
   else{if(it.cls&&it.cls!==me.cls){sys(`${CLSN[it.cls]||'다른 직업'} 전용 ${it.kind==='weapon'?'무기':'장비'}예요.`);return}
-    const old=me.eq[it.kind],oldE=me.eqE[it.kind]||0,oldO=me.eqO[it.kind]||[];me.eqLk=me.eqLk||{};const oldL=!!me.eqLk[it.kind];me.eq[it.kind]=s.id;me.eqE[it.kind]=s.e||0;me.eqO[it.kind]=s.o||[];me.eqLk[it.kind]=!!s.lk;me.bag.splice(i,1);if(old){const b0=oldE?{id:old,n:1,e:oldE}:{id:old,n:1};b0.o=oldO;if(oldL)b0.lk=1;me.bag.splice(i,0,b0)}
-    recalc();sys(`${nameOf(s.id,s.e)} 장착!`);sel={from:'eq',k:it.kind}}
+    const k0=it.kind,old=me.eq[k0],oldE=me.eqE[k0]||0,oldO=me.eqO[k0]||[];me.eqLk=me.eqLk||{};me.eqIL=me.eqIL||{};me.slotE=me.slotE||{};const oldL=!!me.eqLk[k0],oldIL=me.eqIL[k0]||0;
+    const capE=id=>ITEMS[id].legend?LEG_CAP:20,carry=old?(oldE>=capE(old)?Math.max(oldE,me.slotE[k0]||0):oldE):(me.slotE[k0]||0),newE=Math.max(carry,s.e||0);   /* 강화는 부위(칸)에 남아요 */
+    me.eq[k0]=s.id;me.slotE[k0]=newE;me.eqE[k0]=Math.min(newE,capE(s.id));me.eqO[k0]=s.o||[];me.eqLk[k0]=!!s.lk;me.eqIL[k0]=s.il||0;me.bag.splice(i,1);if(old){const b0={id:old,n:1};b0.o=oldO;if(oldL)b0.lk=1;if(oldIL)b0.il=oldIL;me.bag.splice(i,0,b0)}
+    recalc();sys(`${nameOf(s.id,s.e,s.il)} 장착!`);sel={from:'eq',k:it.kind}}
   invChanged();
 }
 function unequip(k){if(!me.eq[k])return;if(me.bag.length>=bagMax()){sys('가방이 가득 차서 벗을 수 없어요');return}
-  const e0=me.eqE[k]||0,b0=e0?{id:me.eq[k],n:1,e:e0}:{id:me.eq[k],n:1};b0.o=me.eqO[k]||[];if(me.eqLk&&me.eqLk[k]){b0.lk=1;me.eqLk[k]=false}me.bag.push(b0);me.eq[k]=null;me.eqE[k]=0;me.eqO[k]=[];recalc();sel={from:'bag',i:me.bag.length-1};invChanged()}
+  const e0=me.eqE[k]||0,b0={id:me.eq[k],n:1};me.slotE=me.slotE||{};me.eqIL=me.eqIL||{};me.slotE[k]=Math.max(e0,e0>=(ITEMS[me.eq[k]].legend?LEG_CAP:20)?(me.slotE[k]||0):0);b0.o=me.eqO[k]||[];if(me.eqIL[k])b0.il=me.eqIL[k];me.eqIL[k]=0;if(me.eqLk&&me.eqLk[k]){b0.lk=1;me.eqLk[k]=false}me.bag.push(b0);me.eq[k]=null;me.eqE[k]=0;me.eqO[k]=[];recalc();sel={from:'bag',i:me.bag.length-1};invChanged()}
 
 /* ---------- 강화 · 분해 · 제작 ---------- */
 const STAR_RATE=e=>[.25,.2,.15,.1,.07][Math.max(0,Math.min(4,e-25))],STAR_DES=e=>e>=27?(e-26)*.01:0;
@@ -2010,7 +2013,7 @@ function disassemble(i,quiet){
   const s=me.bag[i];if(!s||!isGear(s.id))return 0;if(s.lk){if(!quiet)sys('잠긴 장비는 분해할 수 없어요. 먼저 [잠금 해제]를 눌러 주세요.');return 0}if(ITEMS[s.id].gm){if(!quiet)sys('운영자 아이템은 분해할 수 없어요.');return 0}stAdd('dis');dqAdd('dis');const it=ITEMS[s.id],got=Math.random()<DUST_CHANCE,d=got?Math.round(dustOf(s)*(1+trv('t_dust')*.1)):0;me.bag.splice(i,1);
   let scs=0;if(it.rar>=3)scs=1+(Math.random()<.5?1:0);else if(Math.random()<(it.rar>=1?.35:.1))scs=1;
   if(d)addItem('dust',d);for(let k=0;k<scs;k++)addItem(Math.random()<.5?'sc_w':'sc_a',1);
-  if(!quiet){sys(`${nameOf(s.id,s.e)} 분해 → ${d?`마력 가루 ${d}개`:'가루가 나오지 않았어요'}${scs?` + 강화 주문서 ${scs}장`:''}`);burst(me.x,me.y-12,16,['#c9a8ff','#ffffff'],70,.5);sel=null;invChanged()}
+  if(!quiet){sys(`${nameOf(s.id,s.e,s.il)} 분해 → ${d?`마력 가루 ${d}개`:'가루가 나오지 않았어요'}${scs?` + 강화 주문서 ${scs}장`:''}`);burst(me.x,me.y-12,16,['#c9a8ff','#ffffff'],70,.5);sel=null;invChanged()}
   return d;
 }
 /* 물약·주문서 같은 소모품 분해 → 마력 가루 (확정) */
@@ -2019,31 +2022,31 @@ const potDust=id=>{const it=ITEMS[id];return it.price?Math.max(1,Math.round(it.p
 function disPotion(i,all){const s=me.bag[i];if(!s||!canDisPot(s.id))return;const n=all?(s.n||1):1,d=potDust(s.id)*n;takeAt(i,n);addItem('dust',d);
   sys(`${ITEMS[s.id].name} ${n}개 분해 → 마력 가루 ${d.toLocaleString()}개`);burst(me.x,me.y-12,12,['#c9a8ff','#ffffff'],60,.4);if(!me.bag[i]||me.bag[i]!==s)sel=null;invChanged();persist()}
 /* 장비 점수: 착용 중인 장비와 비교해 약한지 판단 (강화 보너스 포함, 단검·대검은 공격 속도 반영) */
-function gearScore(id,e=0){const it=ITEMS[id],f=k=>(it[k]||0)+enhBonus(it,e,k);
+function gearScore(id,e=0,il=0){const it=ITEMS[id],M=ilMul(il),f=k=>(k==='atk'||k==='def'||k==='hp'||k==='mp'?(it[k]||0)*M:(it[k]||0))+enhBonus(it,e,k);
   return f('atk')*3/(it.as||1)+f('def')*2+f('hp')*.3+f('mp')*.2+f('crit')*2+(it.spd||0)*200+((it.sk||0)+enhBonus(it,e,'sk'))*200+(it.mpr||0)*10+(it.ls||0)*1000}
-function isWeaker(id,e){if(!isGear(id))return false;const it=ITEMS[id];
+function isWeaker(id,e,il){if(!isGear(id))return false;const it=ITEMS[id];e=Math.max(e||0,Math.min(me.eqE[it.kind]||0,it.legend?LEG_CAP:20));   /* 강화는 칸에 남으니 같은 강화로 비교 */
   if(it.cls&&it.cls!==me.cls)return false;   /* 다른 직업 장비는 따로 처리 */
   const cur=me.eq[it.kind];if(!cur)return false;const ci=ITEMS[cur];if(ci.cls&&ci.cls!==me.cls)return false;
-  return gearScore(id,e)<gearScore(cur,me.eqE[it.kind]||0)}
+  return gearScore(id,e,il)<gearScore(cur,me.eqE[it.kind]||0,me.eqIL&&me.eqIL[it.kind])}
 // 착용 중인 것보다 강한(또는 그 칸이 비어 있는) 장비인지
-function isStronger(id,e){if(!isGear(id))return false;const it=ITEMS[id];
+function isStronger(id,e,il){if(!isGear(id))return false;const it=ITEMS[id];e=Math.max(e||0,Math.min(me.eqE[it.kind]||0,it.legend?LEG_CAP:20));
   if(it.cls&&it.cls!==me.cls)return false;
   const cur=me.eq[it.kind];if(!cur)return true;const ci=ITEMS[cur];if(ci.cls&&ci.cls!==me.cls)return true;
-  return gearScore(id,e)>gearScore(cur,me.eqE[it.kind]||0)}
+  return gearScore(id,e,il)>gearScore(cur,me.eqE[it.kind]||0,me.eqIL&&me.eqIL[it.kind])}
 /* 자동 분해 판단: ① 약한 장비 자동 분해 ② 등급별 자동 분해(강화 안 한 장비만)
    단, 지금 낀 것보다 좋은 장비와 다른 직업 무기는 절대 분해하지 않음 */
-function shouldAutoDis(id,e=0){if(!isGear(id))return false;const it=ITEMS[id];if(it.gm)return false;
+function shouldAutoDis(id,e=0,il=0){if(!isGear(id))return false;const it=ITEMS[id];if(it.gm)return false;
   if(it.cls&&it.cls!==me.cls)return !e&&!!me.autoDisOther;   // 다른 직업 무기: 옵션을 켜면 등급 상관없이 분해
-  if(isStronger(id,e))return false;
-  if(me.autoDis&&isWeaker(id,e))return true;
+  if(isStronger(id,e,il))return false;
+  if(me.autoDis&&isWeaker(id,e,il))return true;
   return !e&&me.autoDisSet.includes(it.rar)}
 function autoEquipAt(i){const s=me.bag[i];if(!s)return;const it=ITEMS[s.id],old=me.eq[it.kind],oldE=me.eqE[it.kind]||0;
-  useAt(i);floatText(me.x,me.y-44,`${nameOf(s.id,s.e)} 자동 장착!`,RAR[it.rar][1],true);burst(me.x,me.y-12,18,[RAR[it.rar][1],'#ffffff'],80,.5);
-  if(old){const k=me.bag.findIndex(b=>b.id===old&&(b.e||0)===oldE);if(k>=0&&!me.bag[k].lk&&shouldAutoDis(old,oldE)){const d=disassemble(k,true);sys(`예전 ${nameOf(old,oldE)}은(는) 자동 분해했어요 (+가루 ${d})`)}}
+  useAt(i);floatText(me.x,me.y-44,`${nameOf(s.id,s.e,s.il)} 자동 장착!`,RAR[it.rar][1],true);burst(me.x,me.y-12,18,[RAR[it.rar][1],'#ffffff'],80,.5);
+  if(old){const k=me.bag.findIndex(b=>b.id===old&&!(b.e));if(k>=0&&!me.bag[k].lk&&shouldAutoDis(old,0,me.bag[k].il)){const d=disassemble(k,true);sys(`예전 ${nameOf(old,0,0)}은(는) 자동 분해했어요 (+가루 ${d})`)}}
   sel=null;invChanged()}
 /* 전승: 새 장비로 갈아낄 때 지금 장비 강화의 80%를 옮김 (가루 = 강화² × 5천). 예전 장비는 강화 0으로 가방에 */
 const inhCost=e=>5000*e*e,inhTo=(id,oe)=>Math.min(ITEMS[id].legend?LEG_CAP:20,Math.floor(oe*.8));
-function inheritAt(i){const s=me.bag[i];if(!s||!isGear(s.id))return;const it=ITEMS[s.id],k=it.kind,old=me.eq[k],oe=me.eqE[k]||0;if(!old||!oe)return;
+function inheritAt(i){const s=me.bag[i];if(!s||!isGear(s.id))return;if(true){useAt(i);sys('이제 강화는 부위(칸)에 남아서, 장비를 바꿔 껴도 강화가 그대로 이어져요.');return}const it=ITEMS[s.id],k=it.kind,old=me.eq[k],oe=me.eqE[k]||0;if(!old||!oe)return;
   if(it.cls&&it.cls!==me.cls){sys('다른 직업 장비라 전승할 수 없어요.');return}const ne=inhTo(s.id,oe);if(ne<=(s.e||0)){sys('전승해도 강화가 오르지 않아요.');return}
   const c=inhCost(oe);if(!payDust(c))return;useAt(i);me.eqE[k]=ne;const bi=me.bag.findIndex(b=>b.id===old&&(b.e||0)===oe);if(bi>=0)me.bag[bi].e=0;
   recalc();hudKey='';sel=null;invChanged();persist();floatText(me.x,me.y-40,`전승 +${ne}!`,'#ffd35a',true);burst(me.x,me.y-12,30,['#ffd35a','#ffffff'],110,.6);sys(`${nameOf(old,oe)}의 강화를 전승했어요 → ${nameOf(me.eq[k],ne)} (가루 ${fmtK(c)})`)}
@@ -2061,7 +2064,7 @@ function nextGoal(){const L=me.lvl,hub=()=>togglePanel('hub'),adv=()=>togglePane
 setInterval(()=>{try{if(started){const el=$('goal');const t='▶ '+nextGoal()[0];if(el.textContent!==t)el.textContent=t}}catch{}},1000);
 function equipBest(){let n=0;
   for(const [k] of EQ_KINDS){let bi=-1,bs=-1;
-    me.bag.forEach((s,i)=>{if(ITEMS[s.id].kind===k&&isStronger(s.id,s.e||0)){const sc=gearScore(s.id,s.e||0);if(sc>bs){bs=sc;bi=i}}});
+    me.bag.forEach((s,i)=>{if(ITEMS[s.id].kind===k&&isStronger(s.id,s.e||0,s.il)){const sc=gearScore(s.id,s.e||0,s.il);if(sc>bs){bs=sc;bi=i}}});
     if(bi>=0){autoEquipAt(bi);n++}}
   if(!n)sys('가방에 지금 착용한 것보다 좋은 장비가 없어요.')}
 /* 가방 정리: 같은 물약·재료 합치기 → 장비(부위·등급·층·강화 순) → 물약 → 버프·주문서 → 재료 순 정렬 */
@@ -2074,14 +2077,14 @@ function sortBag(){
   const grp=s=>{const it=ITEMS[s.id];if(isGear(s.id))return (it.cls&&it.cls!==me.cls)?7.5:KO.indexOf(it.kind);
     if(it.heal||it.mana)return 8;if(it.buff||it.home)return 9;if(it.kind==='mat')return s.id==='dust'?11:10;return 12};
   merged.sort((a,b)=>{const ga=grp(a),gb=grp(b);if(ga!==gb)return ga-gb;const A=ITEMS[a.id],B=ITEMS[b.id];
-    if(ga<8){return (B.rar-A.rar)||((B.tier??B.minT??0)-(A.tier??A.minT??0))||((b.e||0)-(a.e||0))||(gearScore(b.id,b.e||0)-gearScore(a.id,a.e||0))}
+    if(ga<8){return (B.rar-A.rar)||((B.tier??B.minT??0)-(A.tier??A.minT??0))||((b.e||0)-(a.e||0))||(gearScore(b.id,b.e||0,b.il)-gearScore(a.id,a.e||0,a.il))}
     if(ga===8)return POT.indexOf(a.id)-POT.indexOf(b.id);return a.id<b.id?-1:a.id>b.id?1:0});
   me.bag=merged;sel=null;invChanged();
   const freed=before-merged.length;sys(`가방을 정리했어요. ${freed>0?`같은 아이템을 합쳐 ${freed}칸이 비었어요. `:''}(${merged.length}/${bagMax()}칸)`);
 }
 const otherCls=id=>{const it=ITEMS[id];return isGear(id)&&!it.gm&&it.cls&&it.cls!==me.cls&&it.rar<9};
 function weakDisassemble(){let n=0,o=0,d=0,sc=countItem('sc_w')+countItem('sc_a');
-  for(let i=me.bag.length-1;i>=0;i--){const s=me.bag[i];if(s.lk)continue;if(isWeaker(s.id,s.e||0)){d+=disassemble(i,true);n++}else if(otherCls(s.id)){d+=disassemble(i,true);n++;o++}}
+  for(let i=me.bag.length-1;i>=0;i--){const s=me.bag[i];if(s.lk)continue;if(isWeaker(s.id,s.e||0,s.il)){d+=disassemble(i,true);n++}else if(otherCls(s.id)){d+=disassemble(i,true);n++;o++}}
   if(!n){sys('착용 중인 장비보다 약한 장비나 다른 직업 장비가 없어요.');return}
   const got=countItem('sc_w')+countItem('sc_a')-sc;
   sys(`착용보다 약한 장비${o?`·다른 직업 장비(${o}개 포함)`:''} ${n}개 분해 → 마력 가루 ${d}개${got?` + 강화 주문서 ${got}장`:''}`);burst(me.x,me.y-12,24,['#c9a8ff','#ffffff'],90,.6);sel=null;invChanged()}
@@ -3351,8 +3354,8 @@ const TR_NAMES=['시작의 시련','인내의 회랑','고통의 계단','망각
 const trOpen=k=>endOK()&&(k>34?((me.rb||0)>=(k-34)*2||(me.tlv||0)>=(k-1)*TR_STEP):(me.rb>0||(me.tlv||0)>=(k-1)*TR_STEP));
 function trName(k){return TR_NAMES[k-1]||TR_NAMES_X[k-11]||(TR_NAMES_Y[(k-35)%TR_NAMES_Y.length]+(k>50?' '+['Ⅱ','Ⅲ','Ⅳ','Ⅴ','Ⅵ','Ⅶ'][Math.floor((k-51)/16)]:''))}   // 환생한 사람은 모든 단계
 function makeTrain(k){k=Math.max(1,Math.min(TR_N,k));const T=k>34?ABYSS_FROM+9:ABYSS_FROM+((k-1)%10),z=makeDungeon(T),[ah,ad,ae]=avgOfT3(T),tgt=needT(Math.min(TLV_MAX,TR_STEP*(k-1)+15))/trKills(k),RBT=trRb(k);
-  z.id='tr'+k;z.train=k;z.expMul=tgt/ae*(RBT?Math.pow(1.08,k-34):1);if(k>34)z.monPool=trMons(k);if(k<=10){z.hpMul=1.2+.1*(k-1);z.dmgMul=1.1+.05*(k-1)}else{const [th,td]=avgOfT3(ABYSS_FROM+9);if(k<=34||RBT){z.hpMul=th*2.1*Math.pow(1.12,k-10)/ah;z.dmgMul=td*1.55*Math.pow(1.06,k-10)/ad}else{const g=(1+TR_STEP*(k-1)/TLV_DIV)/(1+TR_STEP*33/TLV_DIV);z.hpMul=th*2.1*Math.pow(1.12,24)/ah*g*Math.pow(1.005,k-34);z.dmgMul=td*1.55*Math.pow(1.06,24)/ad*Math.pow(g,.8)*Math.pow(1.004,k-34)}}
-  z.title=`초월의 수련장 ${k}단계 · ${trName(k)}`;z.sub=`Lv.${999+(k-1)*TR_STEP}부터 · 경험치 x${Math.round(z.expMul)} (레벨 한 칸에 약 ${trKills(k)}마리)`;return z}
+  z.id='tr'+k;z.train=k;z.expMul=tgt/ae*(RBT?Math.pow(1.08,k-34):1);if(k>34)z.monPool=trMons(k);if(k<=10){z.hpMul=1.2+.1*(k-1);z.dmgMul=1.1+.05*(k-1)}else{const [th,td]=avgOfT3(ABYSS_FROM+9);if(k<=34||RBT){z.hpMul=th*2.1*Math.pow(1.12,k-10)/ah;z.dmgMul=td*1.55*Math.pow(1.06,k-10)/ad}else{const g=(1+TR_STEP*(k-1)/TLV_DIV)/(1+TR_STEP*33/TLV_DIV);z.hpMul=th*2.1*Math.pow(1.12,24)/ah*g*Math.pow(1.005,k-34)*Math.pow(ilMul(k-34),.85);z.dmgMul=td*1.55*Math.pow(1.06,24)/ad*Math.pow(g,.8)*Math.pow(1.004,k-34)*Math.pow(ilMul(k-34),.6)}}
+  z.title=`초월의 수련장 ${k}단계 · ${trName(k)}`;z.sub=`Lv.${999+(k-1)*TR_STEP}부터 · ${k>34?`장비 아이템Lv.${k-34} (+${Math.round(IL_PER*(k-34)*100)}%) · `:''}경험치 x${Math.round(z.expMul)} (레벨 한 칸에 약 ${trKills(k)}마리)`;return z}
 function avgOfT3(T){const ns=MONLIST.filter(D=>D.T===T&&!D.boss&&!D.pk&&!D.tr);return [ns.reduce((a,D)=>a+D.hp,0)/ns.length,ns.reduce((a,D)=>a+D.dmg,0)/ns.length,ns.reduce((a,D)=>a+D.exp,0)/ns.length]}
 function renderTrain(){const ul=$('trl');ul.textContent='';
   $('trsum').textContent=!endOK()?`초월의 수련장은 Lv.${LV_MAX}부터 들어갈 수 있어요. (지금 Lv.${me.lvl})`:`Lv.1000부터 5000까지 레벨을 올리는 전용 던전이에요. 경험치가 심연보다 수십 배 많고, 레벨 한 칸에 몬스터 약 ${TR_KILLS}마리(35단계부터 점점 줄어 최소 150마리)가 필요해요. ${TR_STEP}레벨마다 다음 단계가 열려요 (1~${TR_N}단계). 지금 Lv.${LVT()}`;
@@ -3429,7 +3432,7 @@ function renderAltar(){const el=$('altar');if(!el)return;el.textContent='';const
   el.append(h,bar,am,all)}
 CRAFT.push(
   {id:'c_box3',name:'태초 상자 열기',need:[['core4',10],['lb_stone',10]],dust:500000,desc:'4차의 핵 10 + 한계돌파석 10 + 가루 50만 → 내 직업 장비 1개 (레전드 확정, 태초 Ⅱ 5% · 무한 1%)',give:()=>openBox2(3)},
-  {id:'c_enh',name:'확정 강화',need:[['star_st',3],['lb_stone',5]],dust:200000,slot:'eq',desc:'별의 돌 3 + 한계돌파석 5 + 가루 20만 → 착용 장비 하나 강화 +1 (실패 없음, 최대 강화까지)',give:k=>{const id=me.eq[k];me.eqE[k]=(me.eqE[k]||0)+1;recalc();return `${nameOf(id,me.eqE[k])} (확정 강화)`}},
+  {id:'c_enh',name:'확정 강화',need:[['star_st',3],['lb_stone',5]],dust:200000,slot:'eq',desc:'별의 돌 3 + 한계돌파석 5 + 가루 20만 → 착용 장비 하나 강화 +1 (실패 없음, 최대 강화까지)',give:k=>{const id=me.eq[k];me.eqE[k]=(me.eqE[k]||0)+1;recalc();return `${nameOf(id,me.eqE[k],me.eqIL&&me.eqIL[k])} (확정 강화)`}},
   {id:'c_lb2',name:'별의 돌 분해',need:[['star_st',1]],dust:0,desc:'별의 돌 1개 → 한계돌파석 2개',give:()=>{addItem('lb_stone',2);return '한계돌파석 2개'}});
 const genBag=()=>me.bag.filter(s=>{const it=ITEMS[s.id];return it.genesis&&!it.inf}).length;
 const CR_KINDS=[['weapon','무기'],['helm','투구'],['armor','갑옷'],['glove','장갑'],['belt','벨트'],['pants','하의'],['cape','망토'],['shoulder','어깨'],['earring','귀걸이'],['sub','보조무기']];
@@ -3613,7 +3616,7 @@ function rbScore(r){return (r.rb||0)*10000+(r.tlv||0)}
 /* ---------- 창고 (계정 공용 · 100칸 × 5탭) : 캐릭터끼리 아이템·재료를 옮겨요 ---------- */
 const STASH_KEY='slime-hill-stash',STASH_TABS=5,STASH_N=100;
 let stash={tabs:[[],[],[],[],[]],ts:0},stashTab=0,stashSaveT=0;
-function cleanSlot(x){if(!x||typeof x!=='object'||!ITEMS[x.id])return null;const o={id:x.id,n:Math.max(1,Math.min(capOf(x.id),Math.round(+x.n||1)))};if(x.e)o.e=clamp(Math.round(+x.e||0),0,LEG_CAP);if(OPTPOOL[ITEMS[x.id].kind])o.o=Array.isArray(x.o)?x.o.slice(0,5):[];return o}
+function cleanSlot(x){if(!x||typeof x!=='object'||!ITEMS[x.id])return null;const o={id:x.id,n:Math.max(1,Math.min(capOf(x.id),Math.round(+x.n||1)))};if(x.e)o.e=clamp(Math.round(+x.e||0),0,LEG_CAP);if(x.il)o.il=clamp(Math.round(+x.il||0),0,999);if(OPTPOOL[ITEMS[x.id].kind])o.o=Array.isArray(x.o)?x.o.slice(0,5):[];return o}
 function cleanStash(v){const out={tabs:[],ts:+(v&&v.ts)||0,enhV:ENH_VER};const old=!(v&&v.enhV>=ENH_VER);for(let t=0;t<STASH_TABS;t++){const a=v&&Array.isArray(v.tabs)&&Array.isArray(v.tabs[t])?v.tabs[t]:[];out.tabs.push(a.map(x=>{if(old&&x&&x.e)x={...x,e:convE(+x.e||0)};return cleanSlot(x)}).filter(Boolean).slice(0,STASH_N));mergeStacks(out.tabs[t])}return out}
 function loadStash(){try{stash=cleanStash(JSON.parse(localStorage.getItem(STASH_KEY)||'null'))}catch{stash=cleanStash(null)}}
 function saveStash(){stash.ts=Date.now();try{localStorage.setItem(STASH_KEY,JSON.stringify(stash))}catch{}
@@ -5669,7 +5672,7 @@ function dropLoot(m,D){ // 극악 드롭: 금화는 그대로, 나머지는 매�
   if(P(0,.015,.002))list.push(['home',1]);
   const scN=D.god?1:D.boss?(r()<.5?1:0):P(0,.02,.002)?1:0;for(let k=0;k<scN;k++)list.push([r()<.5?'sc_w':'sc_a',1]);
   const spread=D.boss?34:E?20:14;
-  for(const [id,n] of list){const g={id,n,x:m.x+(r()-.5)*spread,y:m.y+(r()-.5)*spread*.7,t:0,full:false};{const f=freeSpot(g.x,g.y,3,3,140)||freeSpot(me.x,me.y,3,3,40);if(f){g.x=f[0];g.y=f[1]}else{g.x=me.x;g.y=me.y}}if(OPTPOOL[ITEMS[id].kind])g.o=rollOpts(id);Z.ground.push(g)}
+  for(const [id,n] of list){const g={id,n,x:m.x+(r()-.5)*spread,y:m.y+(r()-.5)*spread*.7,t:0,full:false};{const f=freeSpot(g.x,g.y,3,3,140)||freeSpot(me.x,me.y,3,3,40);if(f){g.x=f[0];g.y=f[1]}else{g.x=me.x;g.y=me.y}}if(OPTPOOL[ITEMS[id].kind])g.o=rollOpts(id);if(Z.train>34&&isGear(id))g.il=Z.train-34;Z.ground.push(g)}
 }
 
 /* ---------- 입력 ---------- */
@@ -5928,11 +5931,11 @@ function update(dt,t){
     if(me.autoLoot&&alive&&started&&g.t>.3&&!g.full){const dx=me.x-g.x,dy=me.y-g.y,d=Math.hypot(dx,dy);
       if(d<LOOT_R&&d>1){const sp=Math.min(d,(140+(LOOT_R-d)*4)*dt);g.x+=dx/d*sp;g.y+=dy/d*sp;if(Math.random()<.3)spark(g.x,g.y-6,0,-10,RAR[ITEMS[g.id].rar][1],.3)}}
     if(alive&&started&&g.t>0.4&&Math.hypot(me.x-g.x,me.y-g.y)<12){const it=ITEMS[g.id];
-      if(shouldAutoDis(g.id,0)&&addItem(g.id,1,g.e||0,g.o)){G2.splice(i,1);const d=disassemble(me.bag.length-1,true);me.autoDisN=(me.autoDisN||0)+1;floatText(g.x,g.y-10,`${it.name} 자동 분해 ${d?'+가루 '+d:'(가루 없음)'}`,'#c9a8ff');invChanged()}
-      else if(addItem(g.id,g.n,g.e||0,g.o)){G2.splice(i,1);floatText(g.x,g.y-10,it.kind==='coin'?`+${g.n} 금화`:it.name+(g.n>1?' x'+g.n:''),RAR[it.rar][1]);
+      if(shouldAutoDis(g.id,0,g.il)&&addItem(g.id,1,g.e||0,g.o,g.il)){G2.splice(i,1);const d=disassemble(me.bag.length-1,true);me.autoDisN=(me.autoDisN||0)+1;floatText(g.x,g.y-10,`${it.name} 자동 분해 ${d?'+가루 '+d:'(가루 없음)'}`,'#c9a8ff');invChanged()}
+      else if(addItem(g.id,g.n,g.e||0,g.o,g.il)){G2.splice(i,1);floatText(g.x,g.y-10,it.kind==='coin'?`+${g.n} 금화`:it.name+(g.n>1?' x'+g.n:''),RAR[it.rar][1]);
         if(it.rar>=2){sysItem('',g.id,' 획득!');news({i:g.id});if(g.id==='mark3'){toast(`초월의 증표 획득! (${countItem('mark3')}/${MARK_NEED})`,2500);sys(`초월의 증표 ${countItem('mark3')}개 / 3차 전직에 ${MARK_NEED}개 필요`)}if(g.id==='core4'){toast(`4차의 핵 획득! (${countItem('core4')}/${ADV4_NEED})`,2500);sys(`4차의 핵 ${countItem('core4')}개 / 4차 전직에 ${ADV4_NEED}개 필요`)}}
         if(it.rar>=5&&it.rar!==8&&it.kind!=='mat'){if(it.legend){stAdd('leg');toast(`★ 레전드 장비 획득! ${it.name}`,5000);news({k:'leg',i:g.id});edgeT=2;edgeCol='#ffa31a'}else toast(`${RAR[it.rar][0]} 장비 획득! ${it.name}`,3200);flashT=.35;flashCol=RAR[it.rar][1];shakeT=Math.max(shakeT,.4);burst(me.x,me.y-14,60,['#ff4a6a','#ffd35a','#ffffff','#7ff0ff'],170,1,2,-30)}
-        const bi=me.bag.length-1;if(me.autoEq&&!me.dead&&isGear(g.id)&&me.bag[bi]?.id===g.id&&isStronger(g.id,me.bag[bi].e||0))autoEquipAt(bi);invChanged()}
+        const bi=me.bag.length-1;if(me.autoEq&&!me.dead&&isGear(g.id)&&me.bag[bi]?.id===g.id&&isStronger(g.id,me.bag[bi].e||0,me.bag[bi].il))autoEquipAt(bi);invChanged()}
       else if(!g.full){g.full=true;floatText(me.x,me.y-30,'가방이 가득 찼어요','#ff8a9a')}}
     else if(g.full&&Math.hypot(me.x-g.x,me.y-g.y)>20)g.full=false}
   interact=null;
@@ -6143,7 +6146,7 @@ function renderOpt(){
     r.append(b,sm,seg);body.appendChild(r)}
   row('다른 직업 장비 자동 분해',`지금 직업(${CLSN[me.cls]})이 못 쓰는 ${{mage:'검·단검·대검·쌍단검·활, 방패·표창 주머니·화살통',rogue:'검·단검·대검·지팡이·활, 방패·마도서·화살통',archer:'검·단검·대검·지팡이·쌍단검, 방패·마도서·표창 주머니',samurai:'검·단검·대검·지팡이·쌍단검·활, 방패·마도서·표창 주머니·화살통',lancer:'창 말고 다른 무기, 완갑 말고 다른 보조 장비',shaman:'정령봉 말고 다른 무기, 부적 말고 다른 보조 장비'}[me.cls]||'지팡이·쌍단검·활, 마도서·표창 주머니·화살통'}를 주우면 등급 상관없이 바로 분해해요 (강화한 장비는 남겨요)`,OF,!!me.autoDisOther,v=>me.autoDisOther=v);
   row('지금 가방 정리','위 자동 분해 기준에 맞는 가방 속 장비를 한 번에 분해해요',[['정리하기','run']],null,()=>{let n=0,d=0;
-    for(let i=me.bag.length-1;i>=0;i--){const s=me.bag[i];if(shouldAutoDis(s.id,s.e||0)){d+=disassemble(i,true);n++}}
+    for(let i=me.bag.length-1;i>=0;i--){const s=me.bag[i];if(shouldAutoDis(s.id,s.e||0,s.il)){d+=disassemble(i,true);n++}}
     sys(n?`가방 장비 ${n}개 분해 → 마력 가루 ${d}개`:'자동 분해 기준에 맞는 장비가 가방에 없어요.');invChanged()});
   row('자동 체력 물약','체력이 이 비율 아래로 떨어지면 물약을 마셔요',PCT,me.autoHp||0,v=>me.autoHp=v);
   row('자동 마나 물약','마나가 이 비율 아래로 떨어지면 물약을 마셔요',PCT,me.autoMp||0,v=>me.autoMp=v);
@@ -6269,7 +6272,7 @@ function renderBag(){
     const c=document.createElement('span');c.className='bcnt';c.textContent=`${me.bag.length}/${bagMax()}칸`;tb.appendChild(c)}
   const gr=$('grid');gr.textContent='';
   for(let i=0;i<Math.max(bagMax(),me.bag.length);i++){const s=me.bag[i];if(bagTab!=='all'&&(!s||bagCat(s.id)!==bagTab))continue;const el=slotEl(s?.id,s?.n,sel&&sel.from==='bag'&&sel.i===i,()=>{sel={from:'bag',i};renderBag()},'',s?.e||0,(s?.o||[]).length,!!s?.lk);
-    if(s&&isGear(s.id)&&me.eq[ITEMS[s.id].kind]&&(ITEMS[s.id].kind!=='weapon'||!ITEMS[s.id].cls||ITEMS[s.id].cls===me.cls)){const w=document.createElement('span');const weak=isWeaker(s.id,s.e||0);w.className=weak?'weak':'up';w.textContent=weak?'▼':'▲';el.appendChild(w)}
+    if(s&&isGear(s.id)&&me.eq[ITEMS[s.id].kind]&&(ITEMS[s.id].kind!=='weapon'||!ITEMS[s.id].cls||ITEMS[s.id].cls===me.cls)){const w=document.createElement('span');const weak=isWeaker(s.id,s.e||0,s.il);w.className=weak?'weak':'up';w.textContent=weak?'▼':'▲';el.appendChild(w)}
     gr.appendChild(el)}
   const tl=$('bagtools');tl.textContent='';const tb=(txt,fn,cls='alt')=>{const b=document.createElement('button');b.type='button';b.className='btn sm '+cls;b.textContent=txt;b.addEventListener('click',fn);tl.appendChild(b)};
   const dn=document.createElement('span');dn.innerHTML='마력 가루 <b></b>개';dn.querySelector('b').textContent=countItem('dust');tl.appendChild(dn);
@@ -6292,8 +6295,8 @@ function renderBag(){
         if(oit&&!(it.cls&&it.cls!==me.cls)){const d=v-ov;if(Math.abs(d)>1e-9){const x=document.createElement('span');x.className=d>0?'up':'dn';x.textContent=` (${d>0?'▲ +':'▼ '}${gstFmt(d,u)})`;b.appendChild(x)}}r.append(a,b);tbl.appendChild(r)}
       if(tbl.childNodes.length){if(oit)tbl.title='괄호 = 지금 착용 중인 장비와 차이 (접두어 제외)';ds.append(tbl)}}
     if(sel.from==='bag'){const nc=cpIfEquip(sel.i);if(nc!=null){const c0=cpNow(),cp=document.createElement('div');cp.style.cssText='font-size:15px;color:'+(nc>=c0?'#6ee7b7':'#ff8a9a');cp.textContent=`장착하면 전투력 ${c0.toLocaleString()} → ${nc.toLocaleString()} (${nc>=c0?'▲ +':'▼ '}${(nc-c0).toLocaleString()})`;ds.append(cp)}}
-    if(sel.from==='bag'&&me.eq[it.kind]&&!(it.cls&&it.cls!==me.cls)){const cmp=document.createElement('div');const a=gearScore(id,e),b=gearScore(me.eq[it.kind],me.eqE[it.kind]||0);
-      cmp.style.color=a<b?'#ff8a9a':'#6ee7b7';cmp.textContent=a<b?`▼ 착용 중인 ${nameOf(me.eq[it.kind],me.eqE[it.kind]||0)}보다 약해요`:a>b?`▲ 착용 중인 ${nameOf(me.eq[it.kind],me.eqE[it.kind]||0)}보다 강해요`:'착용 중인 장비와 비슷해요';ds.append(cmp)}}
+    if(sel.from==='bag'&&me.eq[it.kind]&&!(it.cls&&it.cls!==me.cls)){const cmp=document.createElement('div');const a=gearScore(id,e,il),b=gearScore(me.eq[it.kind],me.eqE[it.kind]||0,me.eqIL&&me.eqIL[it.kind]);
+      cmp.style.color=a<b?'#ff8a9a':'#6ee7b7';cmp.textContent=a<b?`▼ 착용 중인 ${nameOf(me.eq[it.kind],me.eqE[it.kind]||0,me.eqIL&&me.eqIL[it.kind])}보다 약해요`:a>b?`▲ 착용 중인 ${nameOf(me.eq[it.kind],me.eqE[it.kind]||0,me.eqIL&&me.eqIL[it.kind])}보다 강해요`:'착용 중인 장비와 비슷해요';ds.append(cmp)}}
   const row=document.createElement('div');row.className='row';
   const mk=(txt,cls,fn)=>{const b=document.createElement('button');b.type='button';b.className='btn sm '+cls;b.textContent=txt;b.addEventListener('click',fn);row.appendChild(b)};
   const enhBtn=()=>{if(isGear(id)&&e<20){const sc=it.kind==='weapon'?'sc_w':'sc_a';mk(`강화 (${ITEMS[sc].name.replace(' 주문서','')} ${countItem(sc)}장)`,'teal',()=>enhance(sel.from==='eq'?{from:'eq',k:sel.k}:{from:'bag',i:sel.i}))}};
@@ -6603,9 +6606,9 @@ function applySave(sv){
   me.nick=cleanStr(sv.nick,12)||'';
   me.color=sv.v===2?clampIdx(sv.color):0;me.hair=sv.v===2?clampHair(sv.hair):0;
   me.lvl=Math.round(num(sv.lvl,1,LV_MAX)??1);me.exp=Math.max(0,Math.round(num(sv.exp,0,1e9)??0));me.gold=Math.max(0,Math.round(num(sv.gold,0,1e12)??0));
-  if(Array.isArray(sv.bag))me.bag=sv.bag.map(s=>s&&{id:fix(s.id),n:s.n,e:s.e,o:s.o,lk:s.lk}).filter(s=>s&&ITEMS[s.id]&&ITEMS[s.id].kind!=='coin').slice(0,bagMax()).map(s=>{const o={id:s.id,n:stackable(s.id)?Math.round(clamp(Number(s.n)||1,1,capOf(s.id))):1};const e=Math.round(clamp((sv.enhV||1)<ENH_VER?convE(Number(s.e)||0):Number(s.e)||0,0,LEG_CAP));if(e&&isGear(s.id))o.e=e;if(OPTPOOL[ITEMS[s.id].kind])o.o=cleanOpts(s.o)??(ITEMS[s.id].gm?rollOpts(s.id):[]);if(s.lk&&isGear(s.id))o.lk=1;return o});
+  if(Array.isArray(sv.bag))me.bag=sv.bag.map(s=>s&&{id:fix(s.id),n:s.n,e:s.e,o:s.o,lk:s.lk}).filter(s=>s&&ITEMS[s.id]&&ITEMS[s.id].kind!=='coin').slice(0,bagMax()).map(s=>{const o={id:s.id,n:stackable(s.id)?Math.round(clamp(Number(s.n)||1,1,capOf(s.id))):1};const e=Math.round(clamp((sv.enhV||1)<ENH_VER?convE(Number(s.e)||0):Number(s.e)||0,0,LEG_CAP));if(e&&isGear(s.id))o.e=e;if(OPTPOOL[ITEMS[s.id].kind])o.o=cleanOpts(s.o)??(ITEMS[s.id].gm?rollOpts(s.id):[]);if(s.lk&&isGear(s.id))o.lk=1;if(s.il&&isGear(s.id))o.il=clamp(Math.round(+s.il||0),0,999);return o});
   else me.bag=[{id:'pot_s',n:3}];mergeDust();
-  me.cls=(['mage','rogue','archer','samurai','lancer','shaman'].includes(sv.cls)?sv.cls:'knight');me.gotStaff=!!sv.gotStaff;me.gotRd=!!sv.gotRd;me.gotBw=!!sv.gotBw;me.gotKt=!!sv.gotKt;me.lvms=Math.max(0,Math.min(8,Math.floor(+sv.lvms||0)));me.gotSp=!!sv.gotSp;me.gotEo=!!sv.gotEo;me.ki=Math.max(0,Math.min(100,+sv.ki||0));me.bsrBest=Math.max(0,Math.floor(+sv.bsrBest||0));me.stree=sv.stree&&typeof sv.stree==='object'?sv.stree:{};me.altar=sv.altar&&typeof sv.altar==='object'?{lv:Math.max(0,Math.floor(+sv.altar.lv||0)),pt:Math.max(0,+sv.altar.pt||0)}:null;me.gshop=sv.gshop&&typeof sv.gshop==='object'&&sv.gshop.n?sv.gshop:null;me.eqLk=(sv.eqLk&&typeof sv.eqLk==='object')?sv.eqLk:{};me.eqPre=Array.isArray(sv.eqPre)?sv.eqPre.slice(0,3):[];me.raidClr=sv.raidClr||{};me.rbTP=sv.rbTP||0;setTimeout(()=>{try{grantRbMs(true)}catch{}},0);me.autoDis=!!sv.autoDis;if(typeof sv.autoEq==='boolean')me.autoEq=sv.autoEq;if(typeof sv.autoLoot==='boolean')me.autoLoot=sv.autoLoot;if(sv.adv3&&typeof sv.adv3==='object')for(const k of ['knight','mage','rogue','archer','samurai','lancer','shaman'])me.adv3[k]=ADV3[sv.adv3[k]]?sv.adv3[k]:'';me.awk=Math.max(0,Math.min(100,+sv.awk||0));me.adv4={knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''};if(sv.adv4&&typeof sv.adv4==='object')for(const k of ['knight','mage','rogue','archer','samurai','lancer','shaman'])me.adv4[k]=ADV4[sv.adv4[k]]?sv.adv4[k]:'';me.adv5={knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''};if(sv.adv5&&typeof sv.adv5==='object')for(const k of ['knight','mage','rogue','archer','samurai','lancer','shaman'])me.adv5[k]=ADV4[sv.adv5[k]]?sv.adv5[k]:'';me.rb=Math.max(0,Math.min(999,Math.round(+sv.rb||0)));me.tr={};if(sv.tr&&typeof sv.tr==='object')for(const k in sv.tr)if(TRAIT_BY[k])me.tr[k]=Math.max(0,Math.min(traitMax(k),Math.round(+sv.tr[k]||0)));while(traitPts()<0){const k=Object.keys(me.tr).find(k=>me.tr[k]>0);if(!k)break;me.tr[k]--}me.revAt=+sv.revAt||0;me.att=sv.att&&typeof sv.att==='object'?{last:String(sv.att.last||'').slice(0,10),streak:Math.max(0,Math.round(+sv.att.streak||0))}:null;me.dq=sv.dq&&typeof sv.dq==='object'&&Array.isArray(sv.dq.list)?{day:String(sv.dq.day),list:sv.dq.list.slice(0,3).map(m=>({k:String(m.k),name:String(m.name).slice(0,40),goal:+m.goal||1,p:+m.p||0,done:!!m.done}))}:null;me.st={};if(sv.st&&typeof sv.st==='object')for(const k of ['kills','boss','gods','dis','leg'])me.st[k]=Math.max(0,+sv.st[k]||0);me.achN=Math.max(0,Math.round(+sv.achN||0));me.tlvMax=Math.max(+sv.tlvMax||0,+sv.tlv||0);{const c=sv.cos&&typeof sv.cos==='object'?sv.cos:{};me.cos={own:Array.isArray(c.own)?c.own.filter(x=>COS_BY[x]||MOUNT_BY[x]):[]};for(const k of ['wing','aura','name','dye','mount'])me.cos[k]=me.cos.own.includes(c[k])?c[k]:''}me.xb=+sv.xb||0;me.db=+sv.db||0;me.xb2=+sv.xb2||0;me.db2=+sv.db2||0;me.pity2=clamp(Math.round(+sv.pity2||0),0,29);me.bagX=Math.max(0,Math.min(100,Math.round(+sv.bagX||0)));me.pity=Math.max(0,Math.min(149,Math.round(+sv.pity||0)));me.unl={};if(sv.unl&&typeof sv.unl==='object')for(const k in sv.unl)if(UNLOCKS.some(u=>u[0]===k))me.unl[k]=1;me.gseen={};if(sv.gseen&&typeof sv.gseen==='object')for(const k in sv.gseen)if(ITEMS[k]&&isGear(k))me.gseen[k]=1;me.cs=sv.cs&&typeof sv.cs==='object'&&sv.cs.n&&typeof sv.cs.n==='object'?{d:String(sv.cs.d||''),free:sv.cs.free?1:0,w:+sv.cs.w||0,n:sv.cs.n,pass:Math.min(+sv.cs.pass||0,Date.now()+400*864e5),passD:String(sv.cs.passD||'')}:null;me.ltd=sv.ltd&&typeof sv.ltd==='object'&&Array.isArray(sv.ltd.got)?{w:+sv.ltd.w,got:sv.ltd.got.slice(0,3)}:null;me.adv6={knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''};if(sv.adv6&&typeof sv.adv6==='object')for(const k of ['knight','mage','rogue','archer','samurai','lancer','shaman'])me.adv6[k]=ADV4[sv.adv6[k]]?sv.adv6[k]:'';me.towerBest=Math.max(0,Math.min(1e5,Math.round(+sv.towerBest||0)));me.duelBest=Math.max(0,Math.min(DUEL_MAX,Math.round(+sv.duelBest||0)));me.udBest=Math.max(0,Math.min(1e5,Math.round(+sv.udBest||0)));{const v=sv.ins||{};me.ins={a:clamp(Math.round(+v.a||0),0,INS_MAX),h:clamp(Math.round(+v.h||0),0,INS_MAX),d:clamp(Math.round(+v.d||0),0,INS_MAX)}}me.wbGot=+sv.wbGot||0;if(sv.adv2&&typeof sv.adv2==='object')for(const k of ['knight','mage','rogue','archer','samurai','lancer','shaman']){const v=sv.adv2[k];me.adv2[k]=v===true?'@':typeof v==='string'&&(ADV2[v]||v==='@')?v:''}me.sk1=!!sv.sk1;if(sv.adv&&typeof sv.adv==='object')for(const k of ['knight','mage','rogue','archer','samurai','lancer','shaman'])me.adv[k]=ADV[sv.adv[k]]?.cls===k?sv.adv[k]:'';if(Array.isArray(sv.pets))me.pets=sv.pets.filter(x=>PET_BY[x]);me.petLv={};if(sv.petLv&&typeof sv.petLv==='object')for(const k in sv.petLv)if(PET_BY[k])me.petLv[k]=clamp(Math.round(+sv.petLv[k]||0),0,PET_LV_MAX);if(typeof sv.pet==='string'&&me.pets.includes(sv.pet))me.pet=sv.pet;if(typeof sv.autoDisOther==='boolean')me.autoDisOther=sv.autoDisOther;if(Array.isArray(sv.autoDisSet))me.autoDisSet=sv.autoDisSet.filter(x=>Number.isInteger(x)&&x>=0&&x<RAR.length);else if([0,1,2,3].includes(sv.autoDisRar))me.autoDisSet=Array.from({length:sv.autoDisRar+1},(_,i)=>i);if(AUTO_STEPS.includes(sv.autoHp))me.autoHp=sv.autoHp;if(AUTO_STEPS.includes(sv.autoMp))me.autoMp=sv.autoMp;setAutoBtns();
+  me.cls=(['mage','rogue','archer','samurai','lancer','shaman'].includes(sv.cls)?sv.cls:'knight');me.gotStaff=!!sv.gotStaff;me.gotRd=!!sv.gotRd;me.gotBw=!!sv.gotBw;me.gotKt=!!sv.gotKt;me.lvms=Math.max(0,Math.min(8,Math.floor(+sv.lvms||0)));me.eqIL={};me.slotE={};for(const [k] of EQ_KINDS){const a=Math.round(+(sv.eqIL&&sv.eqIL[k])||0),b=Math.round(+(sv.slotE&&sv.slotE[k])||0);if(a>0)me.eqIL[k]=Math.min(999,a);if(b>0)me.slotE[k]=Math.min(LEG_CAP*2,b)}me.gotSp=!!sv.gotSp;me.gotEo=!!sv.gotEo;me.ki=Math.max(0,Math.min(100,+sv.ki||0));me.bsrBest=Math.max(0,Math.floor(+sv.bsrBest||0));me.stree=sv.stree&&typeof sv.stree==='object'?sv.stree:{};me.altar=sv.altar&&typeof sv.altar==='object'?{lv:Math.max(0,Math.floor(+sv.altar.lv||0)),pt:Math.max(0,+sv.altar.pt||0)}:null;me.gshop=sv.gshop&&typeof sv.gshop==='object'&&sv.gshop.n?sv.gshop:null;me.eqLk=(sv.eqLk&&typeof sv.eqLk==='object')?sv.eqLk:{};me.eqPre=Array.isArray(sv.eqPre)?sv.eqPre.slice(0,3):[];me.raidClr=sv.raidClr||{};me.rbTP=sv.rbTP||0;setTimeout(()=>{try{grantRbMs(true)}catch{}},0);me.autoDis=!!sv.autoDis;if(typeof sv.autoEq==='boolean')me.autoEq=sv.autoEq;if(typeof sv.autoLoot==='boolean')me.autoLoot=sv.autoLoot;if(sv.adv3&&typeof sv.adv3==='object')for(const k of ['knight','mage','rogue','archer','samurai','lancer','shaman'])me.adv3[k]=ADV3[sv.adv3[k]]?sv.adv3[k]:'';me.awk=Math.max(0,Math.min(100,+sv.awk||0));me.adv4={knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''};if(sv.adv4&&typeof sv.adv4==='object')for(const k of ['knight','mage','rogue','archer','samurai','lancer','shaman'])me.adv4[k]=ADV4[sv.adv4[k]]?sv.adv4[k]:'';me.adv5={knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''};if(sv.adv5&&typeof sv.adv5==='object')for(const k of ['knight','mage','rogue','archer','samurai','lancer','shaman'])me.adv5[k]=ADV4[sv.adv5[k]]?sv.adv5[k]:'';me.rb=Math.max(0,Math.min(999,Math.round(+sv.rb||0)));me.tr={};if(sv.tr&&typeof sv.tr==='object')for(const k in sv.tr)if(TRAIT_BY[k])me.tr[k]=Math.max(0,Math.min(traitMax(k),Math.round(+sv.tr[k]||0)));while(traitPts()<0){const k=Object.keys(me.tr).find(k=>me.tr[k]>0);if(!k)break;me.tr[k]--}me.revAt=+sv.revAt||0;me.att=sv.att&&typeof sv.att==='object'?{last:String(sv.att.last||'').slice(0,10),streak:Math.max(0,Math.round(+sv.att.streak||0))}:null;me.dq=sv.dq&&typeof sv.dq==='object'&&Array.isArray(sv.dq.list)?{day:String(sv.dq.day),list:sv.dq.list.slice(0,3).map(m=>({k:String(m.k),name:String(m.name).slice(0,40),goal:+m.goal||1,p:+m.p||0,done:!!m.done}))}:null;me.st={};if(sv.st&&typeof sv.st==='object')for(const k of ['kills','boss','gods','dis','leg'])me.st[k]=Math.max(0,+sv.st[k]||0);me.achN=Math.max(0,Math.round(+sv.achN||0));me.tlvMax=Math.max(+sv.tlvMax||0,+sv.tlv||0);{const c=sv.cos&&typeof sv.cos==='object'?sv.cos:{};me.cos={own:Array.isArray(c.own)?c.own.filter(x=>COS_BY[x]||MOUNT_BY[x]):[]};for(const k of ['wing','aura','name','dye','mount'])me.cos[k]=me.cos.own.includes(c[k])?c[k]:''}me.xb=+sv.xb||0;me.db=+sv.db||0;me.xb2=+sv.xb2||0;me.db2=+sv.db2||0;me.pity2=clamp(Math.round(+sv.pity2||0),0,29);me.bagX=Math.max(0,Math.min(100,Math.round(+sv.bagX||0)));me.pity=Math.max(0,Math.min(149,Math.round(+sv.pity||0)));me.unl={};if(sv.unl&&typeof sv.unl==='object')for(const k in sv.unl)if(UNLOCKS.some(u=>u[0]===k))me.unl[k]=1;me.gseen={};if(sv.gseen&&typeof sv.gseen==='object')for(const k in sv.gseen)if(ITEMS[k]&&isGear(k))me.gseen[k]=1;me.cs=sv.cs&&typeof sv.cs==='object'&&sv.cs.n&&typeof sv.cs.n==='object'?{d:String(sv.cs.d||''),free:sv.cs.free?1:0,w:+sv.cs.w||0,n:sv.cs.n,pass:Math.min(+sv.cs.pass||0,Date.now()+400*864e5),passD:String(sv.cs.passD||'')}:null;me.ltd=sv.ltd&&typeof sv.ltd==='object'&&Array.isArray(sv.ltd.got)?{w:+sv.ltd.w,got:sv.ltd.got.slice(0,3)}:null;me.adv6={knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''};if(sv.adv6&&typeof sv.adv6==='object')for(const k of ['knight','mage','rogue','archer','samurai','lancer','shaman'])me.adv6[k]=ADV4[sv.adv6[k]]?sv.adv6[k]:'';me.towerBest=Math.max(0,Math.min(1e5,Math.round(+sv.towerBest||0)));me.duelBest=Math.max(0,Math.min(DUEL_MAX,Math.round(+sv.duelBest||0)));me.udBest=Math.max(0,Math.min(1e5,Math.round(+sv.udBest||0)));{const v=sv.ins||{};me.ins={a:clamp(Math.round(+v.a||0),0,INS_MAX),h:clamp(Math.round(+v.h||0),0,INS_MAX),d:clamp(Math.round(+v.d||0),0,INS_MAX)}}me.wbGot=+sv.wbGot||0;if(sv.adv2&&typeof sv.adv2==='object')for(const k of ['knight','mage','rogue','archer','samurai','lancer','shaman']){const v=sv.adv2[k];me.adv2[k]=v===true?'@':typeof v==='string'&&(ADV2[v]||v==='@')?v:''}me.sk1=!!sv.sk1;if(sv.adv&&typeof sv.adv==='object')for(const k of ['knight','mage','rogue','archer','samurai','lancer','shaman'])me.adv[k]=ADV[sv.adv[k]]?.cls===k?sv.adv[k]:'';if(Array.isArray(sv.pets))me.pets=sv.pets.filter(x=>PET_BY[x]);me.petLv={};if(sv.petLv&&typeof sv.petLv==='object')for(const k in sv.petLv)if(PET_BY[k])me.petLv[k]=clamp(Math.round(+sv.petLv[k]||0),0,PET_LV_MAX);if(typeof sv.pet==='string'&&me.pets.includes(sv.pet))me.pet=sv.pet;if(typeof sv.autoDisOther==='boolean')me.autoDisOther=sv.autoDisOther;if(Array.isArray(sv.autoDisSet))me.autoDisSet=sv.autoDisSet.filter(x=>Number.isInteger(x)&&x>=0&&x<RAR.length);else if([0,1,2,3].includes(sv.autoDisRar))me.autoDisSet=Array.from({length:sv.autoDisRar+1},(_,i)=>i);if(AUTO_STEPS.includes(sv.autoHp))me.autoHp=sv.autoHp;if(AUTO_STEPS.includes(sv.autoMp))me.autoMp=sv.autoMp;setAutoBtns();
   if(sv.sbuf&&typeof sv.sbuf==='object')for(const k in sv.sbuf)if(BUFF_BY_ID[k]){const v=Number(sv.sbuf[k]);if(v>0)me.sbuf[k]=Math.min(BUFF_DUR,v)}
   if(sv.eqE&&typeof sv.eqE==='object')for(const [k] of EQ_KINDS)me.eqE[k]=Math.round(clamp((sv.enhV||1)<ENH_VER?convE(Number(sv.eqE[k])||0):Number(sv.eqE[k])||0,0,LEG_CAP));
   if(sv.eq&&typeof sv.eq==='object')for(const [k] of EQ_KINDS){const id=fix(sv.eq[k]);me.eq[k]=(typeof id==='string'&&ITEMS[id]&&ITEMS[id].kind===k)?id:null}
