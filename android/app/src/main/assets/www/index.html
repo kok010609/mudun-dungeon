@@ -1019,6 +1019,7 @@ const HN=['가죽 두건','달빛 투구','포자 모자','해골 투구','용�
 const KN=['가죽 장갑','달빛 건틀릿','포자 장갑','뼈 손아귀','용암 건틀릿','서리 장갑','저주받은 손','황금 건틀릿','심연의 손아귀','공허의 건틀릿'];
 const AD=[1,2,4,6,8,11,14,18,22,27];
 const CPN=['낡은 망토','달빛 망토','포자 망토','뼈 망토','용암 망토','서리 망토','저주받은 망토','황금 망토','심연의 망토','공허의 망토'],SHN=['가죽 어깨','달빛 견갑','포자 견갑','뼈 견갑','용암 견갑','서리 견갑','저주받은 견갑','황금 견갑','심연의 견갑','공허의 견갑'],
+  BLN=['구리 팔찌','달빛 팔찌','포자 팔찌','뼈 팔찌','용암 팔찌','서리 팔찌','저주받은 팔찌','황금 팔찌','심연의 팔찌','공허의 팔찌'],BHN=['구리 브로치','달빛 브로치','포자 브로치','뼈 브로치','용암 브로치','서리 브로치','저주받은 브로치','황금 브로치','심연의 브로치','공허의 브로치'],
   ERN=['구리 귀걸이','달빛 귀걸이','포자 귀걸이','뼈 귀걸이','용암 귀걸이','서리 귀걸이','저주받은 귀걸이','황금 귀걸이','심연의 귀걸이','공허의 귀걸이'],SKN=['나무 방패','달빛 방패','포자 방패','뼈 방패','용암 방패','서리 방패','저주받은 방패','황금 방패','심연의 방패','공허의 방패'],
   TMN=['낡은 마도서','달빛 마도서','포자 마도서','뼈 마도서','용암 마도서','서리 마도서','저주받은 마도서','황금 마도서','심연의 마도서','공허의 마도서'],PCN=['천 표창 주머니','달빛 표창 주머니','포자 표창 주머니','뼈 표창 주머니','용암 표창 주머니','서리 표창 주머니','저주받은 표창 주머니','황금 표창 주머니','심연의 표창 주머니','공허의 표창 주머니'];
 const BWN=['나무 활','달빛 활','포자 활','뼈 활','용암 활','서리 활','저주받은 활','황금 활','심연의 활','공허의 활'],QVN=['가죽 화살통','달빛 화살통','포자 화살통','뼈 화살통','용암 화살통','서리 화살통','저주받은 화살통','황금 화살통','심연의 화살통','공허의 화살통'];
@@ -1029,7 +1030,7 @@ const BTN=['가죽 벨트','달빛 벨트','포자 벨트','뼈 벨트','용암 
 const PTN=['가죽 바지','달빛 각반','포자 바지','뼈 각반','용암 각반','서리 각반','저주받은 하의','황금 각반','심연의 하의','공허의 하의'];
 const rarOfT=T=>T<2?0:T<5?1:T<8?2:T<20?3:4;
 for(let T=10;T<TIERS.length;T++){const P=TIERS[T].pre,k=T-9;
-  RDN.push(`${P} 쌍단검`);BWN.push(`${P} 활`);KTN.push(`${P} 카타나`);SPRN.push(`${P} 창`);LGN.push(`${P} 완갑`);EON.push(`${P} 정령봉`);CHN.push(`${P} 부적`);WKN.push(`${P} 와키자시`);QVN.push(`${P} 화살통`);CPN.push(`${P} 망토`);SHN.push(`${P} 견갑`);ERN.push(`${P} 귀걸이`);SKN.push(`${P} 방패`);TMN.push(`${P} 마도서`);PCN.push(`${P} 표창 주머니`);BTN.push(`${P} 벨트`);PTN.push(`${P} 각반`);WN.push(`${P} 검`);DN.push(`${P} 단검`);GN.push(`${P} 대검`);SN.push(`${P} 지팡이`);AN.push(`${P} 갑옷`);HN.push(`${P} 투구`);KN.push(`${P} 건틀릿`);
+  RDN.push(`${P} 쌍단검`);BWN.push(`${P} 활`);KTN.push(`${P} 카타나`);SPRN.push(`${P} 창`);LGN.push(`${P} 완갑`);EON.push(`${P} 정령봉`);CHN.push(`${P} 부적`);WKN.push(`${P} 와키자시`);QVN.push(`${P} 화살통`);CPN.push(`${P} 망토`);SHN.push(`${P} 견갑`);ERN.push(`${P} 귀걸이`);BLN.push(`${P} 팔찌`);BHN.push(`${P} 브로치`);SKN.push(`${P} 방패`);TMN.push(`${P} 마도서`);PCN.push(`${P} 표창 주머니`);BTN.push(`${P} 벨트`);PTN.push(`${P} 각반`);WN.push(`${P} 검`);DN.push(`${P} 단검`);GN.push(`${P} 대검`);SN.push(`${P} 지팡이`);AN.push(`${P} 갑옷`);HN.push(`${P} 투구`);KN.push(`${P} 건틀릿`);
   WA.push(Math.round(38+k*14+k*k*.6));WL.push(Math.min(16,13+Math.floor(k/7)));WC.push(TIERS[T].pal.a);AD.push(Math.round(27+k*6+k*k*.2))}
 // 아이템 설명은 능력치에서 자동으로 만듦
 function descOf(it){const d=[];
@@ -1038,7 +1039,7 @@ function descOf(it){const d=[];
   if(it.spd)d.push(`이동 속도 +${Math.round(it.spd*100)}%`);if(it.sk)d.push(`스킬 피해 +${Math.round(it.sk*100)}%`);
   if(it.mpr)d.push(`마나 회복 +${it.mpr}/초`);if(it.cls)d.push(({knight:'기사',mage:'마법사',rogue:'도적',archer:'궁수',samurai:'사무라이',lancer:'창술사',shaman:'정령사'}[it.cls]||'')+' 전용');if(it.ls)d.push(`흡혈 ${Math.round(it.ls*100)}%`);return d.join(' · ')}
 const GEAR=(id,o)=>{ITEMS[id]=o;o.desc=o.desc||descOf(o)};
-const GPRE=['w','d','g','st','rd','bw','kt','a','h','k','bt','pt','cp','sh','er','sk','tm','pc','qv','wk','sp','lg','eo','ch'];
+const GPRE=['w','d','g','st','rd','bw','kt','a','h','k','bt','pt','cp','sh','er','sk','tm','pc','qv','wk','sp','lg','eo','ch','bl','bh'];
 for(let T=0;T<TIERS.length;T++){
   const r=rarOfT(T),c=WC[T],ac=mix(WC[T],'#8a6a4a',.35);
   GEAR('w'+T,{name:WN[T],kind:'weapon',cls:'knight',rar:r,icon:'sword', atk:WA[T],len:WL[T],col:c,glow:T>=1,tier:T,price:[45,130,280][T]});
@@ -1060,6 +1061,8 @@ for(let T=0;T<TIERS.length;T++){
   GEAR('cp'+T,{name:CPN[T],kind:'cape',rar:r,icon:'cape',def:Math.max(1,Math.round(AD[T]*.3)),hp:8+T*10,col:ac,tier:T,price:[30,90,200][T]});
   GEAR('sh'+T,{name:SHN[T],kind:'shoulder',rar:r,icon:'shoulder',def:Math.max(1,Math.round(AD[T]*.5)),atk:Math.round(WA[T]*.12),col:ac,tier:T,price:[30,90,200][T]});
   GEAR('er'+T,{name:ERN[T],kind:'earring',rar:r,icon:'earring',crit:2+Math.floor(T/10),mp:5+T*4,hp:5+T*5,col:ac,tier:T,price:[30,90,200][T]});
+  GEAR('bl'+T,{name:BLN[T],kind:'bracelet',rar:r,icon:'bracelet',atk:Math.max(1,Math.round(WA[T]*.15)),crit:1+Math.floor(T/10),col:ac,tier:T,price:[30,90,200][T]});
+  GEAR('bh'+T,{name:BHN[T],kind:'brooch',rar:r,icon:'brooch',hp:8+T*6,def:Math.max(1,Math.round(AD[T]*.25)),mp:5+T*3,col:ac,tier:T,price:[30,90,200][T]});
   GEAR('sk'+T,{name:SKN[T],kind:'sub',cls:'knight',rar:r,icon:'shield',def:Math.max(1,Math.round(AD[T]*.8)),hp:10+T*10,col:ac,tier:T,price:[35,100,220][T]});
   GEAR('tm'+T,{name:TMN[T],kind:'sub',cls:'mage',rar:r,icon:'tome',atk:Math.round(WA[T]*.25),mp:10+T*8,col:ac,tier:T,price:[35,100,220][T]});
   GEAR('pc'+T,{name:PCN[T],kind:'sub',cls:'rogue',rar:r,icon:'pouch',atk:Math.round(WA[T]*.2),crit:3+Math.floor(T/8),col:ac,tier:T,price:[35,100,220][T]});
@@ -1167,7 +1170,7 @@ const BUFFS=['bf_atk','bf_def','bf_spd','bf_exp'];
 for(const id in ITEMS)ITEMS[id].id=id;
 const ACC=ACCDEF.map(a=>a[0]);
 const LEGACY={sw_iron:'w0',sw_silver:'w1',sw_fire:'w4',sw_moon:'w8',ar_leather:'a0',ar_iron:'a1',ar_knight:'a5',bt_wind:'b0',ring_life:'r0'};
-const EQ_KINDS=[['weapon','무기'],['helm','투구'],['armor','갑옷'],['glove','장갑'],['boots','신발'],['ring','반지'],['amulet','목걸이'],['belt','벨트'],['pants','하의'],['cape','망토'],['shoulder','어깨'],['earring','귀걸이'],['sub','보조무기'],['emblem','엠블럼']];
+const EQ_KINDS=[['weapon','무기'],['helm','투구'],['armor','갑옷'],['glove','장갑'],['boots','신발'],['ring','반지'],['amulet','목걸이'],['belt','벨트'],['pants','하의'],['cape','망토'],['shoulder','어깨'],['earring','귀걸이'],['bracelet','팔찌'],['brooch','브로치'],['sub','보조무기'],['emblem','엠블럼']];
 const STOCK=['herb','pot_s','pot_l','pot_x','mp_s','mp_l','sc_w','sc_a','bf_atk','bf_def','bf_spd','bf_exp','home','st0','st1','st2','rd0','rd1','rd2','bw0','bw1','bw2','w0','d0','g0','a0','h0','k0','b2','w1','d1','g1','a1','h1','k1','w2','d2','g2','a2','h2','k2'];
 const sellOf=id=>{const it=ITEMS[id];return it.price?Math.floor(it.price*0.4):(it.rar+1)*12*(1+(it.tier??it.minT??0))};
 
@@ -1551,6 +1554,8 @@ const ICON={
   cape:["..oooo..",".occcco.","occwccco","occcccco","occcccco","occcccco","occcocco","ooo..ooo"],
   shoulder:["........",".ooo.ooo","occo.occo".replace('occo.occo','occo.occ'),"ocwo.owc","oooo.ooo","........","........","........"],
   earring:["...oo...","...yy...","...oo...","..occo..","..ocwo..","..occo..","...oo...","........"],
+  bracelet:["........","..oooo..",".occwco.","oc....co","oc....co",".occcco.","..oyyo..","........"],
+  brooch:["...oo...","..oyyo..",".oyccyo.","oycwccyo","oyccccyo",".oyccyo.","..oyyo..","...oo..."],
   shield:[".oooooo.","occccco.".replace('o.','co'),"occwccco","occyycco","occyycco","occccco.".replace('o.','co'),".occcco.","..oooo.."],
   tome:[".oooooo.","oyyyyyyo","oycccwyo","oycwccyo","oycccyyo","oyyyyyyo","oooooooo","........"],
   pouch:["..oyyo..",".oooooo.","occcccco","occwccco","occcccco","occcccco",".oooooo.","........"],
@@ -1799,7 +1804,7 @@ function reloadFromSave(sv){if(!sv)return;applySave(sv);recalc();me.hp=me.maxHp;
 const needExp=l=>Math.round((20+15*(l-1)+Math.round(.5*Math.max(0,l-40)**2)+Math.round(.0015*Math.max(0,l-150)**3))*(l>650?1+((l-650)/50)**1.5:1));   // 650레벨부터 훨씬 가파르게   // 150레벨부터 필요 경험치가 더 가파르게
 const me={x:0,y:0,dir:'down',moving:false,nick:'모험가',color:0,hair:0,lvl:1,exp:0,hp:20,maxHp:20,mp:30,maxMp:30,shieldT:0,spinT:0,dashT:0,dashV:[0,0],dashHit:null,skill:'',skillAt:0,
   atkT:-9,atkAt:0,iframe:0,dead:0,bubble:'',bubbleAt:0,bubbleUntil:0,
-  cls:'knight',adv:{knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''},adv2:{knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''},adv3:{knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''},adv4:{knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''},adv5:{knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''},adv6:{knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''},rb:0,tr:{},revAt:0,att:null,dq:null,st:{},achN:0,tlvMax:0,cos:{own:[]},xb:0,db:0,bagX:0,pity:0,ltd:null,towerBest:0,duelBest:0,ins:{a:0,h:0,d:0},awk:0,sk1:false,gotStaff:false,pets:[],pet:'',autoDisOther:true,autoDisSet:[],autoLoot:true,autoEq:true,autoDis:false,autoHp:.5,autoMp:.3,sbuf:{},eqE:{},eqO:{},gold:0,bag:[],eq:{weapon:null,helm:null,armor:null,glove:null,boots:null,ring:null,amulet:null,belt:null,pants:null,cape:null,shoulder:null,earring:null,sub:null,emblem:null},kills:{},cleared:[],buffs:{atk:0,def:0,spd:0,exp:0}};
+  cls:'knight',adv:{knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''},adv2:{knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''},adv3:{knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''},adv4:{knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''},adv5:{knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''},adv6:{knight:'',mage:'',rogue:'',archer:'',samurai:'',lancer:'',shaman:''},rb:0,tr:{},revAt:0,att:null,dq:null,st:{},achN:0,tlvMax:0,cos:{own:[]},xb:0,db:0,bagX:0,pity:0,ltd:null,towerBest:0,duelBest:0,ins:{a:0,h:0,d:0},awk:0,sk1:false,gotStaff:false,pets:[],pet:'',autoDisOther:true,autoDisSet:[],autoLoot:true,autoEq:true,autoDis:false,autoHp:.5,autoMp:.3,sbuf:{},eqE:{},eqO:{},gold:0,bag:[],eq:{weapon:null,helm:null,armor:null,glove:null,boots:null,ring:null,amulet:null,belt:null,pants:null,cape:null,shoulder:null,earring:null,bracelet:null,brooch:null,sub:null,emblem:null},kills:{},cleared:[],buffs:{atk:0,def:0,spd:0,exp:0}};
 const ME0=JSON.parse(JSON.stringify(me));
 function resetMe(){const c=JSON.parse(JSON.stringify(ME0));for(const k in c)me[k]=c[k];me.awakeT=0;me.t4cd=[0,0];me.tlv=0;me.texp=0;me.sbuf={};me.eqO={};me.pets=[];me.pet=''}
 const IL_PER=.03,ilMul=il=>1+IL_PER*(il||0);   // 아이템 레벨: 1마다 기본 공격·방어·체력·마나 +3%
@@ -1813,7 +1818,7 @@ function enhBonus(it,e,f){if(!e||!it)return 0;if(e>LEG_BASE){const s2=e-LEG_BASE
 const OPTDEF={crit:['치명타','%',5,1],atkp:['공격력','%',10,1],defp:['방어','%',10,1],hpp:['최대 체력','%',10,1],mpp:['최대 마나','%',10,1],
   sk:['스킬 피해','%',10,100],ls:['흡혈','%',3,100],spd:['이동 속도','%',5,100],mpr:['마나 회복','/초',5,1],exp:['경험치','%',5,1],drop:['드롭률','%',5,1],gold:['금화 획득','%',10,1]};
 const OPTPOOL={weapon:['crit','atkp','sk','ls','spd','exp','drop','gold'],helm:['hpp','defp','mpp','mpr','crit','exp','drop'],armor:['hpp','defp','mpp','mpr','ls','drop','gold'],
-  glove:['crit','atkp','sk','ls','defp','gold'],belt:['hpp','defp','mpp','mpr','exp','gold'],cape:['hpp','defp','spd','exp','gold','drop'],shoulder:['atkp','defp','hpp','crit','ls','sk'],earring:['crit','mpp','mpr','sk','exp','drop'],sub:['atkp','defp','crit','sk','hpp','ls'],pants:['hpp','defp','spd','ls','drop','exp'],boots:['spd','defp','hpp','exp','drop','gold'],ring:Object.keys(OPTDEF),amulet:Object.keys(OPTDEF)};
+  glove:['crit','atkp','sk','ls','defp','gold'],belt:['hpp','defp','mpp','mpr','exp','gold'],cape:['hpp','defp','spd','exp','gold','drop'],shoulder:['atkp','defp','hpp','crit','ls','sk'],earring:['crit','mpp','mpr','sk','exp','drop'],bracelet:['crit','atkp','sk','ls','gold','drop'],brooch:['hpp','defp','mpp','mpr','exp','drop'],sub:['atkp','defp','crit','sk','hpp','ls'],pants:['hpp','defp','spd','ls','drop','exp'],boots:['spd','defp','hpp','exp','drop','gold'],ring:Object.keys(OPTDEF),amulet:Object.keys(OPTDEF)};
 const OPTN=[[0,1],[1,2],[2,3],[3,4],[4,5],[5,5],[5,5],[5,5],[5,5],[5,5],[5,5],[5,5],[5,5],[5,5],[5,5],[5,5],[5,5]];
 function rollOpts(id){const it=ITEMS[id];const pool=OPTPOOL[it&&it.kind];if(!pool)return undefined;const [a,b]=OPTN[it.rar]||[0,1],n=Math.min(5,a+Math.floor(Math.random()*(b-a+1)));
   const keys=[...pool].sort(()=>Math.random()-.5).slice(0,n);return keys.map(k=>{const mx=OPTDEF[k][2],v=it.gm||it.legend?mx:1+Math.floor(mx*Math.pow(Math.random(),1.6));return [k,Math.min(mx,v)/OPTDEF[k][3]]})}
@@ -3435,7 +3440,7 @@ CRAFT.push(
   {id:'c_enh',name:'확정 강화',need:[['star_st',3],['lb_stone',5]],dust:200000,slot:'eq',desc:'별의 돌 3 + 한계돌파석 5 + 가루 20만 → 착용 장비 하나 강화 +1 (실패 없음, 최대 강화까지)',give:k=>{const id=me.eq[k];me.eqE[k]=(me.eqE[k]||0)+1;recalc();return `${nameOf(id,me.eqE[k],me.eqIL&&me.eqIL[k])} (확정 강화)`}},
   {id:'c_lb2',name:'별의 돌 분해',need:[['star_st',1]],dust:0,desc:'별의 돌 1개 → 한계돌파석 2개',give:()=>{addItem('lb_stone',2);return '한계돌파석 2개'}});
 const genBag=()=>me.bag.filter(s=>{const it=ITEMS[s.id];return it.genesis&&!it.inf}).length;
-const CR_KINDS=[['weapon','무기'],['helm','투구'],['armor','갑옷'],['glove','장갑'],['belt','벨트'],['pants','하의'],['cape','망토'],['shoulder','어깨'],['earring','귀걸이'],['sub','보조무기']];
+const CR_KINDS=[['weapon','무기'],['helm','투구'],['armor','갑옷'],['glove','장갑'],['belt','벨트'],['pants','하의'],['cape','망토'],['shoulder','어깨'],['earring','귀걸이'],['bracelet','팔찌'],['brooch','브로치'],['sub','보조무기']];
 function craftOk(R,k){if(countItem('dust')<R.dust)return false;if(R.id==='c_box3'&&me.bag.length>=bagMax())return false;if(R.id==='c_enh'&&k&&me.eq[k]&&(me.eqE[k]||0)>=(ITEMS[me.eq[k]].legend?LEG_CAP:20))return false;if(R.gen&&genBag()<R.gen)return false;if(R.have&&R.have()<3)return false;for(const [id,n] of R.need)if(countItem(id)<n)return false;if(R.id==='c_legend'&&topTier()<TRANS_FROM)return false;if(R.slot==='eq'&&!(k&&me.eq[k]))return false;return true}
 function doCraft(R,k){if(!craftOk(R,k))return;for(const [id,n] of R.need)takeN(id,n);if(R.dust)takeN('dust',R.dust);const out=R.give(k);
   if(!out){sys('만들 수 없어요.');return}invChanged();persist();toast(`제작 완료: ${out}`,3000);sys(`[제작소] ${R.name} → ${out}`);
@@ -3972,7 +3977,7 @@ const ROUL=[['경험치 10배\n2시간','#ffcc4d',10,()=>{addItem('exp10h',1);re
   ['가루\n150만','#c9a8ff',10,()=>{addItem('dust',15e5);return '마력 가루 150만'}],['가루\n50만','#9a8ac8',15,()=>{addItem('dust',5e5);return '마력 가루 50만'}],
   ['별의 돌\n×2','#ff9ad8',12,()=>{addItem('star_st',2);return '별의 돌 2개'}],['한계돌파석\n×5','#ffa31a',12,()=>{addItem('lb_stone',5);return '한계돌파석 5개'}],
   ['엘릭서\n×30','#6ee7b7',19.7,()=>{addItem('pot_x',30);return '엘릭서 30병'}],['+1\n강화권','#9dffa8',.3,()=>{addItem('en_1',1);return '+1 장비 강화권 (초대박!)'}],['꽝\n가루 10만','#5a5a6a',5,()=>{addItem('dust',1e5);return '꽝… 마력 가루 10만'}],
-  ['내 무기','#ff7a5a',5,()=>roulGear(['weapon'])],['장신구','#5ae0ff',7,()=>roulGear(['ring','amulet','earring'])]];
+  ['내 무기','#ff7a5a',5,()=>roulGear(['weapon'])],['장신구','#5ae0ff',7,()=>roulGear(['ring','amulet','earring','bracelet','brooch'])]];
 /* 룰렛 장비: 내 직업 · 내가 깬 가장 높은 층 기준, 45층 이상이면 [초월] 등급 */
 function roulGear(kinds){const T=Math.max(0,Math.min(TIERS.length-1,topTier())),pres=GPRE.filter(p=>{const it=ITEMS[p+0];return it&&kinds.includes(it.kind)&&(!it.cls||it.cls===me.cls)});if(!pres.length){addItem('dust',5e5);return '마력 가루 50만'}
   if(me.bag.length>=bagMax()){addItem('dust',2e6);return '가방이 가득 차서 마력 가루 200만'}const pre=pick(pres);let id=(T>=TRANS_FROM?'x':'')+pre+T;if(!ITEMS[id])id=pre+T;addItem(id,1,0,rollOpts(id));toast(`룰렛에서 장비! ${ITEMS[id].name}`,3000);return ITEMS[id].name}
@@ -5258,7 +5263,7 @@ function pkIdent(z,fc){const T=TIERS[z.T],lv=T.lv,cls=fc||pick(['knight','mage',
     w:'',gear:pkGear(z.T,cls),skills,fx:A&&tier>=1?(tier>=2?a2:k1):''}}
 /* PK 장비: 층에 맞는 무기·방어구·장신구를 모두 착용 (강화 +3~+20, 랜덤 접두어, 45층부터 초월 장비 확률). 쓰러뜨리면 그중 하나(25%로 둘)를 떨어뜨림 */
 function pkGear(T,cls){const g={},up=pre=>T>=TRANS_FROM&&Math.random()<(T>=HELL_FROM?.35:.2)&&ITEMS['x'+pre+T]?'x'+pre+T:pre+T,emax=T>=HELL_FROM?20:T>=50?15:10;
-  const wp=cls==='knight'?pick(['w','d','g']):cls==='rogue'?'rd':cls==='archer'?'bw':'st';g.weapon=up(wp);g.helm=up('h');g.armor=up('a');g.glove=up('k');g.belt=up('bt');g.pants=up('pt');g.cape=up('cp');g.shoulder=up('sh');g.earring=up('er');g.sub=up(cls==='knight'?'sk':cls==='rogue'?'pc':cls==='archer'?'qv':'tm');
+  const wp=cls==='knight'?pick(['w','d','g']):cls==='rogue'?'rd':cls==='archer'?'bw':'st';g.weapon=up(wp);g.helm=up('h');g.armor=up('a');g.glove=up('k');g.belt=up('bt');g.pants=up('pt');g.cape=up('cp');g.shoulder=up('sh');g.earring=up('er');g.bracelet=up('bl');g.brooch=up('bh');g.sub=up(cls==='knight'?'sk':cls==='rogue'?'pc':cls==='archer'?'qv':'tm');
   for(const k of ['boots','ring','amulet']){const c=ACC.filter(a=>ITEMS[a].kind===k&&ITEMS[a].minT<=T);if(c.length)g[k]=pick(c)}
   const out={};for(const k in g){const id=g[k];if(!ITEMS[id])continue;out[k]={id,e:isGear(id)?Math.min(20,3+Math.floor(Math.random()*(emax-2))):0,o:OPTPOOL[ITEMS[id].kind]?rollOpts(id):[]}}return out}
 /* 무한의 탑 「랭커의 그림자」: 탑 랭킹에 있는 실제 플레이어의 닉네임·직업·전직을 본뜬 PK (랭킹이 없으면 내 그림자) */
@@ -6232,7 +6237,7 @@ function slotEl(id,n,isSel,onClick,label,e,oc=0,lk=false){
   return b;
 }
 /* 장비창: 왼쪽 7칸 · 캐릭터 · 오른쪽 7칸, 아래 능력치·세트 / 가운데 가방(분류 탭) / 오른쪽 설명·비교 */
-const DOLL_L=['weapon','helm','armor','glove','belt','pants','boots'],DOLL_R=['sub','cape','shoulder','earring','ring','amulet','emblem'];let bagTab='all';
+const DOLL_L=['weapon','helm','armor','glove','belt','pants','boots','bracelet'],DOLL_R=['sub','cape','shoulder','earring','ring','amulet','brooch','emblem'];let bagTab='all';
 const BAG_TABS=[['all','전체'],['gear','장비'],['use','소비'],['mat','재료']];
 const bagCat=id=>{const it=ITEMS[id];if(!it)return 'mat';if(isGear(id))return 'gear';if(it.kind==='potion')return 'use';return 'mat'};
 const GST=[['atk','공격'],['def','방어'],['hp','체력'],['mp','마나'],['crit','치명타','%'],['sk','스킬 피해','x%'],['spd','이동 속도','x%'],['ls','흡혈','x%'],['mpr','마나 회복']];
