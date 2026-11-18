@@ -5673,6 +5673,8 @@ function dropLoot(m,D){ // 극악 드롭: 금화는 그대로, 나머지는 매�
   if(T>=TRANS_FROM&&r()<(D.god?.25:D.boss?.09:E?.009:.0015))list.push(['x'+gearT()+T,1]);if(T>=TRANS_FROM&&r()<(D.god?.002:D.boss?.0006:E?.00006:.00001)*SET_DROP)list.push(['L'+gearT()+T,1]);if(Z&&Z.rift)riftDrops(D,list,r);if(Z&&Z.realm)realmDrops(D,list,r);   /* 레전드: 초월의 1/100 (극악) */if((T>=89&&D.god&&r()<(T>=HELL_FROM?.5:.1))||(T>=HELL_FROM&&D.boss&&!D.god&&r()<.2))list.push(['mark3',1]);if(T>=HELL_FROM&&(D.god?r()<.3:D.boss&&r()<.08))list.push(['core4',1]);   // 초월: 일반 0.15% · 정예 0.9% · 보스 9% · 신 25%
   if(E&&nx>T&&r()<.02)list.push([gearT()+nx,1]);
   const acc=ACC.filter(a=>ITEMS[a].minT<=T);if(acc.length&&P(.2,.02,.002))list.push([pick(acc),1]);
+  /* 장신구 드롭: 일반 1% · 정예 10% · 보스 50% (귀걸이·팔찌·브로치, 45층 이상이면 3%로 [초월]) */
+  if(P(.5,.1,.01)){let id=pick(['er','bl','bh'])+T;if(T>=TRANS_FROM&&r()<.03&&ITEMS['x'+id])id='x'+id;if(ITEMS[id])list.push([id,1])}
   if(P(.1,.02,.003))list.push([pick(BUFFS),1]);
   if(P(0,.015,.002))list.push(['home',1]);
   const scN=D.god?1:D.boss?(r()<.5?1:0):P(0,.02,.002)?1:0;for(let k=0;k<scN;k++)list.push([r()<.5?'sc_w':'sc_a',1]);
