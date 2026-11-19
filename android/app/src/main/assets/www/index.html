@@ -6288,9 +6288,9 @@ function renderBag(){
   const id=sel?(sel.from==='eq'?me.eq[sel.k]:me.bag[sel.i]?.id):null;
   if(!id){det.textContent=`아이템을 누르면 설명과 사용 버튼이 나와요. (${me.bag.length}/${bagMax()}칸)`;return}
   const it=ITEMS[id];
-  const e=sel.from==='eq'?(me.eqE[sel.k]||0):(me.bag[sel.i]?.e||0);
-  const nm=document.createElement('div');nm.className='nm';nm.style.color=RAR[it.rar][1];nm.textContent=`${nameOf(id,e)}  ·  ${RAR[it.rar][0]}`;
-  const ds=document.createElement('div');ds.textContent=it.desc||'';
+  const e=sel.from==='eq'?(me.eqE[sel.k]||0):(me.bag[sel.i]?.e||0);const il=sel.from==='eq'?((me.eqIL||{})[sel.k]||0):(me.bag[sel.i]?.il||0);
+  const nm=document.createElement('div');nm.className='nm';nm.style.color=RAR[it.rar][1];nm.textContent=`${nameOf(id,e,il)}  ·  ${RAR[it.rar][0]}`;
+  const ds=document.createElement('div');ds.textContent=(it.desc||'')+(il&&isGear(id)?`\n⟨아이템Lv.${il}⟩ 기본 공격·방어·체력·마나 +${Math.round(IL_PER*il*100)}% 적용`:'');ds.style.whiteSpace='pre-line';
   {const oo=sel.from==='eq'?(me.eqO[sel.k]||[]):(me.bag[sel.i]?.o||[]);if(oo.length){const od=document.createElement('div');od.className='opts';od.style.cssText='margin:4px 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:0 12px;font-size:13px;line-height:1.35';
     for(const o of oo){const ln=document.createElement('div');ln.textContent='◆ '+optText(o);const full=o[1]*OPTDEF[o[0]][3]>=OPTDEF[o[0]][2];ln.style.color=full?'#ffd35a':'#7ff0ff';od.appendChild(ln)}ds.append(od)}
     else if(isGear(id)&&OPTPOOL[it.kind]){const od=document.createElement('div');od.style.color='var(--muted)';od.textContent='접두어 없음 (몬스터가 떨어뜨린 장비에만 붙어요)';ds.append(document.createElement('br'),od)}}
