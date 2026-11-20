@@ -555,8 +555,8 @@ body.mobile #act{top:auto;bottom:calc(120px + env(safe-area-inset-bottom,0px))}
   <p class="dexsum" style="margin:0" id="dusum"></p>
   <ul class="dlist" id="dul"></ul>
 </section>
-<section class="panel float wide" id="rift" hidden aria-label="윤회의 균열">
-  <header><h2 style="color:#4affd0">윤회의 균열 · 환생 전용</h2><button class="btn sm alt x" type="button" data-close>닫기</button></header>
+<section class="panel float wide" id="rift" hidden aria-label="장비 보물고">
+  <header><h2 style="color:#ffd35a">장비 보물고 · 장비만 파밍</h2><button class="btn sm alt x" type="button" data-close>닫기</button></header>
   <p class="dexsum" style="margin:0" id="rfsum"></p>
   <ul class="dlist" id="rfl"></ul>
 </section>
@@ -705,7 +705,7 @@ const TIERS=[
   {name:'심연의 틈',     pre:'심연의', lv:30,boss:'심연의 군주',   pal:{a:'#8a5aff',A:'#4a2ab8',l:'#d0c0ff',o:'#1a0a4a',e:'#ff6ad8',x:'#5a3aff'},floor:['#3a3456','#2e2846','#4a4268'],wall:['#28223e','#1c182e','#3c3458'],moss:'#6a3ad8',amb:'#08041a',dark:.78},
   {name:'공허의 왕좌',   pre:'공허의', lv:35,boss:'공허의 왕',     pal:{a:'#3ae8e0',A:'#1a8a96',l:'#c8fffa',o:'#04222a',e:'#ffffff',x:'#3ae8e0'},floor:['#2a2e36','#20232a','#3a3f4a'],wall:['#1a1c22','#121318','#2c3038'],moss:'#1a6a6a',amb:'#020408',dark:.82},
 ];
-const zoneName=id=>id==='town'?'마을':id==='wb'?'월드 보스 전장':/^tw/.test(id)?`무한의 탑 ${id.slice(2)}층`:/^tr/.test(id)?`초월의 수련장 ${id.slice(2)}단계`:/^rr/.test(id)?`윤회 보스 레이드 ${id.slice(2)}`:/^bs/.test(id)?`보스 군단 ${id.slice(2)}단계`:/^rf/.test(id)?`윤회의 균열 ${id.slice(2)}단계`:/^pv/.test(id)?`대련장 ${id.slice(2)}단계`:/^pr/.test(id)?`태초의 영역 ${id.slice(2)}단계`:/^ud/.test(id)?`무한 던전 ${id.slice(2)}층`:TIERS[+id.slice(1)]?.name||'';
+const zoneName=id=>id==='town'?'마을':id==='wb'?'월드 보스 전장':/^tw/.test(id)?`무한의 탑 ${id.slice(2)}층`:/^vt/.test(id)?`장비 보물고 ${id.slice(2)}단계`:/^tr/.test(id)?`초월의 수련장 ${id.slice(2)}단계`:/^rr/.test(id)?`윤회 보스 레이드 ${id.slice(2)}`:/^bs/.test(id)?`보스 군단 ${id.slice(2)}단계`:/^rf/.test(id)?`윤회의 균열 ${id.slice(2)}단계`:/^pv/.test(id)?`대련장 ${id.slice(2)}단계`:/^pr/.test(id)?`태초의 영역 ${id.slice(2)}단계`:/^ud/.test(id)?`무한 던전 ${id.slice(2)}층`:TIERS[+id.slice(1)]?.name||'';
 
 /* ---------- 몬스터 종류 ---------- */
 const SPECIES={
@@ -1860,7 +1860,7 @@ function contentAdj(z){let t=-1,g=1;
   if(z.train){t=(z.train-1)*30;g=1-.2*Math.max(0,Math.min(1,(z.train-6)/10))}else if(z.tower){t=500;g=.85}else if(z.rift){t=500;g=.7}else if(z.realm){t=600;g=.65}else if(z.duel){t=Math.min(930,300+(z.duel-1)*70);g=.72}else if(z.id==='wb')t=500;else if(z.T>=ABYSS_FROM&&z.id&&z.id[0]==='d')t=(z.T-ABYSS_FROM)*30;
   if(t<0)return;const k=growthAdj(t)*g;z.hpMul=(z.hpMul||1)*k;z.dmgMul=(z.dmgMul||1)*k;z.gAdj=k}
 function udLeaveCheck(id){if(run&&!String(id).startsWith('ud'))udEnd('leave')}
-function getZone(id){if(!zones[id]){const z=id==='town'?makeTown():id==='wb'?makeWB():id.startsWith('tw')?makeTower(+id.slice(2)):id.startsWith('tr')?makeTrain(+id.slice(2)):id.startsWith('rr')?makeRaid(+id.slice(2)):id.startsWith('bs')?makeBsr(+id.slice(2)):id.startsWith('rf')?makeRift(+id.slice(2)):id.startsWith('pv')?makeDuel(+id.slice(2)):id.startsWith('pr')?makeRealm(+id.slice(2)):id.startsWith('ud')?makeUD(+id.slice(2)):makeDungeon(+id.slice(1));contentAdj(z);vulAdj(z);renderWorld(z);zones[id]=z;populate(z)}return zones[id]}
+function getZone(id){if(!zones[id]){const z=id==='town'?makeTown():id==='wb'?makeWB():id.startsWith('tw')?makeTower(+id.slice(2)):id.startsWith('vt')?makeVault(+id.slice(2)):id.startsWith('tr')?makeTrain(+id.slice(2)):id.startsWith('rr')?makeRaid(+id.slice(2)):id.startsWith('bs')?makeBsr(+id.slice(2)):id.startsWith('rf')?makeRift(+id.slice(2)):id.startsWith('pv')?makeDuel(+id.slice(2)):id.startsWith('pr')?makeRealm(+id.slice(2)):id.startsWith('ud')?makeUD(+id.slice(2)):makeDungeon(+id.slice(1));contentAdj(z);vulAdj(z);renderWorld(z);zones[id]=z;populate(z)}return zones[id]}
 function enterZone(id,silent){udLeaveCheck(id);
   if(id!=='town'&&id!==zoneId){let sd=0;for(const r of remotes.values())if(r.z===id&&r.zs>0){sd=r.zs;break}if(!sd)sd=1+Math.floor(Math.random()*2147483000);
     if(zones[id]&&zones[id].seed!==sd)delete zones[id];nextSeed=sd}
@@ -2064,7 +2064,7 @@ function nextGoal(){const L=me.lvl,hub=()=>togglePanel('hub'),adv=()=>togglePane
   if(!(typeof adv4Of==='function'?adv4Of():me.adv4))return ['4차 전직을 노려 보세요 (전직 창에서 조건 확인)',adv];
   if(tl<TLV_MAX){const k=Math.min(TR_N,1+Math.floor(tl/30));return [`분수대 → 초월의 수련장 ${k}단계에서 레벨 올리기 (Lv.${999+tl}/5000)`,hub]}
   if(rb===0)return ['Lv.5000 달성! 전직 창에서 환생하세요',adv];
-  if(rb<REALM_RB)return [`윤회의 균열 ${rb}단계 도전 · 환생 ${REALM_RB-rb}회 더 하면 태초의 영역`,hub];
+  if(rb<REALM_RB)return [`장비 보물고에서 장비 모으기 · 환생 ${REALM_RB-rb}회 더 하면 태초의 영역`,hub];
   return [`태초의 영역 ${Math.min(REALM_MAX,1+Math.floor((rb-REALM_RB)/REALM_STEP))}단계 도전!`,hub]}
 setInterval(()=>{try{if(started){const el=$('goal');const t='▶ '+nextGoal()[0];if(el.textContent!==t)el.textContent=t}}catch{}},1000);
 function equipBest(){let n=0;
@@ -3587,7 +3587,7 @@ function makeRift(k){k=Math.max(1,Math.min(999,k));const T=ABYSS_FROM+((k-1)%10)
 function riftDrops(D,list,r){const T=TIERS.length-1,gp=()=>gearPre();if(r()<(D.god?.2:D.boss?.05:D.pk?.03:.0005)*SET_DROP)list.push(['R'+gp()+T,1]);
   if(r()<(D.god?1:D.boss?.5:.002))list.push(['lb_stone',D.god?3:1]);if(D.god&&r()<.1)list.push(['tr_reset',1])}
 function renderRift(){const ul=$('rfl');ul.textContent='';const rb=me.rb||0;
-  $('rfsum').textContent=rb?`환생한 사람만 들어가는 던전이에요. 단계 = 환생 횟수까지 열리고, 단계마다 몬스터 레벨이 ★10씩 올라가요 (가장 높은 20단계만 보여요). 몬스터가 매우 강한 대신 [태초 Ⅰ] 등급 장비(레전드 위), 한계돌파석, 특성 초기화권이 나와요. 지금 환생 ${rb}회`:'윤회의 균열은 한 번 이상 환생해야 열려요 (Lv.5000 → 전직 창 J → 환생).';
+  $('rfsum').textContent=rb?`환생한 사람만 들어가는 던전이에요. 단계 = 환생 횟수까지 열리고, 단계마다 몬스터 레벨이 ★10씩 올라가요 (가장 높은 20단계만 보여요). 몬스터가 매우 강한 대신 [태초 Ⅰ] 등급 장비(레전드 위), 한계돌파석, 특성 초기화권이 나와요. 지금 환생 ${rb}회`:'장비 보물고는 Lv.999부터 들어갈 수 있어요.';
   for(let k=Math.max(1,rb-19);k<=Math.max(1,rb)+1;k++){const ok=k<=rb,li=document.createElement('li');li.className=ok?'':'lock';const no=document.createElement('div');no.className='no';no.textContent='R'+k;no.style.color='#4affd0';
     const mid=document.createElement('div');const dn=document.createElement('div');dn.className='dn';dn.textContent=`균열 ${k}단계`;const sm=document.createElement('small');sm.textContent=`몬스터 ${mLv(999+riftLv(k))}급 · 체력 x${(3*riftHpF(k)).toFixed(1)} · 공격 x${(1.8*riftDmgF(k)).toFixed(1)} (심연 10단계 기준)`+(ok?'':` · 환생 ${k}회에 열림`);mid.append(dn,sm);
     const b=document.createElement('button');b.type='button';b.className='btn sm';b.style.background='#4affd0';b.textContent='입장';b.disabled=!ok;b.addEventListener('click',()=>{for(const id in zones)if(id.startsWith('rf'))delete zones[id];enterZone('rf'+k);sys(`윤회의 균열 ${k}단계! 돌아갈 땐 시작 방 포털(E) 또는 귀환(G).`)});li.append(no,mid,b);ul.appendChild(li)}}
@@ -3897,7 +3897,7 @@ function trMons(k){if(k>TR_PRE)return trMons(TR_OLD+1+((k-TR_OLD-1)%(TR_PRE-TR_O
     if(MONIDX[id]==null){MONIDX[id]=MONLIST.length;const D={id,T,tr:k,sp,name:`${pre} ${nm}`,hp:Math.round(ah*S.hpM),dmg:Math.round(ad*S.dmgM),exp:Math.round(ae*S.hpM),speed:S.sp*1.4,move:S.move,glow:!!S.glow,pal:S.pal(P),lvl:LV_MAX};
       D.rad=7;D.hgt=12;MONLIST.push(D)}pool.push(MONIDX[id])});return TRM[k]=pool}
 /* 새 단계 처치 보너스: 한계돌파석 1% · 별의 돌 0.3% */
-function trCount(){const k=Z.train;if(!k)return;me.trKC=me.trKC||{};const n=(me.trKC[k]=(me.trKC[k]||0)+1);if(n>=TR_CLEAR&&(me.trBest||0)<k){me.trBest=k;toast(`${k}단계 돌파! ${k+1}단계가 열렸어요`,3200);sys(`★ 초월의 수련장 ${k}단계 돌파 → ${k+1}단계 열림 (분수대 → 초월의 수련장)`);const kk=Object.keys(me.trKC).map(Number).filter(q=>q<k-2);for(const q of kk)delete me.trKC[q];persist()}}
+function trCount(){const k=Z.train;if(!k||Z.vault)return;me.trKC=me.trKC||{};const n=(me.trKC[k]=(me.trKC[k]||0)+1);if(n>=TR_CLEAR&&(me.trBest||0)<k){me.trBest=k;toast(`${k}단계 돌파! ${k+1}단계가 열렸어요`,3200);sys(`★ 초월의 수련장 ${k}단계 돌파 → ${k+1}단계 열림 (분수대 → 초월의 수련장)`);const kk=Object.keys(me.trKC).map(Number).filter(q=>q<k-2);for(const q of kk)delete me.trKC[q];persist()}}
 function onKillTr2(m){trCount();if(!Z.train||Z.train<=TR_OLD||isBossM(m))return;const r=Math.random();if(r<.003){addItem('star_st',1);floatText(m.x,m.y-30,'별의 돌!','#ff6ad5',true);invChanged()}else if(r<.013){addItem('lb_stone',1);floatText(m.x,m.y-30,'한계돌파석','#ffa31a');invChanged()}}
 
 /* ================= 장비 도감 + 레벨별 추천 장비 ================= */
@@ -5056,6 +5056,23 @@ function castSha2(id,x,y,dir,mine,a,isMe){const [dx,dy]=DV(dir),ang=Math.atan2(d
   if(!M)return s0(x,y,ad,mine,col);gx({k:'proj',x:x+dx*10,y:y-12+dy*8,vx:dx*300,vy:dy*300,sp:300,look:M[1],col:M[2],th:M[0],dmg:mine?atkOf():0,hit:new Set(),mine,dur:.7,trail:1,slow:A2==='frostcaller'?.5:0})}}
 
 Object.assign(JOB_BAL,{"blizzardc":0.96,"dryad":1.19,"frostqueen":0.88,"ifrit":0.89,"phoenixc":0.92,"sylph":0.69,"thunderbird":0.65,"treant":1.34});   /* 정령사 개편 후 다시 맞춤 */
+
+/* ================= 장비 보물고 (윤회의 균열 대신): 장비·무기·장신구만 나오는 던전 ================= */
+function makeVault(k){const z=makeTrain(k);z.id='vt'+k;z.vault=k;z.expMul=Math.max(1,z.expMul*.1);
+  z.title=`장비 보물고 ${k}단계`;z.sub=`장비·무기·장신구만 나와요 · 몬스터는 수련장 ${k}단계와 같아요${k>34?` · 장비 아이템Lv.${k-34}`:''} · 경험치·금화·물약 없음`;return z}
+function vaultList(D,E,r){const T=TIERS.length-1,out=[],rb=me.rb||0;
+  const one=()=>{let pre=r()<.3?pick(['er','bl','bh']):gearPre(),id=pre+T;const q=r();
+    if(rb>0&&q<.002&&ITEMS['R'+id])id='R'+id;else if(q<.005&&ITEMS['L'+id])id='L'+id;else if(q<.09&&ITEMS['x'+id])id='x'+id;if(ITEMS[id])out.push([id,1])};
+  const n=D.god?5:D.boss?3:E?1+(r()<.5?1:0):(r()<.15?1:0);for(let i=0;i<n;i++)one();
+  if(r()<(D.boss?.3:E?.03:.004))out.push(['lb_stone',1]);if(rb>0&&D.boss&&r()<.05)out.push(['tr_reset',1]);return out}
+function renderRift(){const ul=$('rfl');ul.textContent='';
+  $('rfsum').textContent=endOK()?`장비·무기·장신구만 떨어지는 던전이에요 (경험치·금화·물약은 거의 없어요). 일반 몬스터 15% · 정예 1~2개 · 보스 3개, 그중 30%는 장신구(귀걸이·팔찌·브로치). [초월] 9% · [레전드] 0.5%${(me.rb||0)>0?' · [태초 Ⅰ] 0.2% · 특성 초기화권(보스)':''} · 한계돌파석. 초월의 수련장에서 열린 단계까지 들어갈 수 있고, 35단계부터 장비에 아이템Lv가 붙어요.`:'장비 보물고는 Lv.999부터 들어갈 수 있어요.';
+  let hi=1;for(let k=1;k<=Math.min(TR_N,Math.max(TR_PRE,(me.trBest||0)+3));k++)if(trOpen(k))hi=k;
+  for(let k=Math.max(1,hi-19);k<=hi;k++){const li=document.createElement('li');const no=document.createElement('div');no.className='no';no.textContent='V'+k;no.style.color='#ffd35a';
+    const mid=document.createElement('div');const dn=document.createElement('div');dn.className='dn';dn.textContent=`${k}단계`+(k>34?` · 장비 아이템Lv.${k-34}`:'');const sm=document.createElement('small');sm.textContent=`몬스터는 수련장 ${k}단계와 같아요`;mid.append(dn,sm);
+    const b=document.createElement('button');b.type='button';b.className='btn sm';b.style.background='#ffd35a';b.textContent='입장';b.disabled=!endOK();
+    b.addEventListener('click',()=>{for(const id in zones)if(id.startsWith('vt'))delete zones[id];closePanels();enterZone('vt'+k);sys(`장비 보물고 ${k}단계! 장비만 나와요. 돌아갈 땐 시작 방 포털(E) 또는 귀환(G).`)});li.append(no,mid,b);ul.prepend(li)}}
+
 function makeDuel(k){k=Math.max(1,Math.min(DUEL_MAX,k));const T=ABYSS_FROM+9,z=makeArena(T);
   z.id='pv'+k;z.duel=k;z.hpMul=duelHp(k);z.dmgMul=duelDmg(k);z.expMul=3;
   z.title=`대련장 ${k}단계`;z.sub=`PK ${DUEL_N}명 + 챔피언 · 체력 x${duelHp(k).toFixed(1)} · 공격 x${duelDmg(k).toFixed(1)} (심연 10단계 PK 기준) · 챔피언을 쓰러뜨리면 다음 단계`;return z}
@@ -5240,7 +5257,7 @@ const NOTICE=[
  ['레전드 세트 · 한계돌파',['레전드 장비 3/5/7/9부위 착용 시 세트 효과','레전드는 한계돌파석으로 +25까지 (성공률 25%)']],
  ['창고 (왼쪽 위 [창고])',['모든 캐릭터가 함께 쓰는 창고 100칸 × 5개','가방 아이템을 누르면 넣고, 창고 아이템을 누르면 꺼내요','[재료 모두 넣기] 한 번에 정리 · 로그인하면 계정에 저장']],
  ['일일 · 업적 (왼쪽 위 [일일])',['매일 첫 접속에 출석 보상 (7일 주기, 7일째 핵+한계돌파석)','오늘의 임무 3개 (매일 바뀜) → 가루·재료, 3개 다 하면 보너스','업적 1개마다 공격력·체력 영구 +1%','무한의 탑 창에 환생 랭킹 (환생 수·초월 레벨)']],
- ['환생 특성 · 윤회의 균열',['환생마다 특성 포인트 5점 → 전직 창 환생 칸 [특성 트리 열기]','공격·생존·사냥·경제 4갈래 16개 특성 (부활 포함)','윤회의 균열: 분수대(E) → 균열, 환생 횟수만큼 단계 열림','[태초 Ⅰ] 등급 장비(레전드 위)·한계돌파석·특성 초기화권']],
+ ['환생 특성 · 장비 보물고',['환생마다 특성 포인트 5점 → 전직 창 환생 칸 [특성 트리 열기]','공격·생존·사냥·경제 4갈래 16개 특성 (부활 포함)','장비 보물고: 분수대(E) → 보물고, 장비·무기·장신구만 나오는 던전 (윤회의 균열은 없어졌어요)','환생했다면 보물고에서 [태초 Ⅰ] 장비·특성 초기화권도 나와요']],
  ['환생 (초월 999)',['전직 창(J) 맨 아래 · Lv.1과 초월 0으로 돌아감','장비·가방·금화·전직 그대로, 스킬은 레벨 상관없이 사용','환생마다 공격·체력·방어 +10%, 경험치 +20% (누적), 이름 앞 ★']],
  ['6차 전직 (초월 600)',['5차 전직 후 초월 600 + 핵 20 + 한계돌파석 10 (전직 창 J)','최종 오의 쿨타임 90초 → 45초','공격력·체력 +50%, 스킬 피해 +50%, 치명타 +15%']],
  ['5차 전직',['4차 전직 후 초월 300 + 4차의 핵 10개 (전직 창 J)','Y·U 피해 2배·쿨타임 절반, ; 버프 1.5배, 공격·체력 +30%']],
@@ -5680,6 +5697,7 @@ function dropLoot(m,D){ // 극악 드롭: 금화는 그대로, 나머지는 매�
   if(P(.1,.02,.003))list.push([pick(BUFFS),1]);
   if(P(0,.015,.002))list.push(['home',1]);
   const scN=D.god?1:D.boss?(r()<.5?1:0):P(0,.02,.002)?1:0;for(let k=0;k<scN;k++)list.push([r()<.5?'sc_w':'sc_a',1]);
+  if(Z&&Z.vault)list.splice(0,list.length,...vaultList(D,E,r));
   const spread=D.boss?34:E?20:14;
   for(const [id,n] of list){const g={id,n,x:m.x+(r()-.5)*spread,y:m.y+(r()-.5)*spread*.7,t:0,full:false};{const f=freeSpot(g.x,g.y,3,3,140)||freeSpot(me.x,me.y,3,3,40);if(f){g.x=f[0];g.y=f[1]}else{g.x=me.x;g.y=me.y}}if(OPTPOOL[ITEMS[id].kind])g.o=rollOpts(id);if(Z.train>34&&isGear(id))g.il=Z.train-34;Z.ground.push(g)}
 }
@@ -6692,6 +6710,6 @@ function boot(data){loadStash();
 try{if(typeof window.claude?.hot?.snapshot==='function')window.claude.hot.snapshot(()=>({save:saveObj(),started,zone:zoneId}))}catch{}
 setMobile(mobileUI,false);
 window.claude?.hot?.ready?window.claude.hot.ready(boot):boot(window.claude?.hot?.data??{});
-</script>
+</script>     ['보물고','장비 보물고','#ffd35a',endOK(),endOK()?`장비·무기·장신구만 나와요 · 수련장과 같은 단계까지`:`Lv.${LV_MAX}부터`,()=>togglePanel('rift')],
 
 </body></html>
