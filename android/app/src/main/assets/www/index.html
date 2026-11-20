@@ -705,7 +705,7 @@ const TIERS=[
   {name:'심연의 틈',     pre:'심연의', lv:30,boss:'심연의 군주',   pal:{a:'#8a5aff',A:'#4a2ab8',l:'#d0c0ff',o:'#1a0a4a',e:'#ff6ad8',x:'#5a3aff'},floor:['#3a3456','#2e2846','#4a4268'],wall:['#28223e','#1c182e','#3c3458'],moss:'#6a3ad8',amb:'#08041a',dark:.78},
   {name:'공허의 왕좌',   pre:'공허의', lv:35,boss:'공허의 왕',     pal:{a:'#3ae8e0',A:'#1a8a96',l:'#c8fffa',o:'#04222a',e:'#ffffff',x:'#3ae8e0'},floor:['#2a2e36','#20232a','#3a3f4a'],wall:['#1a1c22','#121318','#2c3038'],moss:'#1a6a6a',amb:'#020408',dark:.82},
 ];
-const zoneName=id=>id==='town'?'마을':id==='wb'?'월드 보스 전장':/^tw/.test(id)?`무한의 탑 ${id.slice(2)}층`:/^vt/.test(id)?`장비 보물고 ${id.slice(2)}단계`:/^tr/.test(id)?`초월의 수련장 ${id.slice(2)}단계`:/^rr/.test(id)?`윤회 보스 레이드 ${id.slice(2)}`:/^bs/.test(id)?`보스 군단 ${id.slice(2)}단계`:/^rf/.test(id)?`윤회의 균열 ${id.slice(2)}단계`:/^pv/.test(id)?`대련장 ${id.slice(2)}단계`:/^pr/.test(id)?`태초의 영역 ${id.slice(2)}단계`:/^ud/.test(id)?`무한 던전 ${id.slice(2)}층`:TIERS[+id.slice(1)]?.name||'';
+const zoneName=id=>id==='town'?'마을':id==='wb'?'월드 보스 전장':/^tw/.test(id)?`무한의 탑 ${id.slice(2)}층`:/^vt/.test(id)?`장비 보물고 ${id.slice(2)}단계`:/^tr/.test(id)?`초월의 수련장 ${id.slice(2)}단계`:/^rr/.test(id)?`윤회 보스 레이드 ${id.slice(2)}`:/^bs/.test(id)?`보스 군단 ${id.slice(2)}단계`:/^rf/.test(id)?`장비 보물고`:/^pv/.test(id)?`대련장 ${id.slice(2)}단계`:/^pr/.test(id)?`태초의 영역 ${id.slice(2)}단계`:/^ud/.test(id)?`무한 던전 ${id.slice(2)}층`:TIERS[+id.slice(1)]?.name||'';
 
 /* ---------- 몬스터 종류 ---------- */
 const SPECIES={
@@ -1155,7 +1155,7 @@ Object.assign(ITEMS,{
   sc_w:  {name:'무기 강화 주문서',kind:'mat',rar:1,icon:'scroll',price:10000,col:'#ff7a5a',desc:'가방에서 무기를 고르고 [강화]를 누르면 써요 (최대 +20)'},
   sc_a:  {name:'방어구 강화 주문서',kind:'mat',rar:1,icon:'scroll',price:150,col:'#5ab0ff',desc:'투구·갑옷·장갑·신발·반지·목걸이 강화에 써요 (최대 +20)'},
   dust:  {name:'마력 가루',kind:'mat',rar:0,icon:'dust',col:'#c9a8ff',desc:'장비를 분해하면 50% 확률로 나와요. 15개로 강화 주문서를 만들 수 있어요'},
-  tr_reset:{name:'특성 초기화권',kind:'potion',rar:9,icon:'scroll',trreset:true,noSell:true,col:'#ff9ad8',desc:'환생 특성 포인트를 모두 돌려받아요 (윤회의 균열 신화 보스에서 가끔)'},
+  tr_reset:{name:'특성 초기화권',kind:'potion',rar:9,icon:'scroll',trreset:true,noSell:true,col:'#ff9ad8',desc:'환생 특성 포인트를 모두 돌려받아요 (장비 보물고 보스에서 가끔)'},
   star_st:{name:'별의 돌',kind:'mat',rar:11,icon:'scroll',noSell:true,col:'#ff6ad5',desc:'레전드·태초·무한 장비를 +25 넘어 별 강화(+26~+30)할 때 1개씩 필요해요. 대련장·탑 PK 보스층에서 얻거나 제작소에서 한계돌파석 3개로 만들어요.'},
   en_1:{name:'+1 장비 강화권',kind:'mat',rar:9,icon:'scroll',noSell:true,col:'#9dffa8',desc:'장비 하나를 실패 없이 +1 강화해요 (최대 강화까지). 가방에서 장비를 고르고 [+1 강화권] 버튼. 던전 보스가 아주 드물게 떨어뜨려요.'},
   en_2:{name:'+2 장비 강화권',kind:'mat',rar:10,icon:'scroll',noSell:true,col:'#7fd8ff',desc:'장비 하나를 실패 없이 +2 강화해요 (최대 강화까지). 가방에서 장비를 고르고 [+2 강화권] 버튼. 던전 보스가 극히 드물게 떨어뜨려요.'},
@@ -3393,13 +3393,13 @@ function renderHub(){const ul=$('hubl');ul.textContent='';const w=wbNow();
     ['심연','심연 1~10단계','#c47bff',abyss0(),abyss0()?'헬보다 강한 몬스터 · [초월] 심연 장비':'헬 10단계 보스를 쓰러뜨리면 열려요',()=>openHell('abyss')],
     ['수련',`초월의 수련장 1~${TR_N}단계`,'#5affd8',endOK(),endOK()?`Lv.1000~5000 레벨 올리기 · 지금 Lv.${LVT()}`:`Lv.${LV_MAX}부터`,()=>togglePanel('train')],
     ['탑','무한의 탑','#7ff0ff',endOK(),endOK()?`끝없는 층 · 내 최고 ${me.towerBest||0}층 · 랭킹`:`Lv.${LV_MAX}부터`,()=>togglePanel('tower')],
-    ['균열','윤회의 균열 (환생 전용)','#4affd0',(me.rb||0)>0,(me.rb||0)>0?`환생 ${me.rb}회 · ${me.rb}단계까지 · [태초 Ⅰ] 장비`:'한 번 이상 환생하면 열려요',()=>togglePanel('rift')],
+    ['보물고','장비 보물고','#ffd35a',endOK(),endOK()?`장비·무기·장신구만 나와요 · 수련장과 같은 단계까지`:`Lv.${LV_MAX}부터`,()=>togglePanel('rift')],
     ['레이드','윤회 보스 레이드 (환생 전용)','#4affd0',(me.rb||0)>0,(me.rb||0)>0?`보스 ${RAID.filter((_,i)=>(me.rb||0)>=raidRb(i+1)).length}/${RAID_N} 열림 · 경고를 피하며 싸우는 보스 · 첫 처치 특성 +2`:'한 번 이상 환생하면 열려요',()=>togglePanel('rraid')],
     ['기념','환생 기념 보상','#ffd35a',(me.rb||0)>0,(()=>{const nx=RB_MS.find(x=>x[0]>(me.rb||0));return nx?`다음: 환생 ${nx[0]}회 · ${nx[1]}`:'모든 기념 보상을 받았어요'})(),()=>togglePanel('rraid')],
     ['태초','태초의 영역 (환생 75회+)','#b48aff',(me.rb||0)>=REALM_RB,(me.rb||0)>=REALM_RB?`환생 ${me.rb}회 · ${Math.min(REALM_MAX,1+Math.floor(((me.rb||0)-REALM_RB)/REALM_STEP))}단계까지 · 태초 Ⅱ·무한 장비`:`환생 ${REALM_RB}회부터 (지금 ${me.rb||0}회)`,()=>togglePanel('realm')],
     ['대련','대련장 (PK 결투장)','#ff6a8a',me.lvl>=LV_MAX||(me.rb||0)>0,me.lvl>=LV_MAX||(me.rb||0)>0?`아주 강한 PK AI만 · 최고 ${me.duelBest||0}단계 / ${DUEL_MAX}`:`Lv.${LV_MAX}부터`,()=>togglePanel('duel')],
     ['보스','월드 보스','#ffd35a',endOK()&&w.active,!endOK()?`Lv.${LV_MAX}부터 · 매시 정각 10분`:w.active?`출현 중! ${Math.ceil(w.left/6e4)}분 남음 · 다 같이 잡기`:`다음 출현까지 ${Math.ceil(w.next/6e4)}분 (매시 정각 10분)`,()=>{closePanels();enterWB()}]];
-  {const ORD=['일반','무한','헬','심연','수련','탑','대련','보스','군단','균열','레이드','기념','태초'];rows.sort((a,b)=>ORD.indexOf(a[0])-ORD.indexOf(b[0]));let lk=0;const vis=rows.filter(r=>r[3]);for(const r of rows){if(!r[3]&&lk++<2)vis.push(r)}rows.length=0;rows.push(...vis)}
+  {const ORD=['일반','무한','헬','심연','수련','보물고','탑','대련','보스','군단','균열','레이드','기념','태초'];rows.sort((a,b)=>ORD.indexOf(a[0])-ORD.indexOf(b[0]));let lk=0;const vis=rows.filter(r=>r[3]);for(const r of rows){if(!r[3]&&lk++<2)vis.push(r)}rows.length=0;rows.push(...vis)}
   for(const [tag,name,col,ok,desc,fn] of rows){const li=document.createElement('li');li.className=ok?'':'lock';if(!ok&&!ul.querySelector('.nexthd')){const hd=document.createElement('li');hd.className='nexthd';hd.style.cssText='display:block;border:0;background:none;color:var(--muted);font-size:13px;padding:6px 2px 0';hd.textContent='다음에 열려요';ul.appendChild(hd)}
     const no=document.createElement('div');no.className='no';no.textContent=tag;no.style.color=col;no.style.fontSize='13px';
     const mid=document.createElement('div');const dn=document.createElement('div');dn.className='dn';dn.textContent=name;dn.style.color=col;const sm=document.createElement('small');sm.textContent=desc;mid.append(dn,sm);
@@ -5121,7 +5121,7 @@ function makeRealm(k){k=Math.max(1,Math.min(REALM_MAX,k));const T=TIERS.length-1
   z.th={...TIERS[T],name:'태초의 영역',floor:['#1d1440','#181036','#40307a'],wall:['#0f0a24','#0b071c','#5a48a0'],moss:'#8a5aff',amb:'#0a0420',dark:.9};z.amb=z.th.amb;z.dark=.9;
   for(const L of z.lights||[])if(L.col)L.col=['#b48aff','#7ff0ff','#ff6ad5'][Math.floor(Math.random()*3)];
   z.id='pr'+k;z.realm=k;z.lvAdd=realmLv(k);z.hpMul=realmHp(k);z.dmgMul=realmDmg(k);z.expMul=5;
-  z.title=`태초의 영역 ${k}단계`;z.sub=`환생 ${realmNeed(k)}회부터 · 몬스터 ${mLv(999+realmLv(k))}급 · 윤회의 균열보다 강한 태초의 몬스터 · 태초 Ⅱ·무한 장비, 별의 돌, 파괴 방지 주문서`;return z}
+  z.title=`태초의 영역 ${k}단계`;z.sub=`환생 ${realmNeed(k)}회부터 · 몬스터 ${mLv(999+realmLv(k))}급 · 가장 강한 태초의 몬스터 · 태초 Ⅱ·무한 장비, 별의 돌, 파괴 방지 주문서`;return z}
 function realmDrops(D,list,r){const k=Z.realm||1,TT=TIERS.length-1,gp=()=>gearPre();
   if(r()<(D.god?1:D.boss?.6:.03))list.push(['star_st',D.god?3+k:D.boss?2:1]);
   if(r()<(D.god?1:D.boss?.4:.003))list.push(['lb_stone',D.god?2+k:1]);
@@ -6109,7 +6109,7 @@ function gmCmd(t){const [c,...a]=t.slice(1).trim().split(/\s+/),n=parseInt(a[0],
   switch(c){
     case '도움말':sys(GM_HELP);break;
     case '환생':if(a[0]==null){me.lvl=LV_MAX;me.tlv=TLV_MAX;doRebirth();sys(`[운영자] 조건 없이 바로 환생했어요 → 환생 ${me.rb}회`);break}
-      if(!okN(n)){sys('사용법: /환생 (바로 1회) 또는 /환생 50 (환생 횟수를 50으로)');break}me.rb=Math.min(9999,n);recalc();me.hp=me.maxHp;me.mp=me.maxMp;hudKey='';towerPost();try{grantRbMs()}catch(e){}persist();sys(`[운영자] 환생 횟수를 ${me.rb}회로 바꿨어요 (레벨은 그대로). 환생 보너스·균열 단계·수련장 단계가 새 횟수 기준으로 바뀌어요.`);break;
+      if(!okN(n)){sys('사용법: /환생 (바로 1회) 또는 /환생 50 (환생 횟수를 50으로)');break}me.rb=Math.min(9999,n);recalc();me.hp=me.maxHp;me.mp=me.maxMp;hudKey='';towerPost();try{grantRbMs()}catch(e){}persist();sys(`[운영자] 환생 횟수를 ${me.rb}회로 바꿨어요 (레벨은 그대로). 환생 보너스·수련장 단계가 새 횟수 기준으로 바뀌어요.`);break;
     case '레벨':if(!okN(n)||n<1){sys('사용법: /레벨 300 (최대 5000)');break}me.lvl=Math.min(LV_MAX,n);me.exp=0;me.tlv=n>LV_MAX?Math.min(TLV_MAX,n-LV_MAX):0;me.texp=0;checkLvMs();recalc();me.hp=me.maxHp;me.mp=me.maxMp;buildSkillBar();hudKey='';persist();sys(`레벨을 Lv.${LVT()}로 바꿨어요.`);break;
     case '가루':if(!okN(n)){sys('사용법: /가루 50000');break}addItem('dust',n);invChanged();sys(`마력 가루 ${n.toLocaleString()}개 지급 (보유 ${countItem('dust').toLocaleString()}).`);break;
     case '골드':if(!okN(n)){sys('사용법: /골드 100000');break}me.gold+=n;hudKey='';persist();sys(`금화 ${n.toLocaleString()} 지급.`);break;
@@ -6719,6 +6719,6 @@ function boot(data){loadStash();
 try{if(typeof window.claude?.hot?.snapshot==='function')window.claude.hot.snapshot(()=>({save:saveObj(),started,zone:zoneId}))}catch{}
 setMobile(mobileUI,false);
 window.claude?.hot?.ready?window.claude.hot.ready(boot):boot(window.claude?.hot?.data??{});
-</script>     ['보물고','장비 보물고','#ffd35a',endOK(),endOK()?`장비·무기·장신구만 나와요 · 수련장과 같은 단계까지`:`Lv.${LV_MAX}부터`,()=>togglePanel('rift')],
+</script>
 
 </body></html>
