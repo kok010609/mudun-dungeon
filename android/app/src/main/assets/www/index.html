@@ -1901,7 +1901,15 @@ function moveFree(b,dx,dy){const nx=clamp(b.x+dx,24,Z.W*16-24),ny=clamp(b.y+dy,2
 /* ---------- 몬스터 배치 ---------- */
 const FIELD=[['0-slime','0-shroom','0-frog','0-snail'],['0-rat','0-beetle','0-bat','0-wisp','0-plant'],['0-goblin','1-slime','1-moth','1-owl','1-wolf']];
 function baseMon(m){return Object.assign(m,{dead:false,t:Math.random(),moveT:0,vx:0,vy:0,kx:0,ky:0,flash:0,seed:Math.random()*10,face:1,atkT:-9})}
-function spawnMon(m,z){if(z&&z.hpMul){spawnMon0(m,z);if(!m.dead&&!m.hpMulDone&&!m.isPK){m.hp=m.maxHp=Math.round(m.maxHp*z.hpMul)}return m}return spawnMon0(m,z)}
+function spawnMon(m,z){if(z&&z.hpMul){spawnMon0(m,z);if(!m.dead&&!m.hpMulDone&&!m.isPK){m.hp=m.maxHp=Math.round(m.maxHp*z.hpMul)}if(z.vault&&!m.dead&&!m.isPK)vtScale(m,z);return m}return spawnMon0(m,z)}
+const VT_MOB=8,VT_BOSS=90,vtF=k=>Math.pow(1.02,Math.max(0,k-1)/5);   /* 보물고 몬스터: 내 공격력 기준 (일반 약 8대, 보스 약 90대 · 단계마다 조금씩 더) */
+/* 보물고에서 내가 실제로 넣는 초당 피해를 재서(전투 중인 초만) 몬스터 체력에 반영: 일반 약 0.7초, 보스 약 15초 분량 */
+let vtAcc=0;const VT_MOB_S=.7,VT_BOSS_S=15;
+setInterval(()=>{try{if(Z&&Z.vault&&vtAcc>0){const v=vtAcc;me.vtDps=me.vtDps?me.vtDps*.85+v*.15:v}vtAcc=0}catch{}},1000);
+function vtScale(m,z){const D=MONLIST[m.type]||{},boss=!!(D.boss||D.god),R=(.85+Math.random()*.3)*vtF(z.vault),dps=me.vtDps||0;
+  const f=Math.max(atkOf()*Math.max(1,skillMul())*(boss?VT_BOSS*(D.god?2:1):VT_MOB*(m.elite?2:1)),dps*(boss?VT_BOSS_S*(D.god?2:1):VT_MOB_S*(m.elite?2:1)))*R;
+  m.vtP=1;m.vtB=boss?1:0;if(f>m.maxHp)m.hp=m.maxHp=Math.round(f)}
+function vtHit(m,f,base){return Math.max(base||0,Math.round(me.maxHp*(m.vtB?.07:.025)*(m.elite?1.5:1)*(f||1))+defOf())}
 function spawnMon0(m,z){
   const wasPK=m.isPK;baseMon(m);if(wasPK){m.isPK=false;spawnMon0(m,z);if(me.pkOn!==false||z.duel)makePK(m,z);return m}
   if(m.god){const r=z.godRoom;m.type=MONIDX[`${z.T}-god`];m.x=m.hx=r.cx*16+8;m.y=m.hy=r.cy*16+12;m.hp=m.maxHp=MONLIST[m.type].hp;m.elite=false;m.pat=0;m.patT=1.5;m.awake=false;return m}
@@ -2225,7 +2233,7 @@ const monCY=m=>{const D=MONLIST[m.type];return m.y-(D.boss?D.hgt*.45:6)};
 function spark(x,y,vx,vy,col,life=.6,size=1,grav=0,drag=.92){if(GFX.q<2&&Math.random()>GQF()*1.4)return;sparks.push({x,y,vx,vy,col,t:0,life,size,grav,drag})}
 function burst(x,y,n,cols,sp=60,life=.6,size=1,grav=30){n=Math.max(1,Math.ceil(n*GQF()));for(let i=0;i<n;i++){const a=Math.random()*6.283,v=sp*(.3+Math.random()*.7);
   spark(x,y,Math.cos(a)*v,Math.sin(a)*v,cols[i%cols.length],life*(.6+Math.random()*.6),size,grav)}}
-function hitMon(m,d,kx,ky,col){if(m.dead)return;const D=MONLIST[m.type];if(udOn()){if(D.boss&&pk_('boss'))d=Math.round(d*(1+.25*pk_('boss')));if(pk_('chain')&&!hitMon.ch&&Math.random()<.15){hitMon.ch=1;const o=monsNear(m.x,m.y-8,90).find(x=>x!==m&&!x.dead);if(o){fxs.push({k:'ring',x:o.x,y:o.y,t:0,dur:.25,col:'#ffd35a',r:14});hitMon(o,Math.round(d*.6*pk_('chain')),0,0,'#ffd35a')}hitMon.ch=0}}if(m.stopT>0&&m.stopK==='ice')d*=2;if(m.brandT>0)d=Math.round(d*1.5);if(adv2Id()==='judge'&&UNDEAD.has(D.sp))d=Math.round(d*1.5);const crit=Math.random()<critOf();if(crit){d=Math.round(d*(adv2Id()==='blade'?2.5:1.8));col='#ffd35a'}if(!inDot&&started)sfx(crit?'crit':'hit');
+function hitMon(m,d,kx,ky,col){if(m.dead)return;if(m.vtP&&d>0)vtAcc+=Math.min(d,m.hp);const D=MONLIST[m.type];if(udOn()){if(D.boss&&pk_('boss'))d=Math.round(d*(1+.25*pk_('boss')));if(pk_('chain')&&!hitMon.ch&&Math.random()<.15){hitMon.ch=1;const o=monsNear(m.x,m.y-8,90).find(x=>x!==m&&!x.dead);if(o){fxs.push({k:'ring',x:o.x,y:o.y,t:0,dur:.25,col:'#ffd35a',r:14});hitMon(o,Math.round(d*.6*pk_('chain')),0,0,'#ffd35a')}hitMon.ch=0}}if(m.stopT>0&&m.stopK==='ice')d*=2;if(m.brandT>0)d=Math.round(d*1.5);if(adv2Id()==='judge'&&UNDEAD.has(D.sp))d=Math.round(d*1.5);const crit=Math.random()<critOf();if(crit){d=Math.round(d*(adv2Id()==='blade'?2.5:1.8));col='#ffd35a'}if(!inDot&&started)sfx(crit?'crit':'hit');
   if(!inDot&&(adv2Id()==='demon'||adv2Id()==='hell')&&!(m.dot&&m.dot.t>0))m.dot={t:3,k:.5,d:Math.max(1,Math.round(d*.1)),c:adv2Id()==='hell'?'#ff6a1a':'#c43aff'};
   const ls=eqSum('ls')+(advOf()?.id==='dark'?.05:0)+(adv2Id()==='demon'?.1:0)+(adv2Id()==='blood'?.08:0);const ls2=adv3Id()==='bloodking'&&me.hp<me.maxHp*.3?ls*2:ls;if(ls2>0&&!me.dead)me.hp=Math.min(me.maxHp,me.hp+d*ls2);if(me.tr&&me.tr.t_boss&&MONLIST[m.type].boss)d=Math.round(d*(1+me.tr.t_boss*.08));m.hp-=d;if(m.wb){me.wbDmg=(me.wbDmg||0)+d;wbSync(m)}m.flash=0.15;const k=D.boss?0.15:1;m.kx=kx*k;m.ky=ky*k;
   floatText(m.x+(Math.random()-.5)*6,m.y-(m.h||14),crit?d+'!':String(d),col||'#ffffff',!!col||crit);
@@ -5077,7 +5085,7 @@ Object.assign(JOB_BAL,{"blizzardc":0.96,"dryad":1.19,"frostqueen":0.88,"ifrit":0
 
 /* ================= 장비 보물고 (윤회의 균열 대신): 장비·무기·장신구만 나오는 던전 ================= */
 function makeVault(k){const z=makeTrain(k);z.id='vt'+k;z.vault=k;z.expMul=Math.max(1,z.expMul*.1);
-  z.title=`장비 보물고 ${k}단계`;z.sub=`장비·무기·장신구만 나와요 · 몬스터는 수련장 ${k}단계와 같아요${k>34?` · 장비 아이템Lv.${k-34}`:''}${xtMax(k)?` · ${XT_NAMES[xtMax(k)-1]} 장비까지`:''} · 경험치·금화·물약 없음`;return z}
+  z.title=`장비 보물고 ${k}단계`;z.sub=`장비·무기·장신구만 나와요 · 몬스터가 내 힘에 맞춰 강해져요 (보스는 단단해요)${k>34?` · 장비 아이템Lv.${k-34}`:''}${xtMax(k)?` · ${XT_NAMES[xtMax(k)-1]} 장비까지`:''} · 경험치·금화·물약 없음`;return z}
 function vaultList(D,E,r){const T=TIERS.length-1,out=[],rb=me.rb||0;
   const one=()=>{let pre=r()<.3?pick(['er','bl','bh']):gearPre(),id=pre+T;const q=r();
     if(rb>0&&q<.002&&ITEMS['R'+id])id='R'+id;else if(q<.005&&ITEMS['L'+id])id='L'+id;else if(q<.09&&ITEMS['x'+id])id='x'+id;if(ITEMS[id])out.push([id,1])};
@@ -5881,7 +5889,7 @@ function thinkMon(m,dt,alive){
   if(S.caster&&!m.rboss&&!m.rmin&&alive&&started&&!Z.safe(me.x,me.y)){m.castCd=(m.castCd??1+Math.random()*2)-dt;const dd=Math.hypot(me.x-m.x,me.y-m.y);
     if(m.castCd<=0&&dd<(D.boss?200:150)){m.castCd=S.caster.cd*(D.boss?.7:1)*(.8+Math.random()*.4);m.atkT=performance.now()/1000;
       const col=S.caster.col||D.pal.e||'#ff6ad8',sy=monCY(m),n=D.boss?5:(S.caster.n||1);
-      for(let k=0;k<n;k++){const a=Math.atan2(me.y-10-sy,me.x-m.x)+(k-(n-1)/2)*.28;mprojs.push({x:m.x,y:sy,vx:Math.cos(a)*95,vy:Math.sin(a)*95,life:2.4,dmg:m.bsr?bsrHit(m,.5):Math.round(D.dmg*(m.elite?1.5:1)*.9),col})}
+      for(let k=0;k<n;k++){const a=Math.atan2(me.y-10-sy,me.x-m.x)+(k-(n-1)/2)*.28;mprojs.push({x:m.x,y:sy,vx:Math.cos(a)*95,vy:Math.sin(a)*95,life:2.4,dmg:m.bsr?bsrHit(m,.5):m.vtP?vtHit(m,.5,Math.round(D.dmg*(m.elite?1.5:1)*.9)):Math.round(D.dmg*(m.elite?1.5:1)*.9),col})}
       burst(m.x,sy,6,[col,'#ffffff'],50,.3)}}
   if(m.kx||m.ky){if(fly)moveFree(m,m.kx*dt,m.ky*dt);else moveBody(m,m.kx*dt,m.ky*dt,5,3,Z.safe);m.kx*=0.82;m.ky*=0.82;if(Math.abs(m.kx)+Math.abs(m.ky)<4)m.kx=m.ky=0}
   const dist=Math.hypot(me.x-m.x,me.y-m.y),leash=D.boss?Math.hypot(me.x-m.hx,me.y-m.hy)<170:true;
@@ -5902,7 +5910,7 @@ function thinkMon(m,dt,alive){
   }
   if(m.moveT>0){m.moveT-=dt;if(fly)moveFree(m,m.vx*dt,m.vy*dt);else moveBody(m,m.vx*dt,m.vy*dt,D.boss?Math.min(14,D.rad*.6):5,3,Z.safe)}
   const reach=D.boss?D.rad+4:10;
-  if(alive&&started&&dist<reach&&hurtPlayer(m.bsr?bsrHit(m):m.rboss||m.rmin?raidHit(m.rboss?.03:.04,m.rboss?m:null):Math.round(D.dmg*(m.elite?1.5:1)),m.x,m.y))m.atkT=performance.now()/1000;
+  if(alive&&started&&dist<reach&&hurtPlayer(m.bsr?bsrHit(m):m.vtP?vtHit(m,1,Math.round(D.dmg*(m.elite?1.5:1))):m.rboss||m.rmin?raidHit(m.rboss?.03:.04,m.rboss?m:null):Math.round(D.dmg*(m.elite?1.5:1)),m.x,m.y))m.atkT=performance.now()/1000;
 }
 /* ---------- 운영자 전용 자동사냥 (/자동사냥 또는 [자동사냥] 버튼) ---------- */
 function autoPath(tx,ty){const z=Z,W=z.W,H=z.H,sx=Math.floor(me.x/16),sy=Math.floor((me.y-4)/16);let gx=Math.floor(tx/16),gy=Math.floor((ty-4)/16);
