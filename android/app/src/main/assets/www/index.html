@@ -1096,6 +1096,13 @@ for(let T=TRANS_FROM;T<TIERS.length;T++)for(const pre of GPRE){
 const G3=[['C','성좌',14,'#7ab0ff','star'],['V','은하',15,'#b48aff','galaxy'],['O','개벽',16,'#ffe066','dawn']];
 {const T=TIERS.length-1;for(const pre of GPRE){let prev='E';for(const [P,nm,r,col,flag] of G3){const base=ITEMS[pre+T],b=ITEMS[prev+pre+T];if(!b)break;
   const o={...b,name:nm+' '+base.name,rar:r,col,[flag]:true};delete o.id;delete o.desc;for(const f of ['atk','def','hp','mp'])if(o[f])o[f]=Math.round(o[f]*1.3);o.crit=Math.min(100,(o.crit||0)+5);GEAR(P+pre+T,o);ITEMS[P+pre+T].id=P+pre+T;prev=P}}}
+/* ---------- 원초 너머 10단계 장비: 시원 → 천원 (단계마다 기본 능력치 ×1.25) · 수련장·보물고 60단계부터 25단계마다 하나씩 ---------- */
+const XT_NAMES=['시원','창조','근원','섭리','운명','영겁','절대','초극','무극','천원'],XT_COLS=['#ff9a5a','#ffd35a','#9aff7a','#5affd8','#5ab0ff','#9a7aff','#ff5ad8','#ffffff','#ff4a4a','#fff27a'];
+{const T=TIERS.length-1;for(let n=1;n<=10;n++)for(const pre of GPRE)for(const G of ['','x','L']){const b=ITEMS[G+pre+T];if(!b)continue;const o={...b,name:b.name.replace('원초',XT_NAMES[n-1]),xt:n,col:G?b.col:XT_COLS[n-1]};delete o.id;delete o.desc;
+  const M=Math.pow(1.25,n);for(const f of ['atk','def','hp','mp'])if(o[f])o[f]=Math.round(o[f]*M);const id=G+'N'+n+pre;GEAR(id,o);ITEMS[id].id=id}}
+const xtMax=k=>k>=60?Math.min(10,1+Math.floor((k-60)/25)):0;
+function upTier(id){const k=(Z&&(Z.train||Z.vault))||0,nx=xtMax(k);if(!nx||!isGear(id))return id;const T=TIERS.length-1,m=/^(x|L)?([a-z]+)(\d+)$/.exec(id);if(!m||+m[3]!==T||!GPRE.includes(m[2]))return id;
+  const n=Math.random()<.6?nx:1+Math.floor(Math.random()*nx),id2=(m[1]||'')+'N'+n+m[2];return ITEMS[id2]?id2:id}
 /* ---------- 운영자 아이템 (/아이템 코드로만 얻음 · 분해·판매 불가) ---------- */
 {const G='#3affb0',gm=(id,o)=>{GEAR(id,{rar:8,gm:true,noSell:true,glow:true,col:G,tier:99,...o})};
   gm('gm_sword',{name:'운영자의 검',kind:'weapon',cls:'knight',icon:'gsword',atk:50000,crit:30,ls:.1,len:16});
@@ -3360,7 +3367,7 @@ const trOpen=k=>endOK()&&(k<=(me.trBest||0)+1&&k<=TR_N||k>34?(k<=(me.trBest||0)+
 function trName(k){return TR_NAMES[k-1]||TR_NAMES_X[k-11]||(TR_NAMES_Y[(k-35)%TR_NAMES_Y.length]+(k>50?' '+(Math.floor((k-35)/16)+1):''))}   // 환생한 사람은 모든 단계
 function makeTrain(k){k=Math.max(1,Math.min(TR_N,k));const T=k>34?ABYSS_FROM+9:ABYSS_FROM+((k-1)%10),z=makeDungeon(T),[ah,ad,ae]=avgOfT3(T),tgt=needT(Math.min(TLV_MAX,TR_STEP*(k-1)+15,(me.tlv||0)+TR_STEP))/trKills(Math.min(k,TR_PRE)),RBT=trRb(k);
   z.id='tr'+k;z.train=k;z.expMul=tgt/ae*(RBT?Math.pow(1.08,k-34):1);if(k>34)z.monPool=trMons(k);if(k<=10){z.hpMul=1.2+.1*(k-1);z.dmgMul=1.1+.05*(k-1)}else{const [th,td]=avgOfT3(ABYSS_FROM+9);if(k<=34||RBT){z.hpMul=th*2.1*Math.pow(1.12,k-10)/ah;z.dmgMul=td*1.55*Math.pow(1.06,k-10)/ad}else{z.hpMul=th*2.1*Math.pow(1.12,24)/ah*Math.pow(1.07,k-34);z.dmgMul=td*1.55*Math.pow(1.06,24)/ad*Math.pow(1.04,k-34)}}
-  z.title=`초월의 수련장 ${k}단계 · ${trName(k)}`;z.sub=`Lv.${999+(k-1)*TR_STEP}부터 · ${k>34?`장비 아이템Lv.${k-34} (+${Math.round(IL_PER*(k-34)*100)}%) · `:''}경험치 x${Math.round(z.expMul)} (레벨 한 칸에 약 ${trKills(k)}마리)`;return z}
+  z.title=`초월의 수련장 ${k}단계 · ${trName(k)}`;z.sub=`Lv.${999+(k-1)*TR_STEP}부터 · ${k>34?`장비 아이템Lv.${k-34} (+${Math.round(IL_PER*(k-34)*100)}%) · `:''}${xtMax(k)?`${XT_NAMES[xtMax(k)-1]} 장비까지 · `:''}경험치 x${Math.round(z.expMul)} (레벨 한 칸에 약 ${trKills(k)}마리)`;return z}
 function avgOfT3(T){const ns=MONLIST.filter(D=>D.T===T&&!D.boss&&!D.pk&&!D.tr);return [ns.reduce((a,D)=>a+D.hp,0)/ns.length,ns.reduce((a,D)=>a+D.dmg,0)/ns.length,ns.reduce((a,D)=>a+D.exp,0)/ns.length]}
 function renderTrain(){const ul=$('trl');ul.textContent='';
   $('trsum').textContent=!endOK()?`초월의 수련장은 Lv.${LV_MAX}부터 들어갈 수 있어요. (지금 Lv.${me.lvl})`:`Lv.1000부터 5000까지 레벨을 올리고, 끝없이 위로 올라가는 던전이에요. 한 단계에서 몬스터 ${TR_CLEAR}마리를 잡으면 다음 단계가 열려요(레벨이 되면 바로 열리기도 해요). 35단계부터는 단계마다 몬스터 체력 ×1.07, 장비 아이템Lv +1. 경험치는 내 레벨에 맞춰 나와요. 지금 Lv.${LVT()} · 최고 돌파 ${me.trBest||0}단계`;
@@ -5059,17 +5066,18 @@ Object.assign(JOB_BAL,{"blizzardc":0.96,"dryad":1.19,"frostqueen":0.88,"ifrit":0
 
 /* ================= 장비 보물고 (윤회의 균열 대신): 장비·무기·장신구만 나오는 던전 ================= */
 function makeVault(k){const z=makeTrain(k);z.id='vt'+k;z.vault=k;z.expMul=Math.max(1,z.expMul*.1);
-  z.title=`장비 보물고 ${k}단계`;z.sub=`장비·무기·장신구만 나와요 · 몬스터는 수련장 ${k}단계와 같아요${k>34?` · 장비 아이템Lv.${k-34}`:''} · 경험치·금화·물약 없음`;return z}
+  z.title=`장비 보물고 ${k}단계`;z.sub=`장비·무기·장신구만 나와요 · 몬스터는 수련장 ${k}단계와 같아요${k>34?` · 장비 아이템Lv.${k-34}`:''}${xtMax(k)?` · ${XT_NAMES[xtMax(k)-1]} 장비까지`:''} · 경험치·금화·물약 없음`;return z}
 function vaultList(D,E,r){const T=TIERS.length-1,out=[],rb=me.rb||0;
   const one=()=>{let pre=r()<.3?pick(['er','bl','bh']):gearPre(),id=pre+T;const q=r();
     if(rb>0&&q<.002&&ITEMS['R'+id])id='R'+id;else if(q<.005&&ITEMS['L'+id])id='L'+id;else if(q<.09&&ITEMS['x'+id])id='x'+id;if(ITEMS[id])out.push([id,1])};
   const n=D.god?5:D.boss?3:E?1+(r()<.5?1:0):(r()<.15?1:0);for(let i=0;i<n;i++)one();
+  if(r()<(D.boss?1:E?.25:.05)){let id=pick(['er','bl','bh'])+T;if(r()<.09&&ITEMS['x'+id])id='x'+id;out.push([id,1])}
   if(r()<(D.boss?.3:E?.03:.004))out.push(['lb_stone',1]);if(rb>0&&D.boss&&r()<.05)out.push(['tr_reset',1]);return out}
 function renderRift(){const ul=$('rfl');ul.textContent='';
-  $('rfsum').textContent=endOK()?`장비·무기·장신구만 떨어지는 던전이에요 (경험치·금화·물약은 거의 없어요). 일반 몬스터 15% · 정예 1~2개 · 보스 3개, 그중 30%는 장신구(귀걸이·팔찌·브로치). [초월] 9% · [레전드] 0.5%${(me.rb||0)>0?' · [태초 Ⅰ] 0.2% · 특성 초기화권(보스)':''} · 한계돌파석. 초월의 수련장에서 열린 단계까지 들어갈 수 있고, 35단계부터 장비에 아이템Lv가 붙어요.`:'장비 보물고는 Lv.999부터 들어갈 수 있어요.';
+  $('rfsum').textContent=endOK()?`장비·무기·장신구만 떨어지는 던전이에요 (경험치·금화·물약은 거의 없어요). 일반 몬스터 15% · 정예 1~2개 · 보스 3개 + 장신구(귀걸이·팔찌·브로치) 따로 일반 5% · 정예 25% · 보스 확정. [초월] 9% · [레전드] 0.5%${(me.rb||0)>0?' · [태초 Ⅰ] 0.2% · 특성 초기화권(보스)':''} · 한계돌파석. 초월의 수련장에서 열린 단계까지 들어갈 수 있고, 35단계부터 장비에 아이템Lv가 붙어요.`:'장비 보물고는 Lv.999부터 들어갈 수 있어요.';
   let hi=1;for(let k=1;k<=Math.min(TR_N,Math.max(TR_PRE,(me.trBest||0)+3));k++)if(trOpen(k))hi=k;
   for(let k=Math.max(1,hi-19);k<=hi;k++){const li=document.createElement('li');const no=document.createElement('div');no.className='no';no.textContent='V'+k;no.style.color='#ffd35a';
-    const mid=document.createElement('div');const dn=document.createElement('div');dn.className='dn';dn.textContent=`${k}단계`+(k>34?` · 장비 아이템Lv.${k-34}`:'');const sm=document.createElement('small');sm.textContent=`몬스터는 수련장 ${k}단계와 같아요`;mid.append(dn,sm);
+    const mid=document.createElement('div');const dn=document.createElement('div');dn.className='dn';dn.textContent=`${k}단계`+(k>34?` · 장비 아이템Lv.${k-34}`:'')+(xtMax(k)?` · ${XT_NAMES[xtMax(k)-1]} 장비`:'');const sm=document.createElement('small');sm.textContent=`몬스터는 수련장 ${k}단계와 같아요`;mid.append(dn,sm);
     const b=document.createElement('button');b.type='button';b.className='btn sm';b.style.background='#ffd35a';b.textContent='입장';b.disabled=!endOK();
     b.addEventListener('click',()=>{for(const id in zones)if(id.startsWith('vt'))delete zones[id];closePanels();enterZone('vt'+k);sys(`장비 보물고 ${k}단계! 장비만 나와요. 돌아갈 땐 시작 방 포털(E) 또는 귀환(G).`)});li.append(no,mid,b);ul.prepend(li)}}
 
@@ -5692,12 +5700,13 @@ function dropLoot(m,D){ // 극악 드롭: 금화는 그대로, 나머지는 매�
   if(T>=TRANS_FROM&&r()<(D.god?.25:D.boss?.09:E?.009:.0015))list.push(['x'+gearT()+T,1]);if(T>=TRANS_FROM&&r()<(D.god?.002:D.boss?.0006:E?.00006:.00001)*SET_DROP)list.push(['L'+gearT()+T,1]);if(Z&&Z.rift)riftDrops(D,list,r);if(Z&&Z.realm)realmDrops(D,list,r);   /* 레전드: 초월의 1/100 (극악) */if((T>=89&&D.god&&r()<(T>=HELL_FROM?.5:.1))||(T>=HELL_FROM&&D.boss&&!D.god&&r()<.2))list.push(['mark3',1]);if(T>=HELL_FROM&&(D.god?r()<.3:D.boss&&r()<.08))list.push(['core4',1]);   // 초월: 일반 0.15% · 정예 0.9% · 보스 9% · 신 25%
   if(E&&nx>T&&r()<.02)list.push([gearT()+nx,1]);
   const acc=ACC.filter(a=>ITEMS[a].minT<=T);if(acc.length&&P(.2,.02,.002))list.push([pick(acc),1]);
-  /* 장신구 드롭: 일반 1% · 정예 10% · 보스 50% (귀걸이·팔찌·브로치, 45층 이상이면 3%로 [초월]) */
-  if(P(.5,.1,.01)){let id=pick(['er','bl','bh'])+T;if(T>=TRANS_FROM&&r()<.03&&ITEMS['x'+id])id='x'+id;if(ITEMS[id])list.push([id,1])}
+  /* 장신구 드롭: 일반 5% · 정예 25% · 보스 100% (귀걸이·팔찌·브로치, 45층 이상이면 3%로 [초월]) */
+  if(P(1,.25,.05)){let id=pick(['er','bl','bh'])+T;if(T>=TRANS_FROM&&r()<.03&&ITEMS['x'+id])id='x'+id;if(ITEMS[id])list.push([id,1])}
   if(P(.1,.02,.003))list.push([pick(BUFFS),1]);
   if(P(0,.015,.002))list.push(['home',1]);
   const scN=D.god?1:D.boss?(r()<.5?1:0):P(0,.02,.002)?1:0;for(let k=0;k<scN;k++)list.push([r()<.5?'sc_w':'sc_a',1]);
   if(Z&&Z.vault)list.splice(0,list.length,...vaultList(D,E,r));
+  if(Z&&(Z.train||Z.vault)>=60)for(const e of list)e[0]=upTier(e[0]);
   const spread=D.boss?34:E?20:14;
   for(const [id,n] of list){const g={id,n,x:m.x+(r()-.5)*spread,y:m.y+(r()-.5)*spread*.7,t:0,full:false};{const f=freeSpot(g.x,g.y,3,3,140)||freeSpot(me.x,me.y,3,3,40);if(f){g.x=f[0];g.y=f[1]}else{g.x=me.x;g.y=me.y}}if(OPTPOOL[ITEMS[id].kind])g.o=rollOpts(id);if(Z.train>34&&isGear(id))g.il=Z.train-34;Z.ground.push(g)}
 }
