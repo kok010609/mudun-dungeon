@@ -5081,8 +5081,8 @@ Object.assign(JOB_BAL,{"blizzardc":0.96,"dryad":1.19,"frostqueen":0.88,"ifrit":0
 
 /* ================= 장비 보물고 (윤회의 균열 대신): 장비·무기·장신구만 나오는 던전 ================= */
 function makeVault(k){const z=makeTrain(k);z.id='vt'+k;z.vault=k;z.expMul=Math.max(1,z.expMul*.1);
-  z.title=`장비 보물고 ${k}단계`;z.sub=`장비·무기·장신구만 나와요 · 몬스터가 내 힘에 맞춰 강해져요 (보스는 단단해요)${k>34?` · 장비 아이템Lv.${k-34}`:''}${xtMax(k)?` · ${XT_NAMES[xtMax(k)-1]} 장비까지`:''} · 경험치·금화·물약 없음`;return z}
-function vaultList(D,E,r){const T=TIERS.length-1,out=[],rb=me.rb||0;
+  z.title=`장비 보물고 ${k}단계`;z.sub=`장비·무기·장신구만 나와요 · 몬스터가 내 힘에 맞춰 강해져요 (보스는 단단해요)${k>34?` · 장비 아이템Lv.${k-34}`:''}${xtMax(k)?` · ${XT_NAMES[xtMax(k)-1]} 장비까지`:''}${ygOpen(k)?` · [${YG[ygOpen(k)-1][0]}] 등급까지`:` · ${YG[0][2]}단계부터 [${YG[0][0]}] 등급`} · 경험치·금화·물약 없음`;return z}
+let vaultList=function(D,E,r){const T=TIERS.length-1,out=[],rb=me.rb||0;
   const one=()=>{let pre=r()<.3?pick(['er','bl','bh']):gearPre(),id=pre+T;const q=r();
     if(rb>0&&q<.002&&ITEMS['R'+id])id='R'+id;else if(q<.005&&ITEMS['L'+id])id='L'+id;else if(q<.09&&ITEMS['x'+id])id='x'+id;if(ITEMS[id])out.push([id,1])};
   const n=D.god?5:D.boss?3:E?1+(r()<.5?1:0):(r()<.15?1:0);for(let i=0;i<n;i++)one();
@@ -5098,12 +5098,12 @@ function renderRift(){const ul=$('rfl');ul.textContent='';
 
 /* ================= 장비 등급 정리 (일반·영웅·초월·각성·레전드·태초·신화) + 캐시상점 4탭 ================= */
 const GRD=[['일반','#d9dcef'],['영웅','#c47bff'],['초월','#ff4a6a'],['각성','#5ee8ff'],['레전드','#ffa31a'],['태초','#ff6ad5'],['신화','#fff27a'],['운영자','#3affb0']];
-function gIdx(id){const it=ITEMS[id];if(!it)return 0;const r=it.rar||0;if(r===8)return 7;if(r>=12)return 6;if(r>=10)return 5;if(r===9)return 4;if(/^x/.test(id)&&isGear(id))return 3;if(r>=5)return 2;if(r>=3)return 1;return 0}
+let gIdx=function(id){const it=ITEMS[id];if(!it)return 0;const r=it.rar||0;if(r===8)return 7;if(r>=12)return 6;if(r>=10)return 5;if(r===9)return 4;if(/^x/.test(id)&&isGear(id))return 3;if(r>=5)return 2;if(r>=3)return 1;return 0}
 const gCol=id=>{const i=gIdx(id);return i===6?(ITEMS[id].col||GRD[6][1]):GRD[i][1]};
 const iCol=id=>ITEMS[id]&&isGear(id)?gCol(id):(RAR[(ITEMS[id]||{}).rar||0]||RAR[0])[1];
-function gLabel(id){const i=gIdx(id),it=ITEMS[id];if(i===5)return it.rar===11?'태초 Ⅱ':'태초 Ⅰ';if(i===6)return '신화 · '+RAR[it.rar][0];return GRD[i][0]}
+let gLabel=function(id){const i=gIdx(id),it=ITEMS[id];if(i===5)return it.rar===11?'태초 Ⅱ':'태초 Ⅰ';if(i===6)return '신화 · '+RAR[it.rar][0];return GRD[i][0]}
 function gStep(id){const it=ITEMS[id];if(!it||it.tier==null||!isGear(id))return 0;return it.xt?120+it.xt:it.tier+1}
-function gSrc(id){const i=gIdx(id),it=ITEMS[id];
+let gSrc=function(id){const i=gIdx(id),it=ITEMS[id];
   return i<=1?'던전 사냥':i===2?(it.xt?'초월의 수련장·장비 보물고 60단계부터 (25단계마다 한 단계 위)':'던전·초월의 수련장·장비 보물고'):i===3?'장비 보물고 (가끔) · 고급 장비 상자':i===4?'장비 보물고 (드물게) · 고급 장비 상자 · 레전드 제작':
     i===5?(it.rar===11?'대련장 챔피언 · 무한의 탑 PK 보스층 · 태초 상자':'장비 보물고 (환생 후, 아주 드물게)'):i===6?'승급 제작 · 보스 군단 돌파':'운영자'}
 /* 이름 정리: [태초 원초 활]처럼 겹치던 이름을 → 각성 원초 활 (진짜 태초는 태초 Ⅰ·Ⅱ만) */
@@ -5168,6 +5168,25 @@ function csTabsDraw(){const tabs=$('cashtabs');tabs.textContent='';if(cashTab===
   for(const [k,l] of CS_TABS){const b=document.createElement('button');b.type='button';b.className='btn sm'+(G===k?'':' alt');b.textContent=l;b.addEventListener('click',()=>{cashTab=CS_SUB[k][0][0];renderCash()});tabs.appendChild(b)}
   if(CS_SUB[G].length>1){const br=document.createElement('div');br.style.cssText='flex-basis:100%;height:0';tabs.appendChild(br);
     for(const [k,l] of CS_SUB[G]){const b=document.createElement('button');b.type='button';b.className='btn sm'+(cashTab===k?'':' alt');b.style.cssText='font-size:11px;padding:2px 10px;opacity:'+(cashTab===k?1:.8);b.textContent=l;b.addEventListener('click',()=>{cashTab=k;renderCash()});tabs.appendChild(b)}}}
+
+/* ================= 신화 위 새 등급 5개: 불멸 → 천상 → 신성 → 태극 → 영격 (장비 보물고 높은 단계에서만) ================= */
+const YG=[['불멸','#ff7a4a',75],['천상','#9af0ff',100],['신성','#fff6c4',130],['태극','#ff4ad0',170],['영격','#c6ff4a',220]];   /* [이름, 색, 보물고 몇 단계부터] */
+{const T=TIERS.length-1;for(const pre of GPRE){let prev=ITEMS['O'+pre+T];if(!prev)continue;
+  YG.forEach(([nm,col],i)=>{const o={...prev,rar:17+i,col,yg:i+1};delete o.id;delete o.desc;for(const f of ['atk','def','hp','mp'])if(o[f])o[f]=Math.round(o[f]*1.3);o.crit=Math.min(100,(o.crit||0)+5);
+    const id='Y'+(i+1)+pre;GEAR(id,o);ITEMS[id].id=id;prev=ITEMS[id]})}}
+YG.forEach(([nm,col],i)=>{RAR[17+i]=[nm,col];GRD[8+i]=[nm,col]});
+{const g0=gIdx;gIdx=function(id){const it=ITEMS[id];if(it&&it.yg)return 7+it.yg;return g0(id)}}
+{const l0=gLabel;gLabel=function(id){const it=ITEMS[id];if(it&&it.yg)return YG[it.yg-1][0];return l0(id)}}
+{const s0=gSrc;gSrc=function(id){const it=ITEMS[id];if(it&&it.yg)return `장비 보물고 ${YG[it.yg-1][2]}단계부터 (보스·정예에서 드물게)`;return s0(id)}}
+function ygRename(){const used=new Set(Object.values(ITEMS).filter(it=>it.gRen&&!it.yg).map(it=>it.name));
+  for(const id of Object.keys(ITEMS).filter(id=>ITEMS[id].yg).sort()){const it=ITEMS[id],pre=id.replace(/^Y\d/,''),grp=GN_GRP[pre]||'armor';let nm='',k=0;
+    do{const r=gnRng(gnHash(id+'#'+k));nm=`[${YG[it.yg-1][0]}] ${gnPick(r,GN_EPI[grp])} · ${gnCoin(r)}`;k++}while(used.has(nm)&&k<50);used.add(nm);it.name=nm;it.gRen=1}}
+ygRename();setTimeout(ygRename,0);
+/* 보물고 드롭: 열린 등급 중 가장 높은 것 60%, 나머지는 아래 등급 · 보스 1.5% · 신 3% · 정예 0.15% */
+const ygOpen=k=>YG.filter(y=>k>=y[2]).length;
+{const v0=vaultList;vaultList=function(D,E,r){const out=v0(D,E,r),k=(Z&&Z.vault)||0,n=ygOpen(k);
+  if(n&&r()<(D.god?.03:D.boss?.015:E?.0015:0)){const g=r()<.6?n:1+Math.floor(r()*n),pre=gearPre(),id='Y'+g+pre;if(ITEMS[id]){out.push([id,1]);setTimeout(()=>{toast(`✦ ${YG[g-1][0]} 장비가 떨어졌어요!`,4000);news({k:'leg',i:id})},0)}}
+  return out}}
 
 function makeDuel(k){k=Math.max(1,Math.min(DUEL_MAX,k));const T=ABYSS_FROM+9,z=makeArena(T);
   z.id='pv'+k;z.duel=k;z.hpMul=duelHp(k);z.dmgMul=duelDmg(k);z.expMul=3;
@@ -5359,7 +5378,7 @@ const NOTICE=[
  ['5차 전직',['4차 전직 후 초월 300 + 4차의 핵 10개 (전직 창 J)','Y·U 피해 2배·쿨타임 절반, ; 버프 1.5배, 공격·체력 +30%']],
  ['심연 포탈 (헬 10단계 클리어)',['마을 분수대(E) → 심연','심연 1~10단계: 헬 10단계보다 체력 약 2~5배·공격 1.4~2.5배','[초월] 등급 심연 장비가 기본 드롭, 극악 확률로 [레전드] 장비','초월의 증표·4차의 핵도 헬처럼 나와요']],
  ['레벨 (Lv.1~5000)',['레벨은 하나로 이어져요: 999까지는 사냥으로, 1000부터 5000까지는 분수대 → 초월의 수련장에서 올려요','999 이후 레벨마다 공격력·최대 체력·방어 +0.33%','500레벨마다 보상 (1500·2000·2500·3000·3500·4000·4500·5000): 영구 공격력·체력 +5%, 4차의 핵 5, 한계돌파석 3, 마력 가루','5차 전직 Lv.1300 · 6차 전직 Lv.1600 · 환생 Lv.5000','예전 "Lv.999 + 초월 N"은 Lv.(999+N)으로 바뀌었어요 (손해 없음)']],
- ['장비 등급 (7개)',['일반 → 영웅 → 초월 → 각성 → 레전드 → 태초 → 신화','같은 등급이면 [장비 단계]가 높을수록 세요 (원초 120단계 → 시원~천원 121~130단계)','각성·레전드는 장비 보물고, 태초 Ⅱ는 대련장·무한의 탑, 신화(무한~개벽)는 승급 제작','강화는 장비가 아니라 칸에 남아요 · 더 좋은 장비는 자동으로 껴요']],
+ ['장비 등급 (12개)',['일반 → 영웅 → 초월 → 각성 → 레전드 → 태초 → 신화 → 불멸 → 천상 → 신성 → 태극 → 영격','같은 등급이면 [장비 단계]가 높을수록 세요 (원초 120단계 → 시원~천원 121~130단계)','각성·레전드는 장비 보물고, 태초 Ⅱ는 대련장·무한의 탑, 신화(무한~개벽)는 승급 제작, 불멸~영격은 장비 보물고 75·100·130·170·220단계부터','강화는 장비가 아니라 칸에 남아요 · 더 좋은 장비는 자동으로 껴요']],
  ['PK AI',['5층부터 던전에 다른 모험가처럼 보이는 PK AI가 돌아다니며 공격해요 (빨간 이름)','바닥의 빨간 원(스킬 경고)을 피하세요. 쓰러뜨리면 현상금 금화 + 보스급 드롭','옵션(O) → 게임 → PK AI 등장으로 끌 수 있어요']],
  ['경험치 안내',['51층부터 몬스터 경험치가 크게 줄었어요','Lv.650부터 필요 경험치가 아주 가파르게 늘어나요']]];
 function renderNotice(){const b=$('noticebody');b.textContent='';
