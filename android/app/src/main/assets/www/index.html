@@ -5107,7 +5107,35 @@ function gSrc(id){const i=gIdx(id),it=ITEMS[id];
   return i<=1?'던전 사냥':i===2?(it.xt?'초월의 수련장·장비 보물고 60단계부터 (25단계마다 한 단계 위)':'던전·초월의 수련장·장비 보물고'):i===3?'장비 보물고 (가끔) · 고급 장비 상자':i===4?'장비 보물고 (드물게) · 고급 장비 상자 · 레전드 제작':
     i===5?(it.rar===11?'대련장 챔피언 · 무한의 탑 PK 보스층 · 태초 상자':'장비 보물고 (환생 후, 아주 드물게)'):i===6?'승급 제작 · 보스 군단 돌파':'운영자'}
 /* 이름 정리: [태초 원초 활]처럼 겹치던 이름을 → 각성 원초 활 (진짜 태초는 태초 Ⅰ·Ⅱ만) */
-function gRename(){for(const id in ITEMS){const it=ITEMS[id];if(!/^x/.test(id)||!isGear(id)||it.gRen)continue;const b=ITEMS[id.slice(1)];if(!b)continue;it.name='각성 '+b.name;it.gRen=1}}
+/* 이름 정리: 각성·레전드·태초·신화 장비는 장비마다 하나뿐인 [별명 · 고유 이름] */
+const GN_GRP={w:'blade',d:'blade',g:'blade',rd:'blade',kt:'blade',wk:'blade',pc:'blade',bw:'bow',qv:'bow',st:'staff',tm:'staff',eo:'staff',ch:'staff',sp:'spear',lg:'spear',er:'acc',bl:'acc',bh:'acc'};
+const GN_EPI={
+ blade:['새벽을 가르는 자','달을 벤 자','폭풍을 끊는 자','천 번 맹세한 자','피로 새긴 자','바다를 가른 자','왕을 지킨 자','어둠을 베는 자','별똥별을 벤 자','서리를 두른 자','번개를 삼킨 자','침묵을 깨는 자','불꽃을 품은 자','운명을 끊는 자','용의 숨을 벤 자','그림자를 걷는 자','마지막 일격','붉은 달의 칼날'],
+ bow:['바람을 꿰는 자','별을 쏜 자','천 리를 보는 자','달빛을 당기는 자','폭풍을 겨누는 자','구름을 뚫는 자','새벽을 쏘는 자','숨을 멈춘 자','하늘을 노리는 자','유성을 부르는 자','빗나가지 않는 자','숲의 파수꾼'],
+ staff:['별을 부르는 자','잊힌 주문을 아는 자','영혼을 깨우는 자','시간을 읽는 자','불꽃을 다스리는 자','서리를 엮는 자','번개를 묶는 자','꿈을 걷는 자','이름 없는 현자','심연을 본 자','정령의 목소리','달의 기도'],
+ spear:['하늘을 찌르는 자','용을 꿰뚫은 자','성문을 부순 자','폭풍을 꿰는 자','산을 꿰뚫는 자','첫 돌격','번개를 찌르는 자','별을 꿰는 자','물러서지 않는 자','전장의 깃발'],
+ armor:['무너지지 않는 자','꺼지지 않는 불꽃','천 번 막아낸 자','성벽이 된 자','폭풍을 견딘 자','별을 두른 자','용비늘을 입은 자','맹세를 지킨 자','쓰러지지 않는 자','빛을 머금은 자','겨울을 견딘 자','왕의 방패'],
+ acc:['속삭이는 별','별빛이 깃든 자','잊힌 왕국의 유산','눈물로 빚은 보석','달이 맺힌 자','운명을 엿보는 눈','바람의 노래','심장의 고동','새벽의 약속','꿈의 조각','잠든 신의 숨결','마지막 소원']};
+const GN_ADJ=['꺼지지 않는','무너지지 않는','깨어난','빛나는','울부짖는','잠든 용의','서리 낀','번개 서린','피에 젖은','달빛 머금은','폭풍 같은','고요한','타오르는','별이 내린','검게 물든','바람 깃든','맹세한','잊힌','눈부신','깊은 밤의','노래하는','굶주린'];
+const GN_EL=['화염','서리','번개','폭풍','달빛','별빛','그림자','새벽','용린','강철','심연','바람','핏빛','황혼','은빛','천둥','흑요','백야'];
+const GN_GEN=['첫 빛의 유산','태초의 숨결','창세의 불씨','처음 깨어난 자','시작의 맹세','세상이 열린 날'];
+const GN_S1=['아','실','엘','카','이','미','반','테','로','세','벨','가','하','칼','토','유','제','무','네','오','루','디','에','시','바','레','라','키','모','나'],
+      GN_S2=['르','바','라','케','리','엔','드','로','수','니','론','데','린','벤','타','미','렌','반','시','가','노','에','디','안'],
+      GN_S3=['온','스','엘','리온','라','드','아','렌','토르','시스','네','론','디아','레스','카','인','룬','벨'];
+function gnHash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function gnRng(seed){let a=seed||1;return ()=>{a^=a<<13;a>>>=0;a^=a>>>17;a^=a<<5;a>>>=0;return a/4294967296}}
+const gnPick=(r,a)=>a[Math.floor(r()*a.length)];
+function gnCoin(r){return gnPick(r,GN_S1)+gnPick(r,GN_S2)+gnPick(r,GN_S3)}
+function gRename(){const used=new Set();const ids=Object.keys(ITEMS).filter(id=>isGear(id)&&/^(x|L|R|G|I|E|C|V|O)/.test(id)&&!ITEMS[id].gm).sort();
+  for(const id of ids){const it=ITEMS[id],m=/^(x|L|R|G|I|E|C|V|O)((?:N\d+)?)([a-z]+)(\d*)$/.exec(id);if(!m||!GPRE.includes(m[3]))continue;
+    const base=ITEMS[m[2]+m[3]+m[4]];if(!base)continue;if(!it.name0)it.name0=it.name;
+    const part=base.name.includes(' ')?base.name.slice(base.name.indexOf(' ')+1):base.name,grp=GN_GRP[m[3]]||'armor',g=m[1];
+    let nm='',k=0;do{const r=gnRng(gnHash(id+'#'+k));
+      if(g==='x')nm=`${gnPick(r,GN_ADJ)} · ${gnPick(r,GN_EL)} ${part}`;
+      else if(g==='L')nm=`${gnPick(r,GN_EPI[grp])} · ${gnCoin(r)}`;
+      else if(g==='R'||g==='G')nm=`${gnPick(r,GN_GEN)} · ${gnCoin(r)}${g==='G'?' Ⅱ':''}`;
+      else nm=`[${RAR[it.rar][0]}] ${gnPick(r,GN_EPI[grp])} · ${gnCoin(r)}`;k++}while(used.has(nm)&&k<50);
+    used.add(nm);it.name=nm;it.gRen=1}}
 gRename();setTimeout(gRename,0);
 gradeOf=id=>ITEMS[id]?gLabel(id):'';
 /* 자동 분해 칸: 새 등급 기준 (12 = 초월 중 시원~천원) */
