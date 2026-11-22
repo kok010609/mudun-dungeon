@@ -1153,10 +1153,10 @@ for(let T=10;T<GODS.length;T++){const G=GODS[T],who=G.name.split(' ').pop(),kd=[
   GEAR('god'+T,{name:`${who}의 ${KN2[kd]}`,kind:kd,icon:{weapon:'sword'}[kd]||kd,rar:4,minT:T,col:G.col,...st})}
 for(const [id,name,kind,rar,minT,st,col] of ACCDEF)GEAR(id,{name,kind,rar,icon:kind==='ring'?'ring':kind==='amulet'?'amulet':'boots',minT,col,...st,price:minT===0?30:undefined});
 Object.assign(ITEMS,{
-  bf_atk:{name:'힘의 물약',    kind:'potion',rar:1,icon:'flask', buff:'atk',dur:60, price:40,col:'#ff5a3a',desc:'60초 동안 공격력 +30%'},
-  bf_def:{name:'철벽의 물약',  kind:'potion',rar:1,icon:'flask', buff:'def',dur:60, price:40,col:'#9aa4b8',desc:'60초 동안 방어 +50%'},
-  bf_spd:{name:'신속의 물약',  kind:'potion',rar:1,icon:'flask', buff:'spd',dur:60, price:30,col:'#6ee7b7',desc:'60초 동안 이동 속도 +30%'},
-  bf_exp:{name:'경험의 두루마리',kind:'potion',rar:2,icon:'scroll',buff:'exp',dur:120,price:80,col:'#ffd35a',desc:'2분 동안 얻는 경험치 2배'},
+  bf_atk:{name:'힘의 물약',    kind:'potion',rar:1,icon:'flask', buff:'atk',dur:600, price:40,col:'#ff5a3a',desc:'10분 동안 공격력 +30%'},
+  bf_def:{name:'철벽의 물약',  kind:'potion',rar:1,icon:'flask', buff:'def',dur:600, price:40,col:'#9aa4b8',desc:'10분 동안 방어 +50%'},
+  bf_spd:{name:'신속의 물약',  kind:'potion',rar:1,icon:'flask', buff:'spd',dur:600, price:30,col:'#6ee7b7',desc:'10분 동안 이동 속도 +30%'},
+  bf_exp:{name:'경험의 두루마리',kind:'potion',rar:2,icon:'scroll',buff:'exp',dur:1200,price:80,col:'#ffd35a',desc:'20분 동안 얻는 경험치 2배'},
   sc_w:  {name:'무기 강화 주문서',kind:'mat',rar:1,icon:'scroll',price:10000,col:'#ff7a5a',desc:'가방에서 무기를 고르고 [강화]를 누르면 써요 (최대 +20)'},
   sc_a:  {name:'방어구 강화 주문서',kind:'mat',rar:1,icon:'scroll',price:150,col:'#5ab0ff',desc:'투구·갑옷·장갑·신발·반지·목걸이 강화에 써요 (최대 +20)'},
   dust:  {name:'마력 가루',kind:'mat',rar:0,icon:'dust',col:'#c9a8ff',desc:'장비를 분해하면 50% 확률로 나와요. 15개로 강화 주문서를 만들 수 있어요'},
