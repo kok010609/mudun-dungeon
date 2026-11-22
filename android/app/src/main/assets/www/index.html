@@ -6009,6 +6009,9 @@ const GQF=()=>GFX.q===2?1:GFX.q===1?.5:.25;   // 파티클 비율
 /* 큰 숫자를 한국식으로: 25000 → 2만5천, 123456789 → 1억2345만, 3.2조 등 */
 function fmtK(n){n=Math.round(n);if(n<1e4)return String(n);const neg=n<0?'-':'';n=Math.abs(n);const u=[[1e16,'경'],[1e12,'조'],[1e8,'억'],[1e4,'만']];
   for(let i=0;i<u.length;i++){const [v,nm]=u[i];if(n>=v){const a=Math.floor(n/v),r=n-a*v,sub=i<u.length-1?u[i+1]:[1e3,'천'];const b=Math.floor(r/sub[0]);return neg+a+nm+(b?b+sub[1]:'')}}return neg+n}
+/* 전투력 표시: 1조 2345억 · 3억 4500만 · 2천 */
+function fmtCP(n){n=Math.round(n);const neg=n<0?'-':'';n=Math.abs(n);if(n<1e4)return neg+(n>=1e3&&n%1e3===0?n/1e3+'천':n.toLocaleString());const u=[[1e16,'경'],[1e12,'조'],[1e8,'억'],[1e4,'만']];
+  for(let i=0;i<u.length;i++){const [v,nm]=u[i];if(n>=v){const a=Math.floor(n/v),r=n-a*v,sub=i<u.length-1?u[i+1]:null;const sv=sub||[1,''],b=Math.floor(r/sv[0]),bs=b>=1e3&&b%1e3===0?b/1e3+'천':String(b);return neg+a.toLocaleString()+nm+(b?' '+bs+sv[1]:'')}}return neg+n}
 const floatText=(x,y,txt,col,big)=>{if(GFX.num==='off'&&/^[-+]?\d|!$/.test(String(txt))&&!/[가-힣]/.test(String(txt)))return;if(GFX.num==='crit'&&!big&&/^[-+]?\d+$/.test(String(txt)))return;txt=String(txt).replace(/\d{5,}/g,n=>fmtK(+n));
   floats.push({x,y,txt,col,big,t:0});const cap=GFX.q===2?120:GFX.q===1?50:25;if(floats.length>cap)floats.splice(0,floats.length-cap)};
 /* 장비 드롭 부위: 내 직업이 쓸 수 있는 장비만, 부위를 먼저 고르고(무기는 2배) 그 부위 안에서 고름 → 직업마다 무기 나올 확률이 같음 */
@@ -6622,8 +6625,8 @@ function renderBag(){
   const L=$('dsl'),Rr=$('dsr');L.textContent='';Rr.textContent='';for(const k of DOLL_L)L.appendChild(mkSlot(k));for(const k of DOLL_R)Rr.appendChild(mkSlot(k));
   {const A=advShow&&advShow();$('dname').textContent=`${A?`[${A.name}] `:''}${rbTag(me.rb)}Lv.${LVT()}\n${me.nick}`;$('dname').style.whiteSpace='pre-line';$('dname').style.color=A?A.col:'#ffcc4d'}
   drawDoll();
-  {const c=cpNow(),el=$('dcp');el.textContent='';const l=document.createElement('span');l.className='l';l.textContent='전투력';const v=document.createElement('span');v.className='v';v.textContent=c.toLocaleString();
-    if(renderBag.cp&&renderBag.cp!==c&&Date.now()-(renderBag.cpT||0)<15000){const d=document.createElement('span');d.className='dlt';d.style.color=c>renderBag.cp?'#6ee7b7':'#ff8a9a';d.textContent=(c>renderBag.cp?'▲ +':'▼ ')+(c-renderBag.cp).toLocaleString();v.appendChild(d)}
+  {const c=cpNow(),el=$('dcp');el.textContent='';const l=document.createElement('span');l.className='l';l.textContent='전투력';const v=document.createElement('span');v.className='v';v.textContent=fmtCP(c);
+    if(renderBag.cp&&renderBag.cp!==c&&Date.now()-(renderBag.cpT||0)<15000){const d=document.createElement('span');d.className='dlt';d.style.color=c>renderBag.cp?'#6ee7b7':'#ff8a9a';d.textContent=(c>renderBag.cp?'▲ +':'▼ ')+fmtCP(Math.abs(c-renderBag.cp));v.appendChild(d)}
     if(renderBag.cp!==c){renderBag.cpPrev=renderBag.cp;renderBag.cp=c;renderBag.cpT=Date.now()}el.append(l,v)}
   {const box=$('dpre');box.textContent='';for(let n=0;n<3;n++){const P=(me.eqPre||[])[n],pc=document.createElement('div');pc.className='pc';const pn=document.createElement('div');pn.className='pn';pn.textContent=`프리셋 ${n+1}`+(P?` (${Object.keys(P.eq).length}칸)`:'');pn.title=P?'저장된 장비 구성':'비어 있음 — [저장]으로 지금 장비를 담아요';
       const b1=document.createElement('button');b1.type='button';b1.className='btn sm';b1.textContent='장착';b1.disabled=!P;b1.addEventListener('click',()=>loadPreset(n));
@@ -6661,7 +6664,7 @@ function renderBag(){
       for(const [k,n,u] of GST){const v=gstVal(it,e,k),ov=oit?gstVal(oit,oe,k):0;if(!v&&!ov)continue;const r=document.createElement('div'),a=document.createElement('span');a.textContent=n;const b=document.createElement('span');b.textContent=gstFmt(v,u);
         if(oit&&!(it.cls&&it.cls!==me.cls)){const d=v-ov;if(Math.abs(d)>1e-9){const x=document.createElement('span');x.className=d>0?'up':'dn';x.textContent=` (${d>0?'▲ +':'▼ '}${gstFmt(d,u)})`;b.appendChild(x)}}r.append(a,b);tbl.appendChild(r)}
       if(tbl.childNodes.length){if(oit)tbl.title='괄호 = 지금 착용 중인 장비와 차이 (접두어 제외)';ds.append(tbl)}}
-    if(sel.from==='bag'){const sb=me.bag[sel.i],nc=sb&&isGear(sb.id)&&!(ITEMS[sb.id].cls&&ITEMS[sb.id].cls!==me.cls)?cpNow()+cpDelta(sb.id,sb.e||0,sb.il,sb.o):null;if(nc!=null){const c0=cpNow(),cp=document.createElement('div');cp.style.cssText='font-size:15px;color:'+(nc>=c0?'#6ee7b7':'#ff8a9a');cp.textContent=`장착하면 전투력 ${c0.toLocaleString()} → ${nc.toLocaleString()} (${nc>=c0?'▲ +':'▼ '}${(nc-c0).toLocaleString()})`;ds.append(cp)}}
+    if(sel.from==='bag'){const sb=me.bag[sel.i],nc=sb&&isGear(sb.id)&&!(ITEMS[sb.id].cls&&ITEMS[sb.id].cls!==me.cls)?cpNow()+cpDelta(sb.id,sb.e||0,sb.il,sb.o):null;if(nc!=null){const c0=cpNow(),cp=document.createElement('div');cp.style.cssText='font-size:15px;color:'+(nc>=c0?'#6ee7b7':'#ff8a9a');cp.textContent=`장착하면 전투력 ${fmtCP(c0)} → ${fmtCP(nc)} (${nc>=c0?'▲ +':'▼ '}${fmtCP(Math.abs(nc-c0))})`;ds.append(cp)}}
     if(sel.from==='bag'&&me.eq[it.kind]&&!(it.cls&&it.cls!==me.cls)){const cmp=document.createElement('div');const sb=me.bag[sel.i]||{},a=cpDelta(id,e,il,sb.o),b=0;
       cmp.style.color=a<b?'#ff8a9a':'#6ee7b7';cmp.textContent=a<b?`▼ 착용 중인 ${nameOf(me.eq[it.kind],me.eqE[it.kind]||0,me.eqIL&&me.eqIL[it.kind])}보다 약해요`:a>b?`▲ 착용 중인 ${nameOf(me.eq[it.kind],me.eqE[it.kind]||0,me.eqIL&&me.eqIL[it.kind])}보다 강해요`:'착용 중인 장비와 비슷해요';ds.append(cmp)}}
   const row=document.createElement('div');row.className='row';
