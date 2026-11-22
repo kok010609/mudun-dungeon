@@ -579,7 +579,7 @@ body.mobile #act{top:auto;bottom:calc(120px + env(safe-area-inset-bottom,0px))}
   <ul class="dlist" id="hubl"></ul>
 </section>
 <section class="panel float wide" id="train" hidden aria-label="초월의 수련장">
-  <header><h2 style="color:#5affd8">초월의 수련장 · Lv.1000~5000</h2><button class="btn sm alt x" type="button" data-close>닫기</button></header>
+  <header><h2 style="color:#5affd8">초월의 수련장 · Lv.1000~3000</h2><button class="btn sm alt x" type="button" data-close>닫기</button></header>
   <p class="dexsum" style="margin:0" id="trsum"></p>
   <ul class="dlist" id="trl"></ul>
 </section>
@@ -2092,8 +2092,8 @@ function nextGoal(){const L=me.lvl,hub=()=>togglePanel('hub'),adv=()=>togglePane
     if(top<rec)return [`분수대(E)에서 던전 ${rec+1}층에 도전하세요 (지금 레벨에 딱 맞아요)`,hub];return [`던전 ${Math.min(top+2,HELL_FROM)}층으로! 레벨 ${nx}까지 사냥 (${nx===LV_MAX?'만렙':'다음 전직'})`,hub]}
   if(!me.cleared[HELL_FROM-1])return ['100층 신화 보스를 쓰러뜨리면 헬 던전이 열려요',hub];
   if(!(typeof adv4Of==='function'?adv4Of():me.adv4))return ['4차 전직을 노려 보세요 (전직 창에서 조건 확인)',adv];
-  if(tl<TLV_MAX){const k=Math.min(TR_N,1+Math.floor(tl/30));return [`분수대 → 초월의 수련장 ${k}단계에서 레벨 올리기 (Lv.${999+tl}/5000)`,hub]}
-  if(rb===0)return ['Lv.5000 달성! 전직 창에서 환생하세요',adv];
+  if(tl<TLV_MAX){const k=Math.min(TR_N,1+Math.floor(tl/30));return [`분수대 → 초월의 수련장 ${k}단계에서 레벨 올리기 (Lv.${999+tl}/3000)`,hub]}
+  if(rb===0)return ['Lv.3000 달성! 전직 창에서 환생하세요',adv];
   if(rb<REALM_RB)return [`장비 보물고에서 장비 모으기 · 환생 ${REALM_RB-rb}회 더 하면 태초의 영역`,hub];
   return [`태초의 영역 ${Math.min(REALM_MAX,1+Math.floor((rb-REALM_RB)/REALM_STEP))}단계 도전!`,hub]}
 setInterval(()=>{try{if(started){const el=$('goal');const t='▶ '+nextGoal()[0];if(el.textContent!==t)el.textContent=t}}catch{}},1000);
@@ -3253,12 +3253,12 @@ function doAdvance6(){const A=adv4Of();if(!A||!adv5On()||adv6On()||(me.tlv||0)<A
 const RB_BONUS={atk:10,hp:10,def:10,exp:20};
 let rbConfirm=0;
 function renderAdv7(){const g=$('advgrid');const rb=me.rb||0,tl=me.tlv||0;
-  const hd=document.createElement('div');hd.style.gridColumn='1/-1';hd.style.marginTop='6px';hd.className='nm';hd.style.color='#ff9ad8';hd.textContent=`환생 (Lv.5000 · 지금 Lv.${LVT()} · 환생 ${rb}회)`;g.appendChild(hd);
+  const hd=document.createElement('div');hd.style.gridColumn='1/-1';hd.style.marginTop='6px';hd.className='nm';hd.style.color='#ff9ad8';hd.textContent=`환생 (Lv.3000 · 지금 Lv.${LVT()} · 환생 ${rb}회)`;g.appendChild(hd);
   const el=document.createElement('div');el.className='pet';el.style.gridTemplateColumns='1fr';el.style.gridColumn='1/-1';el.style.borderColor='#ff9ad8';
   const nm=document.createElement('div');nm.className='nm';nm.style.color='#ff9ad8';nm.style.fontSize='19px';nm.textContent=`★${rb+1} ${rb+1}번째 환생`;
   const sm=document.createElement('small');sm.style.whiteSpace='pre-line';sm.textContent=`레벨이 Lv.1로 돌아가요. 장비·가방·금화·전직·펫은 그대로예요.\n환생할 때마다 영구 보너스: 공격력·최대 체력·방어 +${RB_BONUS.atk}%, 얻는 경험치 +${RB_BONUS.exp}% (누적, 최대 +${RB_EXP_MAX}%)\n대신 환생할수록 다시 올리는 데 필요한 경험치가 +${RB_NEED*100}%씩 늘어요 (다음 환생 뒤 ×${(1+RB_NEED*(rb+1)).toFixed(2)}).\n배운 스킬과 버프는 레벨과 상관없이 바로 써요.\n이름 앞에 환생 별 ★ 표시 (★는 환생 횟수만 뜻해요). 지금 보너스: 공격·체력·방어 +${rb*RB_BONUS.atk}%, 경험치 +${Math.min(RB_EXP_MAX,rb*RB_BONUS.exp)}%`;
   const b=document.createElement('button');b.type='button';b.className='btn sm';b.style.background='#ff9ad8';
-  if(tl<TLV_MAX){b.textContent=`Lv.5000에 열려요`;b.disabled=true}
+  if(tl<TLV_MAX){b.textContent=`Lv.3000에 열려요`;b.disabled=true}
   else{b.textContent=rbConfirm?'정말 환생할까요? 한 번 더 누르면 Lv.1로 돌아가요':'환생하기';b.addEventListener('click',()=>{if(!rbConfirm){rbConfirm=1;renderAdv();setTimeout(()=>{rbConfirm=0},6000);return}rbConfirm=0;doRebirth()})}
   const tb=document.createElement('button');tb.type='button';tb.className='btn sm alt';tb.textContent=`특성 트리 열기 (남은 포인트 ${traitPts()})`;tb.disabled=!(me.rb>0);tb.addEventListener('click',()=>togglePanel('trait'));
   el.append(nm,sm,b,tb);g.appendChild(el)}
@@ -3395,12 +3395,12 @@ function makeTrain(k){k=Math.max(1,Math.min(TR_N,k));const T=k>34?ABYSS_FROM+9:A
   z.title=`초월의 수련장 ${k}단계 · ${trName(k)}`;z.sub=`Lv.${999+(k-1)*TR_STEP}부터 · ${k>34?`장비 아이템Lv.${k-34} (+${Math.round(IL_PER*(k-34)*100)}%) · `:''}${xtMax(k)?`${XT_NAMES[xtMax(k)-1]} 장비까지 · `:''}경험치 x${Math.round(z.expMul)} (레벨 한 칸에 약 ${trKills(k)}마리)`;return z}
 function avgOfT3(T){const ns=MONLIST.filter(D=>D.T===T&&!D.boss&&!D.pk&&!D.tr);return [ns.reduce((a,D)=>a+D.hp,0)/ns.length,ns.reduce((a,D)=>a+D.dmg,0)/ns.length,ns.reduce((a,D)=>a+D.exp,0)/ns.length]}
 function renderTrain(){const ul=$('trl');ul.textContent='';
-  $('trsum').textContent=!endOK()?`초월의 수련장은 Lv.${LV_MAX}부터 들어갈 수 있어요. (지금 Lv.${me.lvl})`:`Lv.1000부터 5000까지 레벨을 올리고, 끝없이 위로 올라가는 던전이에요. 한 단계에서 몬스터 ${TR_CLEAR}마리를 잡으면 다음 단계가 열려요(레벨이 되면 바로 열리기도 해요). 35단계부터는 단계마다 몬스터 체력 ×1.07, 장비 아이템Lv +1. 경험치는 내 레벨에 맞춰 나와요. 지금 Lv.${LVT()} · 최고 돌파 ${me.trBest||0}단계`;
+  $('trsum').textContent=!endOK()?`초월의 수련장은 Lv.${LV_MAX}부터 들어갈 수 있어요. (지금 Lv.${me.lvl})`:`Lv.1000부터 3000까지 레벨을 올리고, 끝없이 위로 올라가는 던전이에요. 한 단계에서 몬스터 ${TR_CLEAR}마리를 잡으면 다음 단계가 열려요(레벨이 되면 바로 열리기도 해요). 35단계부터는 단계마다 몬스터 체력 ×1.07, 장비 아이템Lv +1. 경험치는 내 레벨에 맞춰 나와요. 지금 Lv.${LVT()} · 최고 돌파 ${me.trBest||0}단계`;
   let shown=0,hiOpen=1;for(let k=1;k<=Math.min(TR_N,Math.max(TR_PRE,(me.trBest||0)+3));k++)if(trOpen(k))hiOpen=k;const k0=Math.max(1,hiOpen-25);if(k0>1){const hd=document.createElement('li');hd.style.cssText='display:block;color:var(--muted);border:0;background:none';hd.textContent=`… 1~${k0-1}단계는 접어 뒀어요 (모두 열려 있어요)`;ul.appendChild(hd)}
   for(let k=k0;k<=TR_N;k++){const ok=trOpen(k);if(!ok&&shown++>=2)break;if(k===35){const hd=document.createElement('li');hd.style.cssText='display:block;color:#ffd35a;border:0;background:none';hd.textContent=`★ 35단계부터: 새 몬스터 · 단계마다 체력 ×1.07 · 바로 앞 단계에서 ${TR_CLEAR}마리 잡으면 다음 단계가 열려요 (끝없이) · 레벨로도 열림 · 환생 2회마다 더 강하고 경험치 많은 버전`;ul.appendChild(hd)}const li=document.createElement('li');li.className=ok?'':'lock';
     const no=document.createElement('div');no.className='no';no.textContent='T'+k;no.style.color='#5affd8';
     const mid=document.createElement('div');const dn=document.createElement('div');dn.className='dn';dn.textContent=`${k}단계 · ${trName(k)}`+(k>34?' ★새 몬스터':'');
-    const sm=document.createElement('small');sm.textContent=`추천 Lv.${999+(k-1)*TR_STEP}~${Math.min(5000,999+k*TR_STEP)} · `+(k>34?(trRb(k)?`환생 ${(k-34)*2}회 버전: 더 강하고 경험치 x${Math.pow(1.08,k-34).toFixed(1)} 더 · `:'')+'한계돌파석·별의 돌 드롭':(k<=10?`심연 ${k}단계 몬스터 강화판`:`심연 10단계보다 강한 몬스터`))+(ok?((me.trBest||0)>=k?' · ✔ 돌파':''):` · ${k-1}단계에서 ${TR_CLEAR}마리 잡으면 열림 (지금 ${Math.min(TR_CLEAR,(me.trKC||{})[k-1]||0)}/${TR_CLEAR}) · 또는 Lv.${999+(k-1)*TR_STEP}`+(k>34?` · 환생 ${(k-34)*2}회`:''));mid.append(dn,sm);
+    const sm=document.createElement('small');sm.textContent=`추천 Lv.${999+(k-1)*TR_STEP}~${Math.min(3000,999+k*TR_STEP)} · `+(k>34?(trRb(k)?`환생 ${(k-34)*2}회 버전: 더 강하고 경험치 x${Math.pow(1.08,k-34).toFixed(1)} 더 · `:'')+'한계돌파석·별의 돌 드롭':(k<=10?`심연 ${k}단계 몬스터 강화판`:`심연 10단계보다 강한 몬스터`))+(ok?((me.trBest||0)>=k?' · ✔ 돌파':''):` · ${k-1}단계에서 ${TR_CLEAR}마리 잡으면 열림 (지금 ${Math.min(TR_CLEAR,(me.trKC||{})[k-1]||0)}/${TR_CLEAR}) · 또는 Lv.${999+(k-1)*TR_STEP}`+(k>34?` · 환생 ${(k-34)*2}회`:''));mid.append(dn,sm);
     const b=document.createElement('button');b.type='button';b.className='btn sm';b.style.background='#5affd8';b.textContent='입장';b.disabled=!ok;
     b.addEventListener('click',()=>{for(const id in zones)if(id.startsWith('tr')&&id!=='tr'+k)delete zones[id];enterZone('tr'+k);sys(`초월의 수련장 ${k}단계에 들어왔어요. 돌아갈 땐 시작 방 포털(E) 또는 귀환(G).`)});li.append(no,mid,b);ul.appendChild(li)}}
 
@@ -3416,7 +3416,7 @@ function renderHub(){const ul=$('hubl');ul.textContent='';const w=wbNow();
     ['일반','일반 던전 1~100층','#c9a8ff',true,'열려 있는 층으로 바로 이동',()=>togglePanel('dmenu')],
     ['헬','헬 1~10단계','#ff5a4a',hell0(),hell0()?'100층보다 훨씬 강한 몬스터 · 헬 장비':'100층 보스를 쓰러뜨리면 열려요',()=>openHell('hell')],
     ['심연','심연 1~10단계','#c47bff',abyss0(),abyss0()?'헬보다 강한 몬스터 · [초월] 심연 장비':'헬 10단계 보스를 쓰러뜨리면 열려요',()=>openHell('abyss')],
-    ['수련',`초월의 수련장 1~${TR_N}단계`,'#5affd8',endOK(),endOK()?`Lv.1000~5000 레벨 올리기 · 지금 Lv.${LVT()}`:`Lv.${LV_MAX}부터`,()=>togglePanel('train')],
+    ['수련',`초월의 수련장 1~${TR_N}단계`,'#5affd8',endOK(),endOK()?`Lv.1000~3000 레벨 올리기 · 지금 Lv.${LVT()}`:`Lv.${LV_MAX}부터`,()=>togglePanel('train')],
     ['탑','무한의 탑','#7ff0ff',endOK(),endOK()?`끝없는 층 · 내 최고 ${me.towerBest||0}층 · 랭킹`:`Lv.${LV_MAX}부터`,()=>togglePanel('tower')],
     ['보물고','장비 보물고','#ffd35a',endOK(),endOK()?`장비·무기·장신구만 나와요 · 수련장과 같은 단계까지`:`Lv.${LV_MAX}부터`,()=>togglePanel('rift')],
     ['레이드','윤회 보스 레이드 (환생 전용)','#4affd0',(me.rb||0)>0,(me.rb||0)>0?`보스 ${RAID.filter((_,i)=>(me.rb||0)>=raidRb(i+1)).length}/${RAID_N} 열림 · 경고를 피하며 싸우는 보스 · 첫 처치 특성 +2`:'한 번 이상 환생하면 열려요',()=>togglePanel('rraid')],
@@ -4851,8 +4851,8 @@ function newIcons(){const B={pierce:'wave',arc:'wave',spin:'spin',dash:'dash',bl
   const bf={b_lspirit:'b_berserk',b_lguard:'b_steel',b_lwind:'b_haste',b_lfury:'b_berserk',b_sfocus:'b_focus',b_sguard:'b_vow',b_sflow:'b_flow',b_shaste:'b_haste'};for(const [k,v] of Object.entries(bf))SKICON[k]=SKICON[v]||SKICON.nova}
 
 
-/* ---------- 레벨 통합 · 500레벨마다 보상 (Lv.1500 ~ 5000) ---------- */
-const LV_MS=[1500,2000,2500,3000,3500,4000,4500,5000];
+/* ---------- 레벨 통합 · 250레벨마다 보상 (Lv.1250 ~ 3000) ---------- */
+const LV_MS=[1250,1500,1750,2000,2250,2500,2750,3000];
 function lvmsSum(f){const n=me.lvms||0;return n&&(f==='atkp'||f==='hpp')?5*n:0}
 function checkLvMs(){if(!started&&!me.tlv)return;const L=LVT();let n=LV_MS.filter(v=>L>=v).length;if(n<=(me.lvms||0))return;
   for(let i=(me.lvms||0);i<n;i++){const v=LV_MS[i];addItem('core4',5);addItem('lb_stone',3);addItem('dust',1e6*(i+1));
@@ -5523,7 +5523,7 @@ function drawHellPortal(c,t,lo,L){if(Z.id!=='town')return;const x=HELLP.x-cam.x,
   if(lo){L(x,y-12,on?80:40,'#ff2a1a',on?.9:.4);return}
   for(let k=0;k<4;k++){c.globalAlpha=(on?.9:.4)*(1-k*.18);c.fillStyle=k%2?'#ff2a1a':k?'#ff8a3d':'#ffffff';for(let q=0;q<6.283;q+=.05)c.fillRect(Math.round(x+Math.cos(q+t*(k+1)*(k%2?-1:1))*(12-k*2.5)),Math.round(y-14+Math.sin(q)*(20-k*4)),1,1)}
   c.globalAlpha=1;if(on&&Math.random()<.5)spark(HELLP.x+(Math.random()-.5)*16,HELLP.y-4,0,-40,Math.random()<.5?'#ff2a1a':'#ffd35a',.7)}
-function renderHell(){const ul=$('hl');ul.textContent='';const AB=hellMode==='abyss',base=hBase();$('hellsum').textContent=AB?(!abyss0()?'심연 난이도는 헬 10단계 보스를 쓰러뜨리면 들어갈 수 있어요.':'헬 10단계보다 훨씬 강한 몬스터(체력 약 2~5배, 공격 1.4~2.5배)가 나와요. [초월] 등급 심연 장비가 기본으로 나오고, 극악 확률로 [레전드] 장비가 떨어져요. 단계를 깨면 다음 단계가 열려요.'):!hell0()?`헬 난이도는 100층 보스를 쓰러뜨리면 들어갈 수 있어요.`:'100층보다 훨씬 강한 몬스터가 나와요. [초월] 등급 헬 장비, 극악 확률의 [레전드] 장비, 초월의 증표를 얻을 수 있어요. Lv.999부터는 초월의 수련장에서 Lv.5000까지 올려요. 단계를 깨면 다음 단계가 열려요.';
+function renderHell(){const ul=$('hl');ul.textContent='';const AB=hellMode==='abyss',base=hBase();$('hellsum').textContent=AB?(!abyss0()?'심연 난이도는 헬 10단계 보스를 쓰러뜨리면 들어갈 수 있어요.':'헬 10단계보다 훨씬 강한 몬스터(체력 약 2~5배, 공격 1.4~2.5배)가 나와요. [초월] 등급 심연 장비가 기본으로 나오고, 극악 확률로 [레전드] 장비가 떨어져요. 단계를 깨면 다음 단계가 열려요.'):!hell0()?`헬 난이도는 100층 보스를 쓰러뜨리면 들어갈 수 있어요.`:'100층보다 훨씬 강한 몬스터가 나와요. [초월] 등급 헬 장비, 극악 확률의 [레전드] 장비, 초월의 증표를 얻을 수 있어요. Lv.999부터는 초월의 수련장에서 Lv.3000까지 올려요. 단계를 깨면 다음 단계가 열려요.';
   for(let k=0;k<10;k++){const T=TIERS[base+k],ok=hellOpen(k),li=document.createElement('li');li.className=(ok?'':'lock')+(me.cleared[base+k]?' clear':'');
     const no=document.createElement('div');no.className='no';no.textContent=(AB?'A':'H')+(k+1);no.style.color=AB?'#c47bff':'#ff5a4a';
     const mid=document.createElement('div');const dn=document.createElement('div');dn.className='dn';dn.textContent=T.name;
@@ -5562,7 +5562,7 @@ const NOTICE=[
  ['6차 전직 (초월 600)',['5차 전직 후 초월 600 + 핵 20 + 한계돌파석 10 (전직 창 J)','최종 오의 쿨타임 90초 → 45초','공격력·체력 +50%, 스킬 피해 +50%, 치명타 +15%']],
  ['5차 전직',['4차 전직 후 초월 300 + 4차의 핵 10개 (전직 창 J)','Y·U 피해 2배·쿨타임 절반, ; 버프 1.5배, 공격·체력 +30%']],
  ['심연 포탈 (헬 10단계 클리어)',['마을 분수대(E) → 심연','심연 1~10단계: 헬 10단계보다 체력 약 2~5배·공격 1.4~2.5배','[초월] 등급 심연 장비가 기본 드롭, 극악 확률로 [레전드] 장비','초월의 증표·4차의 핵도 헬처럼 나와요']],
- ['레벨 (Lv.1~5000)',['레벨은 하나로 이어져요: 999까지는 사냥으로, 1000부터 5000까지는 분수대 → 초월의 수련장에서 올려요','999 이후 레벨마다 공격력·최대 체력·방어 +0.33%','500레벨마다 보상 (1500·2000·2500·3000·3500·4000·4500·5000): 영구 공격력·체력 +5%, 4차의 핵 5, 한계돌파석 3, 마력 가루','5차 전직 Lv.1300 · 6차 전직 Lv.1600 · 환생 Lv.5000','예전 "Lv.999 + 초월 N"은 Lv.(999+N)으로 바뀌었어요 (손해 없음)']],
+ ['레벨 (Lv.1~3000)',['레벨은 하나로 이어져요: 999까지는 사냥으로, 1000부터 3000까지는 분수대 → 초월의 수련장에서 올려요','999 이후 레벨마다 공격력·최대 체력·방어 +0.33%','250레벨마다 보상 (1250·1500·1750·2000·2250·2500·2750·3000): 영구 공격력·체력 +5%, 4차의 핵 5, 한계돌파석 3, 마력 가루','5차 전직 Lv.1300 · 6차 전직 Lv.1600 · 환생 Lv.3000','예전 "Lv.999 + 초월 N"은 Lv.(999+N)으로 바뀌었어요 (손해 없음)']],
  ['장비 등급 (12개)',['일반 → 영웅 → 초월 → 각성 → 레전드 → 태초 → 신화 → 불멸 → 천상 → 신성 → 태극 → 영격','같은 등급이면 [장비 단계]가 높을수록 세요 (원초 120단계 → 시원~천원 121~130단계)','각성·레전드는 장비 보물고, 태초 Ⅱ는 대련장·무한의 탑, 신화(무한~개벽)는 승급 제작, 불멸~영격은 장비 보물고 75·100·130·170·220단계부터','강화는 장비가 아니라 칸에 남아요 · 더 좋은 장비는 자동으로 껴요']],
  ['PK AI',['5층부터 던전에 다른 모험가처럼 보이는 PK AI가 돌아다니며 공격해요 (빨간 이름)','바닥의 빨간 원(스킬 경고)을 피하세요. 쓰러뜨리면 현상금 금화 + 보스급 드롭','옵션(O) → 게임 → PK AI 등장으로 끌 수 있어요']],
  ['경험치 안내',['51층부터 몬스터 경험치가 크게 줄었어요','Lv.650부터 필요 경험치가 아주 가파르게 늘어나요']]];
@@ -6078,7 +6078,7 @@ function hurtPlayer(d,fromX,fromY){
   if(me.hp<=0){me.dead=2.2;toast(Z.T>=0?'쓰러졌어요… 던전 입구에서 다시 일어나요':'쓰러졌어요… 분수대에서 다시 일어나요',2000);{const pct=Z.T<0?0:Z.T>=HELL_FROM?.15:Z.T>=50?.1:.05;if(pct){if(me.lvl>=LV_MAX){const loss=Math.min(me.texp||0,Math.round(needTl((me.tlv||0)+1)*pct));me.texp=(me.texp||0)-loss;if(loss){sys(`쓰러져서 경험치 ${loss.toLocaleString()}을(를) 잃었어요 (다음 레벨 필요량의 ${pct*100}%)`);floatText(me.x,me.y-44,`-${loss.toLocaleString()} EXP`,'#ff5a5a',true)}}else{const loss=Math.min(me.exp,Math.round(needLv(me.lvl)*pct));me.exp-=loss;if(loss){sys(`쓰러져서 경험치 ${loss.toLocaleString()}을(를) 잃었어요 (다음 레벨 필요량의 ${pct*100}%)`);floatText(me.x,me.y-44,`-${loss.toLocaleString()} EXP`,'#ff5a5a',true)}}}}hudKey='';persist()}
   return true;
 }
-const TLV_MAX=4001,needT=t=>t<=999?Math.round(needExp(LV_MAX-1+t)*1.5):Math.round(needExp(LV_MAX-1+999)*1.5*(1+(t-999)/1000));   // 레벨 통합: Lv.1~5000 (999 이후는 내부적으로 tlv)
+const TLV_MAX=2001,needT=t=>t<=999?Math.round(needExp(LV_MAX-1+t)*1.5):Math.round(needExp(LV_MAX-1+999)*1.5*(1+(t-999)/1000));   // 레벨 통합: Lv.1~3000 (999 이후는 내부적으로 tlv)
 const LVT=()=>me.lvl+(me.tlv||0);   // 하나로 합친 레벨
 /* 레벨 속도 개선: 환생 1번마다 다시 올리는 데 필요한 경험치 +10% · 몬스터 한 마리로는 레벨 필요 경험치의 1/3, 초월 레벨 필요 경험치의 1/2까지만 */
 const RB_NEED=.1,rbNeed=()=>1+RB_NEED*(me.rb||0),needLv=l=>Math.round(needExp(l)*rbNeed()),needTl=t=>Math.round(needT(t)*rbNeed()),RB_EXP_MAX=200;   // 초월 레벨: 999 다음부터 이어지는 경험치 × 1.5 (아주 어렵게)
@@ -6088,7 +6088,7 @@ function gainTExp(n){me.texp=(me.texp||0)+n;while((me.tlv||0)<TLV_MAX&&me.texp>=
 function x10On(){return (me.x10||0)>Date.now()}
 function x10Left(){const tm=Math.ceil(Math.max(0,(me.x10||0)-Date.now())/6e4),h=Math.floor(tm/60),m=tm%60;return h?`${h}시간 ${m}분`:`${m}분`}
 function gainExp(n){if(me.buffs.exp>0)n*=2;if(x10On())n*=10;if(Z&&Z.expMul)n*=Z.expMul;n*=boostMul('xb');if(me.rb)n*=1+Math.min(RB_EXP_MAX,me.rb*RB_BONUS.exp)/100;n=Math.round(n*(1+eqSum('exp')/100)*petExpMul());n=Math.min(n,me.lvl>=LV_MAX?Math.round(needTl((me.tlv||0)+1)*.5):Math.round(needLv(me.lvl)/3));floatText(me.x,me.y-32,'+'+n+' EXP','#ffcc4d');
-  if(me.lvl>=LV_MAX){me.exp=0;gainTExp(n);return}me.exp+=n;while(me.lvl<LV_MAX&&me.exp>=needLv(me.lvl)){me.exp-=needLv(me.lvl);const hp0=me.maxHp,mp0=me.maxMp,atk0=atkOf();me.lvl++;if(me.lvl===ADV3_LV&&adv2Of()&&!adv3Of())setTimeout(()=>{toast('Lv.900 달성! 3차 전직 가능 (초월의 증표 3개 필요)',3500);sys('Lv.900! 90층 이상 신화 보스가 떨어뜨리는 초월의 증표 3개를 모아 전직 창(J)에서 3차 전직하세요.')},800);if(me.lvl===LV_MAX)setTimeout(()=>{sys('3차 전직했다면 이제 4차 전직(J)도 할 수 있어요.')},900);if(me.lvl===ADV2_LV&&advOf()&&!adv2Of())setTimeout(()=>{toast('Lv.650 달성! 2차 전직할 수 있어요 (J)',3500);sys('Lv.650! 전직 창(J)에서 2차 전직을 할 수 있어요.')},700);if(me.lvl===ADV_LV&&!advOf())setTimeout(()=>{toast('Lv.300 달성! 전직할 수 있어요 (J)',3500);sys('Lv.300! 상태창의 [전직] 버튼이나 J 키로 전직하세요.')},600);if(me.lvl>=LV_MAX){const left=me.exp;me.exp=0;setTimeout(()=>{toast('Lv.999! 이제 Lv.5000까지 이어져요',3500);sys('Lv.999 달성! 여기서부터는 분수대 → 초월의 수련장에서 Lv.5000까지 올려요. 레벨마다 공격력·최대 체력·방어 +0.33%, 500레벨마다(1500·2000…5000) 보상이 있어요.')},1000);if(left>0)setTimeout(()=>gainTExp(left),1100)}recalc();me.hp=me.maxHp;me.mp=me.maxMp;toast('레벨 업!  Lv.'+me.lvl);sfx('lvup');
+  if(me.lvl>=LV_MAX){me.exp=0;gainTExp(n);return}me.exp+=n;while(me.lvl<LV_MAX&&me.exp>=needLv(me.lvl)){me.exp-=needLv(me.lvl);const hp0=me.maxHp,mp0=me.maxMp,atk0=atkOf();me.lvl++;if(me.lvl===ADV3_LV&&adv2Of()&&!adv3Of())setTimeout(()=>{toast('Lv.900 달성! 3차 전직 가능 (초월의 증표 3개 필요)',3500);sys('Lv.900! 90층 이상 신화 보스가 떨어뜨리는 초월의 증표 3개를 모아 전직 창(J)에서 3차 전직하세요.')},800);if(me.lvl===LV_MAX)setTimeout(()=>{sys('3차 전직했다면 이제 4차 전직(J)도 할 수 있어요.')},900);if(me.lvl===ADV2_LV&&advOf()&&!adv2Of())setTimeout(()=>{toast('Lv.650 달성! 2차 전직할 수 있어요 (J)',3500);sys('Lv.650! 전직 창(J)에서 2차 전직을 할 수 있어요.')},700);if(me.lvl===ADV_LV&&!advOf())setTimeout(()=>{toast('Lv.300 달성! 전직할 수 있어요 (J)',3500);sys('Lv.300! 상태창의 [전직] 버튼이나 J 키로 전직하세요.')},600);if(me.lvl>=LV_MAX){const left=me.exp;me.exp=0;setTimeout(()=>{toast('Lv.999! 이제 Lv.3000까지 이어져요',3500);sys('Lv.999 달성! 여기서부터는 분수대 → 초월의 수련장에서 Lv.3000까지 올려요. 레벨마다 공격력·최대 체력·방어 +0.33%, 250레벨마다(1250·1500…3000) 보상이 있어요.')},1000);if(left>0)setTimeout(()=>gainTExp(left),1100)}recalc();me.hp=me.maxHp;me.mp=me.maxMp;toast('레벨 업!  Lv.'+me.lvl);sfx('lvup');
     sys(`레벨 ${me.lvl}! 최대 체력 +${me.maxHp-hp0} · 최대 마나 +${me.maxMp-mp0}${atkOf()>atk0?` · 공격력 +${atkOf()-atk0}`:''} (체력·마나 모두 회복)`);
     floatText(me.x,me.y-44,`HP +${me.maxHp-hp0}`,'#ff8a9a',true);floatText(me.x,me.y-56,`MP +${me.maxMp-mp0}`,'#8fc0ff',true);
     burst(me.x,me.y-12,40,['#ffd35a','#ffffff','#5ee6e0'],130,.9,2,-30);fxs.push({k:'ring',x:me.x,y:me.y,t:0,dur:.6,col:'#ffd35a',r:50});
@@ -6374,9 +6374,9 @@ function updateHud(){
   updateSkillBar();
   const k=[x10On()?x10Left():'',Object.values(me.buffs).map(Math.ceil).join(','),Object.values(me.sbuf).map(v=>Math.ceil(v)).join(','),me.lvl,Math.ceil(me.hp),me.maxHp,Math.floor(me.mp),me.maxMp,me.exp,me.nick,me.gold,atkOf(),defOf(),pots].join('|');if(k===hudKey)return;hudKey=k;
   $('mpf').style.width=(me.mp/me.maxMp*100)+'%';$('mpt').textContent=`MP ${Math.floor(me.mp)}/${me.maxMp}`;
-  $('lv').textContent=rbTag(me.rb)+'Lv.'+LVT();$('lv').title=`★${me.rb||0} = 환생 횟수 · Lv.${LVT()} / 5000`;$('nm').textContent=me.nick;
+  $('lv').textContent=rbTag(me.rb)+'Lv.'+LVT();$('lv').title=`★${me.rb||0} = 환생 횟수 · Lv.${LVT()} / 3000`;$('nm').textContent=me.nick;
   $('hpf').style.width=(me.hp/me.maxHp*100)+'%';$('hpt').textContent=`${Math.ceil(me.hp)}/${me.maxHp}`;
-  const n=needLv(me.lvl);if(me.lvl>=LV_MAX){const tn=needTl((me.tlv||0)+1);$('expf').style.width=((me.tlv||0)>=TLV_MAX?100:(me.texp||0)/tn*100)+'%';$('expt').textContent=(me.tlv||0)>=TLV_MAX?'Lv.5000 MAX':`EXP ${(me.texp||0).toLocaleString()}/${tn.toLocaleString()}`}else{$('expf').style.width=(me.exp/n*100)+'%';$('expt').textContent=`EXP ${me.exp}/${n}`}
+  const n=needLv(me.lvl);if(me.lvl>=LV_MAX){const tn=needTl((me.tlv||0)+1);$('expf').style.width=((me.tlv||0)>=TLV_MAX?100:(me.texp||0)/tn*100)+'%';$('expt').textContent=(me.tlv||0)>=TLV_MAX?'Lv.3000 MAX':`EXP ${(me.texp||0).toLocaleString()}/${tn.toLocaleString()}`}else{$('expf').style.width=(me.exp/n*100)+'%';$('expt').textContent=`EXP ${me.exp}/${n}`}
   $('advBtn').hidden=me.lvl<ADV_LV;
   const bl=[['atk','힘'],['def','철벽'],['spd','신속'],['exp','경험 x2']].filter(([k])=>me.buffs[k]>0);const sb=Object.keys(me.sbuf).filter(k=>me.sbuf[k]>0&&BUFF_BY_ID[k]);
   const bx=$('buffs');bx.hidden=!bl.length&&!sb.length&&!x10On()&&!boostOn('xb')&&!boostOn('db')&&!boostOn('xb2')&&!boostOn('db2');bx.textContent='';for(const k of ['xb','db','xb2','db2'])if(boostOn(k)){const sp=document.createElement('span');sp.textContent=`${BOOST[k][0]} ${Math.ceil((me[k]-Date.now())/36e5)}시간`;sp.style.color='#7ff0ff';bx.appendChild(sp)}if(x10On()){const sp=document.createElement('span');sp.textContent=`경험치 x10 ${x10Left()}`;sp.style.color='#ffcc4d';bx.appendChild(sp)}
@@ -6405,7 +6405,7 @@ function gmCmd(t){const [c,...a]=t.slice(1).trim().split(/\s+/),n=parseInt(a[0],
     case '도움말':sys(GM_HELP);break;
     case '환생':if(a[0]==null){me.lvl=LV_MAX;me.tlv=TLV_MAX;doRebirth();sys(`[운영자] 조건 없이 바로 환생했어요 → 환생 ${me.rb}회`);break}
       if(!okN(n)){sys('사용법: /환생 (바로 1회) 또는 /환생 50 (환생 횟수를 50으로)');break}me.rb=Math.min(9999,n);recalc();me.hp=me.maxHp;me.mp=me.maxMp;hudKey='';towerPost();try{grantRbMs()}catch(e){}persist();sys(`[운영자] 환생 횟수를 ${me.rb}회로 바꿨어요 (레벨은 그대로). 환생 보너스·수련장 단계가 새 횟수 기준으로 바뀌어요.`);break;
-    case '레벨':if(!okN(n)||n<1){sys('사용법: /레벨 300 (최대 5000)');break}me.lvl=Math.min(LV_MAX,n);me.exp=0;me.tlv=n>LV_MAX?Math.min(TLV_MAX,n-LV_MAX):0;me.texp=0;checkLvMs();recalc();me.hp=me.maxHp;me.mp=me.maxMp;buildSkillBar();hudKey='';persist();sys(`레벨을 Lv.${LVT()}로 바꿨어요.`);break;
+    case '레벨':if(!okN(n)||n<1){sys('사용법: /레벨 300 (최대 3000)');break}me.lvl=Math.min(LV_MAX,n);me.exp=0;me.tlv=n>LV_MAX?Math.min(TLV_MAX,n-LV_MAX):0;me.texp=0;checkLvMs();recalc();me.hp=me.maxHp;me.mp=me.maxMp;buildSkillBar();hudKey='';persist();sys(`레벨을 Lv.${LVT()}로 바꿨어요.`);break;
     case '가루':if(!okN(n)){sys('사용법: /가루 50000');break}addItem('dust',n);invChanged();sys(`마력 가루 ${n.toLocaleString()}개 지급 (보유 ${countItem('dust').toLocaleString()}).`);break;
     case '골드':if(!okN(n)){sys('사용법: /골드 100000');break}me.gold+=n;hudKey='';persist();sys(`금화 ${n.toLocaleString()} 지급.`);break;
     case '아이템':{const id=a[0],k=Math.max(1,Math.min(999,parseInt(a[1],10)||1));if(!ITEMS[id]){sys('없는 아이템 코드예요. 엑셀의 [운영자 명령어] 시트에서 코드를 확인하세요.');break}
