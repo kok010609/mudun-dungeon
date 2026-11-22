@@ -5426,17 +5426,30 @@ function yBoxOpen(){const k=me.trBest||0,g=Math.random()<.05?2:1,id='Y'+g+gearPr
 const CO_MAX=9999999,CO_N=72,CO_KILLS=12,CO_SEC=10;
 const coLv=w=>Math.min(CO_MAX,Math.max(1,Math.round(Math.pow(10,7*Math.pow(Math.min(1,(w-1)/299),.6)))));
 const coF=k=>k<=10?[1.2+.1*(k-1),1.1+.05*(k-1)]:k<=34?[2.1*Math.pow(1.12,k-10),1.55*Math.pow(1.06,k-10)]:[2.1*Math.pow(1.12,24)*Math.pow(1.07,k-34),1.55*Math.pow(1.06,24)*Math.pow(1.04,k-34)];
-function makeColo(){const z=makeTrain(35);z.id='colo';z.colo=1;z.train=0;z.lvAdd=0;z.hpMul0=z.hpMul;z.dmgMul0=z.dmgMul;z.expMul*=1.5;
+/* 콜로세움 원형 경기장: 둥근 모래판 + 둘레 기둥·횃불 + 남쪽 대기실 */
+function coloMap(z){const W=64,H=64,map=new Uint8Array(W*H).fill(VOID),rnd=mulberry32(77);const at=(x,y)=>(x<0||y<0||x>=W||y>=H)?VOID:map[y*W+x],set=(x,y,v)=>{if(x>=0&&y>=0&&x<W&&y<H)map[y*W+x]=v};
+  const R={x:4,y:2,w:56,h:52,cx:32,cy:28},S={x:27,y:56,w:11,h:6,cx:32,cy:58},rr=25.5;
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const d=Math.hypot(x+.5-R.cx,(y+.5-R.cy)*1.08);if(d<=rr)set(x,y,STONE)}
+  for(let y=S.y;y<S.y+S.h;y++)for(let x=S.x;x<S.x+S.w;x++)set(x,y,STONE);for(let y=R.cy+20;y<S.y;y++)for(let x=S.cx-2;x<=S.cx+2;x++)set(x,y,STONE);
+  for(let k=0;k<16;k++){const a=k/16*6.283;if(Math.abs(a-Math.PI/2)<.3)continue;const px=Math.round(R.cx+Math.cos(a)*(rr-3)),py=Math.round(R.cy+Math.sin(a)*(rr-3)/1.08);if(k%2)set(px,py,WALL)}
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(at(x,y)===VOID){let near=false;for(let dy=-1;dy<=1&&!near;dy++)for(let dx=-1;dx<=1;dx++)if(at(x+dx,y+dy)===STONE){near=true;break}if(near)set(x,y,WALL)}
+  const lights=[];for(let k=0;k<16;k++){const a=(k+.5)/16*6.283,px=Math.round(R.cx+Math.cos(a)*(rr-1.5)),py=Math.round(R.cy+Math.sin(a)*(rr-1.5)/1.08);if(at(px,py)===STONE){set(px,py,BRAZIER);lights.push({x:px*16+8,y:py*16+6,r:120,col:'#ff9a3a',i:.95,fl:1})}}
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(at(x,y)===STONE&&rnd()<.04)set(x,y,RUBBLE);
+  lights.push({x:R.cx*16+8,y:R.cy*16+8,r:260,col:'#ff6a4a',i:.35});set(S.cx,S.cy+1,PORTAL);lights.push({x:S.cx*16+8,y:(S.cy+1)*16+8,r:70,col:'#7ff0ff',i:.9});
+  const sx0=(S.x-1)*16,sy0=(S.y-1)*16,sx1=(S.x+S.w+1)*16,sy1=(S.y+S.h+1)*16;
+  Object.assign(z,{W,H,map,at,rooms:[R,S],startRoom:S,bossRoom:R,godRoom:R,decor:()=>{},spawn:{x:S.cx*16+8,y:S.cy*16+4},exit:{x:S.cx*16+8,y:(S.cy+1)*16+8},lights,safe:(px,py)=>px>sx0&&px<sx1&&py>sy0&&py<sy1})}
+function makeColo(){const z=makeTrain(35);coloMap(z);z.id='colo';z.colo=1;z.train=0;z.lvAdd=0;z.hpMul0=z.hpMul;z.dmgMul0=z.dmgMul;z.expMul*=1.5;
   
   z.co={w:1,kc:0,t:performance.now(),end:0};coSet(z);z.title='콜로세움';z.sub='끝없이 몰려와요 · 몬스터 Lv.1부터 9,999,999까지 · 드롭 많음';return z}
 {const p0=populate;populate=function(z){if(!z.colo)return p0(z);for(let i=0;i<CO_N;i++){const m=spawnMon({},z);m.dead=true;m.respawn=.2+Math.random()*2.5;z.mons.push(m)}}}
 function coSet(z){const [h0,d0]=coF(35),[h,d]=coF(z.co.w);z.hpMul=z.hpMul0*h/h0;z.dmgMul=z.dmgMul0*d/d0}
 {const s0=spawnMon;spawnMon=function(m,z){const r=s0(m,z);if(z&&z.colo&&!m.dead&&!m.isPK){m.cLv=coLv(z.co.w)+(m.elite?2:0);
-  if(z===Z){for(let q=0;q<6;q++){const a=Math.random()*6.283,d=170+Math.random()*80,f=freeSpot(me.x+Math.cos(a)*d,me.y+Math.sin(a)*d*.7);if(f&&Math.hypot(f[0]-me.x,f[1]-me.y)>110){m.x=m.hx=f[0];m.y=m.hy=f[1];break}}m.awake=true;m.aggro=true}}return r}}
+  if(z===Z){for(let q=0;q<6;q++){const a=Math.random()*6.283,d=130+Math.random()*90,f=freeSpot(me.x+Math.cos(a)*d,me.y+Math.sin(a)*d*.7);if(f&&Math.hypot(f[0]-me.x,f[1]-me.y)>90&&!z.safe(f[0],f[1])){m.x=m.hx=f[0];m.y=m.hy=f[1];break}}m.awake=true;m.aggro=true}}return r}}
 {const k0=killMon;killMon=function(m){const was=m.dead;k0(m);if(Z&&Z.colo&&!was&&m.dead){m.respawn=.3+Math.random()*.7;Z.co.kc++}}}
 /* 드롭: 보통 드롭 + 60%로 보물고 장비 (정예는 확정) · 장비 단계는 수련장 최고 단계+1까지 */
 {const d0=dropLoot;dropLoot=function(m,D){const r=d0(m,D);if(Z&&Z.colo&&!Z.vault&&(m.elite||Math.random()<.6)){const vk=Math.max(1,Math.min(Z.co.w,(me.trBest||0)+1));Z.vault=vk;Z.train=vk;try{d0(m,D)}finally{Z.vault=0;Z.train=0}}return r}}
 setInterval(()=>{try{if(!started||!Z||!Z.colo)return;const c=Z.co;if(me.dead){if(!c.end){c.end=1;sys(`콜로세움 기록: ${c.w}웨이브 · 몬스터 Lv.${coLv(c.w).toLocaleString()} (최고 ${me.coloBest||0}웨이브)`)}return}
+  if(c.end){toast(`콜로세움 끝! ${c.w}웨이브 · Lv.${coLv(c.w).toLocaleString()}`,3500);delete zones.colo;enterZone('town');return}
   if(c.kc>=CO_KILLS||performance.now()-c.t>CO_SEC*1000){c.w++;c.kc=0;c.t=performance.now();coSet(Z);
     if(c.w>(me.coloBest||0)){me.coloBest=c.w;if(c.w%10===0)persist()}
     const L=coLv(c.w);floatText(me.x,me.y-50,`${c.w}웨이브 · Lv.${L.toLocaleString()}`,'#ff6a6a',true);if(c.w%10===0){toast(`콜로세움 ${c.w}웨이브! 몬스터 Lv.${L.toLocaleString()}`,2500)}
@@ -6238,7 +6251,7 @@ function thinkMon(m,dt,alive){
       burst(m.x,sy,6,[col,'#ffffff'],50,.3)}}
   if(m.kx||m.ky){if(fly)moveFree(m,m.kx*dt,m.ky*dt);else moveBody(m,m.kx*dt,m.ky*dt,5,3,Z.safe);m.kx*=0.82;m.ky*=0.82;if(Math.abs(m.kx)+Math.abs(m.ky)<4)m.kx=m.ky=0}
   const dist=Math.hypot(me.x-m.x,me.y-m.y),leash=D.boss?Math.hypot(me.x-m.hx,me.y-m.hy)<170:true;
-  const chase=alive&&started&&leash&&!Z.safe(me.x,me.y)&&dist<(Z.duel&&m.isPK?2000:D.boss?170:D.move==='walk'?120:100);
+  const chase=alive&&started&&leash&&!Z.safe(me.x,me.y)&&dist<(Z.colo?4000:Z.duel&&m.isPK?2000:D.boss?170:D.move==='walk'?120:100);
   if(m.rboss)raidThink(m,dt,D);else if(D.god)godThink(m,dt,D);
   if(S.regen&&m.hp<m.maxHp)m.hp=Math.min(m.maxHp,m.hp+m.maxHp*S.regen*dt);
   if(D.move==='none'){m.moveT=0}
