@@ -5169,7 +5169,7 @@ function vtBoxItem(mode){const k=Math.max(1,me.trBest||0),T=TIERS.length-1,pre=g
   if(ITEMS[id].legend){toast(`★ 상자에서 ${gLabel(id)}! ${ITEMS[id].name}`,4000);news({k:'leg',i:id})}return nameOf(id,0,il)}
 {const ob=openBox;openBox=function(lv=1){if((me.trBest||0)>=1)return vtBoxItem(lv>=3?3:lv>=2?2:1);return ob(lv)}}
 const VB_PRICE={1:5e5,10:45e5};
-function renderCashBox(g,sum){const k=me.trBest||0,vt=k>=1,il=k>34?k-34:0,xt=xtMax(k),pity=me.pity||0,full=n=>me.bag.length+n<=bagMax();
+let renderCashBox=function(g,sum){const k=me.trBest||0,vt=k>=1,il=k>34?k-34:0,xt=xtMax(k),pity=me.pity||0,full=n=>me.bag.length+n<=bagMax();
   sum.textContent=vt?`수련장 최고 ${k}단계 기준 장비가 나와요 (장비 보물고 ${k}단계와 같아요${il?` · 아이템Lv.${il}`:''}${xt?` · ${XT_NAMES[xt-1]} 장비까지`:''}). 내 직업용 장비만 나와요.`:`아직 수련장 전이라 내가 깬 가장 높은 층(${Math.max(0,topTier())+1}층) 기준이에요. 수련장에 들어가면 보물고 기준으로 바뀌어요.`;
   const open=(lv,n,price,label)=>()=>{if(!payDust(price))return;const got=[];for(let i=0;i<n;i++)got.push(openBox(lv));invChanged();persist();sys(`${label}: ${got.join(', ')}`);renderCash()};
   for(const [n,p0] of [[1,3e4],[10,27e4]]){const price=vt?VB_PRICE[n]:p0;g.appendChild(cashRow(`장비 상자 ${n}개`,vt?`각성 9% · 레전드 0.5% · 150번째 레전드 확정 (지금 ${pity}/150)${n===10?' · 10% 할인':''}`:`접두어가 붙은 장비${n===10?' · 10% 할인':''}`,`가루 ${fmtK(price)}`,'열기',countItem('dust')>=price&&full(n),open(1,n,price,'장비 상자'),'#ffd35a'))}
@@ -5381,6 +5381,33 @@ function necIcons(){{const bf={b_nreap:'b_focus',b_nbone:'b_steel',b_nsoul:'b_be
     let pool=Y5.filter(y=>ITEMS[y].kind===it.kind&&(!it.cls||!ITEMS[y].cls||ITEMS[y].cls===it.cls));if(!pool.length)pool=Object.keys(ITEMS).filter(y=>!ITEMS[y].gm&&ITEMS[y].kind===it.kind&&isGear(y));if(!pool.length)continue;
     for(const f of ['atk','def','hp','mp']){const best=Math.max(0,...pool.map(y=>ITEMS[y][f]||0));if(best)it[f]=Math.max(it[f]||0,Math.round(best*K))}
     it.crit=100;it.gmUp=1;it.desc='운영자 전용 · 가장 높은 등급 [영격]보다 세요'}}
+
+/* ================= 새 캐시템 (네크로맨서 · 새 등급 기념) ================= */
+NEW_CASH.clear();
+COS.push(['w_bone','wing','뼈 날개',3e8,['#e8e0c8','#7affc8']],['w_immortal','wing','불멸의 날개',2e9,['#ff7a4a','#ffd35a']],['w_soul','wing','영격의 날개',5e9,['#c6ff4a','#ffffff']],
+  ['a_soul','aura','망령 오라',5e8,['#7affc8','#b04aff']],['a_immortal','aura','불멸 오라',2e9,['#ff7a4a','#fff27a']],
+  ['n_skull','name','해골 이름표',1e8,['#e8e0c8']],['n_celest','name','천상 이름표',3e8,['#9af0ff']],['d_necro','dye','사령 망토',5e7,['#2a1a3a']]);
+for(const c of COS.slice(-8)){COS_BY[c[0]]=c;NEW_CASH.add(c[0])}
+MOUNTS.push(['m_bonedragon','뼈 용',15e8,.38,['#e8e0c8','#3a2a4a','#7affc8'],'dragon'],['m_immortal','불멸의 봉황',3e9,.42,['#ff7a4a','#ffd35a','#fff27a'],'bird']);
+for(const m of MOUNTS.slice(-2)){MOUNT_BY[m[0]]=m;NEW_CASH.add(m[0])}
+setTimeout(()=>{const P={id:'skullpet',name:'꼬마 해골',sp:'lich',pal:mkP('#e8e0c8','#2a1a3a','#7affc8'),kind:'ranged',premium:1,price:12e8,mul:6,proj:'orb',cd:.5,col:'#7affc8',drop:.35,exp:.35,desc:'해골탄 연사 (공격력 600%) + 드롭률·경험치 +35%'};
+  P.D={id:'pet_'+P.id,sp:P.sp,pal:palFor(P.sp,P.pal)};PETS.push(P);PET_BY[P.id]=P;NEW_CASH.add(P.id)},0);
+/* 네크로맨서 출시 패키지: 한 번만 · 따로 사는 것보다 40% 싸게 */
+const NEC_PACK={cos:['w_bone','n_skull','d_necro'],pet:'skullpet',price:Math.round((3e8+1e8+5e7+12e8)*.6)};
+const necPackOwned=()=>NEC_PACK.cos.every(k=>me.cos.own.includes(k))&&(me.pets||[]).includes(NEC_PACK.pet);
+/* 특성 포인트 두루마리: 무한 특성용 · 주 5장까지 */
+const TP_SCROLL=2e8,TP_WEEK=5;
+/* 불멸 장비 상자: 내 직업용 [불멸] 장비 확정 · 5%로 [천상] · 아이템Lv는 수련장 최고 단계 기준 */
+const YBOX_PRICE=3e9;
+function yBoxOpen(){const k=me.trBest||0,g=Math.random()<.05?2:1,id='Y'+g+gearPre(),il=k>34?k-34:0;if(!ITEMS[id])return '?';addItem(id,1,0,rollOpts(id),il||undefined);toast(`✦ ${gLabel(id)} 장비! ${ITEMS[id].name}`,4500);news({k:'leg',i:id});return nameOf(id,0,il)}
+{const c0=csCards;csCards=function(g){const r=c0(g),dust=countItem('dust');
+  if(cashTab==='home'){csHead(g,'신상품','네크로맨서 · 새 등급 기념');
+    const own=necPackOwned();g.appendChild(wideCard(cashRow('네크로맨서 출시 패키지',`뼈 날개 + 해골 이름표 + 사령 망토 + 꼬마 해골 펫 (따로 사면 가루 ${fmtK(16.5e8)}) · 한 번만`,own?'받았어요':`가루 ${fmtK(NEC_PACK.price)}`,'사기',!own&&dust>=NEC_PACK.price,()=>csBuy(NEC_PACK.price,()=>{me.cos=me.cos||{own:[]};for(const k of NEC_PACK.cos)if(!me.cos.own.includes(k))me.cos.own.push(k);me.pets=me.pets||[];if(!me.pets.includes(NEC_PACK.pet))me.pets.push(NEC_PACK.pet)},'네크로맨서 출시 패키지! 꾸미기 탭에서 끼세요'),'#7affc8','40% 할인')));
+    g.appendChild(wideCard(cashRow('불멸 장비 상자',`내 직업용 [불멸] 장비 확정 · 5% [천상] · 아이템Lv는 수련장 최고 단계 기준${me.trBest>34?` (지금 Lv.${me.trBest-34})`:''}`,`가루 ${fmtK(YBOX_PRICE)}`,'열기',dust>=YBOX_PRICE&&me.bag.length<bagMax(),()=>{if(!payDust(YBOX_PRICE))return;const n=yBoxOpen();invChanged();persist();sys(`불멸 장비 상자: ${n}`);renderCash()},'#ff7a4a','신상')));}
+  if(cashTab==='grow'){const left=csLeft('tp_scroll',TP_WEEK);
+    g.appendChild(cashRow('특성 포인트 두루마리',`환생 특성 포인트 +5 · 무한 특성에 쓰세요 · 이번 주 ${left}/${TP_WEEK}장 남음`,`가루 ${fmtK(TP_SCROLL)}`,'사기',left>0&&dust>=TP_SCROLL,()=>csBuy(TP_SCROLL,()=>{csTake('tp_scroll');me.rbTP=(me.rbTP||0)+5},'특성 포인트 +5!'),'#ff9ad8','신상'))}
+  return r}}
+{const b0=renderCashBox;renderCashBox=function(g,sum){b0(g,sum);const dust=countItem('dust');g.appendChild(wideCard(cashRow('불멸 장비 상자',`[불멸] 장비 확정 · 5% [천상]`,`가루 ${fmtK(YBOX_PRICE)}`,'열기',dust>=YBOX_PRICE&&me.bag.length<bagMax(),()=>{if(!payDust(YBOX_PRICE))return;const n=yBoxOpen();invChanged();persist();sys(`불멸 장비 상자: ${n}`);renderCash()},'#ff7a4a','신상')));}}
 
 function makeDuel(k){k=Math.max(1,Math.min(DUEL_MAX,k));const T=ABYSS_FROM+9,z=makeArena(T);
   z.id='pv'+k;z.duel=k;z.hpMul=duelHp(k);z.dmgMul=duelDmg(k);z.expMul=3;
