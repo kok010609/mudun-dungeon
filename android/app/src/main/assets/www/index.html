@@ -408,6 +408,8 @@ body.mobile #act{top:auto;bottom:calc(120px + env(safe-area-inset-bottom,0px))}
   text-shadow:3px 3px 0 var(--ink);white-space:nowrap;animation:pop .25s steps(3)}
 @keyframes pop{from{transform:translate(-50%,8px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
 @media (prefers-reduced-motion:reduce){#toast{animation:none}.bar i{transition:none}#zb{transition:none}}
+
+#go{position:sticky;bottom:10px;z-index:5;box-shadow:0 4px 18px #0008}
 </style>
 
 <div id="game"><canvas id="cv"></canvas><canvas id="ov"></canvas></div>
@@ -625,7 +627,7 @@ body.mobile #act{top:auto;bottom:calc(120px + env(safe-area-inset-bottom,0px))}
     <p style="word-break:keep-all">기사·마법사·도적·궁수·사무라이·창술사·정령사·네크로맨서가 되어 마을 분수대에서 1~100층 던전, 헬·심연, 무한의 탑, 월드 보스에 도전하세요. 초월·환생으로 끝없이 키워요.</p>
     <div class="slotrow" id="slots" role="radiogroup" aria-label="캐릭터 선택"></div>
     <div class="clsrow" role="radiogroup" aria-label="직업">
-      <label><input type="radio" name="cls" id="cls_k" value="knight" checked><span><b>기사</b><small>근접 검술 · 높은 체력 · 방패로 막고 강타</small></span></label>
+      <label><input type="radio" name="cls" id="cls_k" value="knight" checked><span><b>기사</b><small>근접 검술 · 높은 체력 · 방패로 막고 강타 · <em style="font-style:normal;color:#7ff0a0">처음이면 기사가 제일 쉬워요</em></small></span></label>
       <label><input type="radio" name="cls" id="cls_m" value="mage"><span><b>마법사</b><small>원거리 마법 · 높은 마나 · 화염구, 메테오</small></span></label>
       <label><input type="radio" name="cls" id="cls_r" value="rogue"><span><b>도적</b><small>쌍단검 연타 · 표창 · 높은 치명타 · 순간이동, 분신</small></span></label>
       <label><input type="radio" name="cls" id="cls_a" value="archer"><span><b>궁수</b><small>원거리 활 · 관통 화살 · 폭발 덫 · 늑대·매 동료</small></span></label>
@@ -1175,7 +1177,7 @@ Object.assign(ITEMS,{
   em6:{name:'6차 전직 엠블럼',kind:'emblem',rar:9,icon:'emblem',emb:6,noSell:true,col:'#fff3b0',desc:'공격력·최대 체력·방어 +50%'},
   exp10h:{name:'경험치 10배 주문서 (2시간)',kind:'potion',rar:5,icon:'scroll',exp10:true,hours:2,noSell:true,col:'#ffcc4d',desc:'읽으면 2시간 동안 얻는 경험치 10배 (초월 경험치 포함). 게임을 꺼 둬도 시간은 흘러요. 여러 장 읽으면 2시간씩 늘어나요. 행운의 룰렛에서 나와요.'},
   exp10:{name:'경험치 10배 주문서 (이벤트)',kind:'potion',rar:5,icon:'scroll',exp10:true,noSell:true,col:'#ffcc4d',desc:'읽으면 24시간 동안 얻는 경험치 10배 (초월 경험치 포함). 게임을 꺼 둬도 시간은 흘러요. 여러 장 읽으면 24시간씩 늘어나요.'},
-  adv_reset:{name:'전직 초기화 주문서',kind:'potion',rar:4,icon:'scroll',reset:true,dust:50000,noSell:true,col:'#ff7ae0',desc:'지금 직업의 1차·2차·3차 전직과 4차 전직을 모두 초기화해요 (초월의 증표·4차의 핵은 돌려받지 못해요). 전직 창(J)에서 다시 고를 수 있어요'},
+  adv_reset:{name:'전직 초기화 주문서',kind:'potion',rar:4,icon:'scroll',reset:true,dust:50000,noSell:true,col:'#ff7ae0',desc:'지금 직업의 1차부터 7차(천제)까지 전직을 모두 초기화해요 (초월의 증표·4차의 핵·한계돌파석은 돌려받지 못해요). 전직 창(J)에서 다시 고를 수 있어요'},
   home:  {name:'귀환 주문서',  kind:'potion',rar:0,icon:'scroll',home:true,price:20,col:'#7ff0ff',desc:'즉시 마을 분수대로 돌아갑니다'},
 });
 const BUFFS=['bf_atk','bf_def','bf_spd','bf_exp'];
@@ -1782,7 +1784,7 @@ let slot=0;try{slot=Math.max(0,Math.min(999,Math.floor(Number(localStorage.getIt
 const slotKey=i=>i?STORE+':'+i:STORE;
 function loadSlot(i){try{return JSON.parse(localStorage.getItem(slotKey(i)))||{}}catch{return{}}}
 function loadSave(){return loadSlot(slot)}
-function saveObj(){return{pkOn:me.pkOn!==false,lowDeco:!!me.lowDeco,lvms:me.lvms||0,trBest:me.trBest||0,trKC:me.trKC||{},eqIL:me.eqIL||{},slotE:me.slotE||{},tlv:me.tlv||0,texp:me.texp||0,ts:Date.now(),rb:me.rb||0,tr:me.tr||{},att:me.att||null,dq:me.dq||null,st:me.st||{},achN:me.achN||0,tlvMax:me.tlvMax||0,revAt:me.revAt||0,cos:me.cos||{own:[]},xb:me.xb||0,db:me.db||0,xb2:me.xb2||0,db2:me.db2||0,pity2:me.pity2||0,bagX:me.bagX||0,pity:me.pity||0,ltd:me.ltd||null,cs:me.cs||null,gseen:me.gseen||null,unl:me.unl||null,gotRd:!!me.gotRd,gotBw:!!me.gotBw,gotKt:!!me.gotKt,gotSp:!!me.gotSp,gotEo:!!me.gotEo,gotNk:!!me.gotNk,ki:Math.round(me.ki||0),bsrBest:me.bsrBest||0,stree:me.stree||{},altar:me.altar||null,gshop:me.gshop||null,eqLk:me.eqLk||{},eqPre:me.eqPre||[],raidClr:me.raidClr||{},rbTP:me.rbTP||0,adv5:me.adv5,adv6:me.adv6,adv7:me.adv7||{},towerBest:me.towerBest||0,duelBest:me.duelBest||0,udBest:me.udBest||0,coloBest:me.coloBest||0,enhV:ENH_VER,ins:me.ins||{a:0,h:0,d:0},wbGot:me.wbGot||0,x10:me.x10||0,evX10:!!me.evX10,eqO:me.eqO,adv3:me.adv3,adv4:me.adv4,awk:Math.floor(me.awk||0),adv2:me.adv2,sk1:!!me.sk1,adv:me.adv,pets:me.pets,petLv:me.petLv||{},pet:me.pet,autoDisOther:!!me.autoDisOther,autoDisSet:me.autoDisSet,adsV:2,autoLoot:!!me.autoLoot,autoEq:!!me.autoEq,autoHp:me.autoHp,autoMp:me.autoMp,autoDis:!!me.autoDis,sbuf:me.sbuf,nick:me.nick,color:me.color,hair:me.hair,cls:me.cls,gotStaff:me.gotStaff,eqE:me.eqE,lvl:me.lvl,exp:me.exp,gold:me.gold,bag:me.bag,eq:me.eq,kills:me.kills,cleared:me.cleared,v:2}}
+function saveObj(){return{pkOn:me.pkOn!==false,fs:me.fs||0,magnet:me.magnet!==false,lowDeco:!!me.lowDeco,lvms:me.lvms||0,trBest:me.trBest||0,trKC:me.trKC||{},eqIL:me.eqIL||{},slotE:me.slotE||{},tlv:me.tlv||0,texp:me.texp||0,ts:Date.now(),rb:me.rb||0,tr:me.tr||{},att:me.att||null,dq:me.dq||null,st:me.st||{},achN:me.achN||0,tlvMax:me.tlvMax||0,revAt:me.revAt||0,cos:me.cos||{own:[]},xb:me.xb||0,db:me.db||0,xb2:me.xb2||0,db2:me.db2||0,pity2:me.pity2||0,bagX:me.bagX||0,pity:me.pity||0,ltd:me.ltd||null,cs:me.cs||null,gseen:me.gseen||null,unl:me.unl||null,gotRd:!!me.gotRd,gotBw:!!me.gotBw,gotKt:!!me.gotKt,gotSp:!!me.gotSp,gotEo:!!me.gotEo,gotNk:!!me.gotNk,ki:Math.round(me.ki||0),bsrBest:me.bsrBest||0,stree:me.stree||{},altar:me.altar||null,gshop:me.gshop||null,eqLk:me.eqLk||{},eqPre:me.eqPre||[],raidClr:me.raidClr||{},rbTP:me.rbTP||0,adv5:me.adv5,adv6:me.adv6,adv7:me.adv7||{},towerBest:me.towerBest||0,duelBest:me.duelBest||0,udBest:me.udBest||0,coloBest:me.coloBest||0,enhV:ENH_VER,ins:me.ins||{a:0,h:0,d:0},wbGot:me.wbGot||0,x10:me.x10||0,evX10:!!me.evX10,eqO:me.eqO,adv3:me.adv3,adv4:me.adv4,awk:Math.floor(me.awk||0),adv2:me.adv2,sk1:!!me.sk1,adv:me.adv,pets:me.pets,petLv:me.petLv||{},pet:me.pet,autoDisOther:!!me.autoDisOther,autoDisSet:me.autoDisSet,adsV:2,autoLoot:!!me.autoLoot,autoEq:!!me.autoEq,autoHp:me.autoHp,autoMp:me.autoMp,autoDis:!!me.autoDis,sbuf:me.sbuf,nick:me.nick,color:me.color,hair:me.hair,cls:me.cls,gotStaff:me.gotStaff,eqE:me.eqE,lvl:me.lvl,exp:me.exp,gold:me.gold,bag:me.bag,eq:me.eq,kills:me.kills,cleared:me.cleared,v:2}}
 /* ---------- 저장 안전장치 ----------
    ① 다른 창에서 같은 게임이 열리면 이 창은 저장을 멈춤 (옛 창이 새 진행을 덮어써서 아이템이 사라지는 문제 방지)
    ② 15초마다·창을 닫거나 숨길 때 자동 저장  ③ 로그인한 계정은 클라우드(계정)에도 저장 */
@@ -1913,7 +1915,7 @@ let vtAcc=0;const VT_MOB_S=.7,VT_BOSS_S=15;
 setInterval(()=>{try{if(Z&&Z.vault&&vtAcc>0){const v=vtAcc;me.vtDps=me.vtDps?me.vtDps*.85+v*.15:v}vtAcc=0}catch{}},1000);
 function vtScale(m,z){const D=MONLIST[m.type]||{},boss=!!(D.boss||D.god),R=(.85+Math.random()*.3)*vtF(z.vault),dps=me.vtDps||0;
   const f=Math.max(atkOf()*Math.max(1,skillMul())*(boss?VT_BOSS*(D.god?2:1):VT_MOB*(m.elite?2:1)),dps*(boss?VT_BOSS_S*(D.god?2:1):VT_MOB_S*(m.elite?2:1)))*R;
-  m.vtP=1;m.vtB=boss?1:0;if(f>m.maxHp)m.hp=m.maxHp=Math.round(f)}
+  m.vtP=1;m.vtB=boss?1:0;m.hp=m.maxHp=Math.max(1,Math.round(f))}
 function vtHit(m,f,base){return Math.max(base||0,Math.round(me.maxHp*(m.vtB?.07:.025)*(m.elite?1.5:1)*(f||1))+defOf())}
 function spawnMon0(m,z){
   const wasPK=m.isPK;baseMon(m);if(wasPK){m.isPK=false;spawnMon0(m,z);if(me.pkOn!==false||z.duel)makePK(m,z);return m}
@@ -1975,7 +1977,7 @@ function useAt(i){
   else if(it.gmLv){const b=me.lvl;me.lvl=Math.min(LV_MAX,me.lvl+it.gmLv);me.exp=0;recalc();me.hp=me.maxHp;me.mp=me.maxMp;buildSkillBar();hudKey='';takeAt(i);sel=null;invChanged();toast(`Lv.${b} → Lv.${me.lvl}`,2000);burst(me.x,me.y-12,60,['#3affb0','#ffd35a','#ffffff'],160,.8)}
   else if(it.gmDust){takeAt(i);sel=null;addItem('dust',it.gmDust);invChanged();sys(`마력 가루 ${it.gmDust.toLocaleString()}개를 얻었어요.`)}
   else if(it.reset){if(!advOf()){sys('초기화할 전직이 없어요.');return}const now=performance.now();
-    if(!(me.resetAsk>now)){me.resetAsk=now+4000;floatText(me.x,me.y-40,'한 번 더 누르면 초기화','#ff7ae0',true);sys('전직을 초기화하려면 4초 안에 한 번 더 읽으세요. 1차·2차 전직이 모두 사라져요.');return}
+    if(!(me.resetAsk>now)){me.resetAsk=now+4000;floatText(me.x,me.y-40,'한 번 더 누르면 초기화','#ff7ae0',true);sys(`⚠ 전직을 초기화하려면 4초 안에 한 번 더 읽으세요. 지금 ${advShow().name}${adv7On&&adv7On()?'(7차)':adv6On()?'(6차)':adv5On()?'(5차)':''}까지 1~7차 전직이 모두 사라지고, 쓴 재료는 돌아오지 않아요.`);return}
     me.resetAsk=0;const old=advShow().name;me.adv[me.cls]='';me.adv2[me.cls]='';me.adv3[me.cls]='';if(me.adv4)me.adv4[me.cls]='';if(me.adv5)me.adv5[me.cls]='';if(me.adv6)me.adv6[me.cls]='';if(me.adv7)me.adv7[me.cls]='';me.awakeT=0;me.sk1=false;refreshSkills();recalc();me.hp=Math.min(me.hp,me.maxHp);me.mp=Math.min(me.mp,me.maxMp);buildSkillBar();takeAt(i);sel=null;invChanged();
     toast('전직 초기화!',2500);sys(`${old} 전직을 초기화했어요. 전직 창(J)에서 다시 고를 수 있어요.`);for(let k=0;k<3;k++)fxs.push({k:'ring',x:me.x,y:me.y,t:-k*.12,dur:.7,col:'#ff7ae0',r:40+k*30});burst(me.x,me.y-12,60,['#ff7ae0','#ffffff'],160,.8)}
   else if(it.trreset){if(!traitSpent()){sys('찍은 특성이 없어요.');return}takeAt(i);if(!me.bag[i]||sel&&sel.i>=me.bag.length)sel=null;resetTraits();invChanged()}
@@ -2072,6 +2074,7 @@ function isStronger(id,e,il,o){if(!isGear(id))return false;const it=ITEMS[id];
 function shouldAutoDis(id,e=0,il=0,o){if(!isGear(id))return false;const it=ITEMS[id];if(it.gm)return false;
   if(it.cls&&it.cls!==me.cls)return !e&&!!me.autoDisOther;   // 다른 직업 무기: 옵션을 켜면 등급 상관없이 분해
   if(isStronger(id,e,il,o))return false;
+  if(me.magnet!==false&&!e&&gIdx(id)<4&&isWeaker(id,e,il,o))return true;   /* 보물 자석: 지금보다 약한 레전드 미만 장비는 줍는 순간 가루 */
   if(me.autoDis&&isWeaker(id,e,il,o))return true;
   return !e&&me.autoDisSet.includes(disCat(id))}
 let disCat=id=>/^x?N\d/.test(id)?100:ITEMS[id].rar;   /* 시원~천원 장비는 초월과 따로 */
@@ -2086,12 +2089,14 @@ function inheritAt(i){const s=me.bag[i];if(!s||!isGear(s.id))return;if(true){use
   const c=inhCost(oe);if(!payDust(c))return;useAt(i);me.eqE[k]=ne;const bi=me.bag.findIndex(b=>b.id===old&&(b.e||0)===oe);if(bi>=0)me.bag[bi].e=0;
   recalc();hudKey='';sel=null;invChanged();persist();floatText(me.x,me.y-40,`전승 +${ne}!`,'#ffd35a',true);burst(me.x,me.y-12,30,['#ffd35a','#ffffff'],110,.6);sys(`${nameOf(old,oe)}의 강화를 전승했어요 → ${nameOf(me.eq[k],ne)} (가루 ${fmtK(c)})`)}
 /* 다음 목표 한 줄 안내 (누르면 해당 창이 열림) */
-function nextGoal(){const L=me.lvl,hub=()=>togglePanel('hub'),adv=()=>togglePanel('adv'),tl=me.tlv||0,rb=me.rb||0;
-  if(L>=ADV_LV&&!advOf())return ['전직할 수 있어요! 눌러서 1차 전직',adv];if(L>=ADV2_LV&&!adv2Of())return ['2차 전직할 수 있어요! 눌러서 전직',adv];if(L>=ADV3_LV&&!adv3Of())return ['3차 전직할 수 있어요! 눌러서 전직',adv];
-  if(L<LV_MAX){let rec=0;for(let T=0;T<HELL_FROM;T++)if(TIERS[T].lv<=L)rec=T;const top=topTier(),nx=L<ADV_LV?ADV_LV:L<ADV2_LV?ADV2_LV:L<ADV3_LV?ADV3_LV:LV_MAX;
+let nextGoal=function(){const L=me.lvl,hub=()=>togglePanel('hub'),adv=()=>togglePanel('adv'),tl=me.tlv||0,rb=me.rb||0;
+  if(L>=ADV_LV&&!advOf())return ['전직할 수 있어요! 눌러서 1차 전직',adv];if(L>=ADV2_LV&&!adv2Of())return ['2차 전직할 수 있어요! 눌러서 전직',adv];if(L>=ADV3_LV&&!adv3Of()){const mk=countItem('mark3');return mk>=MARK_NEED?['3차 전직할 수 있어요! 눌러서 전직',adv]:[`3차 전직에 초월의 증표 ${mk}/${MARK_NEED}개 · 90~100층 신화 보스·헬 보스가 떨어뜨려요`,hub]}
+  if(rb>0&&L<LV_MAX&&traitPts()>0)return [`환생 특성 포인트 ${traitPts()}점이 남았어요 · 눌러서 찍기`,()=>togglePanel('trait')];
+  if(L<LV_MAX){let rec=0;for(let T=0;T<HELL_FROM;T++)if(TIERS[T].lv<=L)rec=T;const top=topTier(),nx=!advOf()&&L<ADV_LV?ADV_LV:!adv2Of()&&L<ADV2_LV?ADV2_LV:!adv3Of()&&L<ADV3_LV?ADV3_LV:LV_MAX;
+    if(Z&&Z.T>=0&&!Z.colo&&!Z.vault&&!Z.train&&Z.T>=Math.min(rec,top)){return [`이 층 몬스터를 잡아 레벨 올리기 (Lv.${L} → ${nx}) · 보스를 잡으면 다음 층 · 체력 포션 Q`,hub]}
     if(top<rec)return [`분수대(E)에서 던전 ${rec+1}층에 도전하세요 (지금 레벨에 딱 맞아요)`,hub];return [`던전 ${Math.min(top+2,HELL_FROM)}층으로! 레벨 ${nx}까지 사냥 (${nx===LV_MAX?'만렙':'다음 전직'})`,hub]}
   if(!me.cleared[HELL_FROM-1])return ['100층 신화 보스를 쓰러뜨리면 헬 던전이 열려요',hub];
-  if(!(typeof adv4Of==='function'?adv4Of():me.adv4))return ['4차 전직을 노려 보세요 (전직 창에서 조건 확인)',adv];
+  if(!(typeof adv4Of==='function'?adv4Of():me.adv4)){const c4=countItem('core4');return c4>=ADV4_NEED?['4차 전직할 수 있어요! 눌러서 전직',adv]:[`4차 전직에 4차의 핵 ${c4}/${ADV4_NEED}개 · 제작소(M)에서 증표 3개로 만들거나 헬 보스에게서`,hub]}
   {const ck=countItem('core4'),lb=countItem('lb_stone');
     if(!adv5On()&&tl>=MYTH_TLV&&ck>=MYTH_CORE)return ['5차 전직할 수 있어요! 눌러서 전직',adv];
     if(adv5On()&&!adv6On()&&tl>=ABS_TLV&&ck>=ABS_CORE&&lb>=ABS_LB)return ['6차 전직할 수 있어요! 눌러서 전직',adv];
@@ -2245,7 +2250,7 @@ const monCY=m=>{const D=MONLIST[m.type];return m.y-(D.boss?D.hgt*.45:6)};
 function spark(x,y,vx,vy,col,life=.6,size=1,grav=0,drag=.92){if(GFX.q<2&&Math.random()>GQF()*1.4)return;sparks.push({x,y,vx,vy,col,t:0,life,size,grav,drag})}
 function burst(x,y,n,cols,sp=60,life=.6,size=1,grav=30){n=Math.max(1,Math.ceil(n*GQF()));for(let i=0;i<n;i++){const a=Math.random()*6.283,v=sp*(.3+Math.random()*.7);
   spark(x,y,Math.cos(a)*v,Math.sin(a)*v,cols[i%cols.length],life*(.6+Math.random()*.6),size,grav)}}
-function hitMon(m,d,kx,ky,col){if(m.dead)return;if(m.vtP&&d>0)vtAcc+=Math.min(d,m.hp);const D=MONLIST[m.type];if(udOn()){if(D.boss&&pk_('boss'))d=Math.round(d*(1+.25*pk_('boss')));if(pk_('chain')&&!hitMon.ch&&Math.random()<.15){hitMon.ch=1;const o=monsNear(m.x,m.y-8,90).find(x=>x!==m&&!x.dead);if(o){fxs.push({k:'ring',x:o.x,y:o.y,t:0,dur:.25,col:'#ffd35a',r:14});hitMon(o,Math.round(d*.6*pk_('chain')),0,0,'#ffd35a')}hitMon.ch=0}}if(m.stopT>0&&m.stopK==='ice')d*=2;if(m.brandT>0)d=Math.round(d*1.5);if(adv2Id()==='judge'&&UNDEAD.has(D.sp))d=Math.round(d*1.5);const crit=Math.random()<critOf();if(crit){d=Math.round(d*(adv2Id()==='blade'?2.5:1.8));col='#ffd35a'}if(!inDot&&started)sfx(crit?'crit':'hit');
+function hitMon(m,d,kx,ky,col){if(m.dead)return;if(m.vtP&&d>0)vtAcc+=Math.min(d,m.hp);const D=MONLIST[m.type];if(udOn()){if(D.boss&&pk_('boss'))d=Math.round(d*(1+.25*pk_('boss')));if(pk_('chain')&&!hitMon.ch&&Math.random()<.15){hitMon.ch=1;const o=monsNear(m.x,m.y-8,90).find(x=>x!==m&&!x.dead);if(o){fxs.push({k:'ring',x:o.x,y:o.y,t:0,dur:.25,col:'#ffd35a',r:14});hitMon(o,Math.round(d*.6*pk_('chain')),0,0,'#ffd35a')}hitMon.ch=0}}if(m.stopT>0&&m.stopK==='ice')d*=2;if(m.brandT>0)d=Math.round(d*1.5);if(adv2Id()==='judge'&&UNDEAD.has(D.sp))d=Math.round(d*1.5);const crit=Math.random()<critOf();if(crit){d=Math.round(d*((adv2Id()==='blade'?2.5:1.8)+critOver()));col='#ffd35a'}if(!inDot&&started)sfx(crit?'crit':'hit');
   if(!inDot&&(adv2Id()==='demon'||adv2Id()==='hell')&&!(m.dot&&m.dot.t>0))m.dot={t:3,k:.5,d:Math.max(1,Math.round(d*.1)),c:adv2Id()==='hell'?'#ff6a1a':'#c43aff'};
   const ls=eqSum('ls')+(advOf()?.id==='dark'?.05:0)+(adv2Id()==='demon'?.1:0)+(adv2Id()==='blood'?.08:0);const ls2=adv3Id()==='bloodking'&&me.hp<me.maxHp*.3?ls*2:ls;if(ls2>0&&!me.dead)me.hp=Math.min(me.maxHp,me.hp+d*ls2);if(me.tr&&me.tr.t_boss&&MONLIST[m.type].boss)d=Math.round(d*(1+me.tr.t_boss*.08));m.hp-=d;if(m.wb){me.wbDmg=(me.wbDmg||0)+d;wbSync(m)}m.flash=0.15;const k=D.boss?0.15:1;m.kx=kx*k;m.ky=ky*k;
   floatText(m.x+(Math.random()-.5)*6,m.y-(m.h||14),crit?d+'!':String(d),col||'#ffffff',!!col||crit);
@@ -3526,7 +3531,7 @@ const NEW_CASH=new Set(['w_star','w_galaxy','w_dawn','a_galaxy','a_dawn','n_gala
 const COS_BY=Object.fromEntries(COS.map(c=>[c[0],c]));const COS_CAT={wing:'날개',aura:'오라',name:'이름표',dye:'망토 염색'};
 /* 탈것 (가루로 구매 · 하나만 탈 수 있음 · 이동 속도 증가) */
 const MOUNTS=[['m_wolf','회색 늑대',3e6,.08,['#9aa0b0','#5a6070','#ffffff'],'beast'],['m_horse','백마',1e7,.12,['#f0f0f8','#a8a8bc','#ffd35a'],'beast'],['m_tiger','천둥 호랑이',3e7,.16,['#ffb03a','#2a2028','#7ff0ff'],'beast'],
-  ['m_unicorn','유니콘',8e7,.2,['#ffe8fa','#c9a8ff','#ff9ad8'],'beast'],['m_dragon','흑룡',2e8,.25,['#3a2a4a','#1a1020','#ff3a3a'],'dragon'],['m_phoenix','불사조',5e8,.3,['#ff6a2a','#ffd35a','#fff27a'],'bird'],['m_cloud','근두운',1e9,.35,['#ffffff','#cfe0ff','#ffd35a'],'cloud'],
+  ['m_unicorn','유니콘',8e7,.2,['#ffe8fa','#c9a8ff','#ff9ad8'],'beast'],['m_dragon','흑룡',2e8,.25,['#3a2a4a','#1a1020','#ff3a3a'],'dragon'],['m_phoenix','불사조',3e8,.3,['#ff6a2a','#ffd35a','#fff27a'],'bird'],['m_cloud','근두운',6e8,.35,['#ffffff','#cfe0ff','#ffd35a'],'cloud'],
   ['m_pony','조랑말',5e5,.05,['#c8a070','#7a5030','#ffffff'],'beast'],['m_starwolf','성좌 늑대',3e8,.3,['#7ab0ff','#1a2a5a','#ffffff'],'beast'],['m_galaxy','은하룡',8e8,.36,['#b48aff','#2a1a4a','#7ab0ff'],'dragon'],['m_dawn','개벽의 봉황',2e9,.4,['#ffe066','#ff9ad8','#ffffff'],'bird'],
   ['m_rbdeer','윤회의 사슴',0,.18,['#cfeee8','#4a8a7a','#4affd0'],'beast',{rb:5}],['m_rbdragon','윤회룡',0,.3,['#2a6a6a','#103030','#4affd0'],'dragon',{rb:30}],['m_rbcloud','영겁의 구름',0,.38,['#e8e0ff','#b48aff','#fff27a'],'cloud',{rb:75}]];
 const MOUNT_BY=Object.fromEntries(MOUNTS.map(m=>[m[0],m]));const MOUNT_LIFT=10;
@@ -3546,7 +3551,7 @@ function drawCosWing(c,x,y,id,t){const C=COS_BY[id];if(!C)return;let [a,b]=C[4];
 function drawCosAura(c,x,y,id,t){const C=COS_BY[id];if(!C)return;let [a,b]=C[4];a=rbw(a,t);b=rbw(b,t,120);ringPx(c,x,y,12+Math.sin(t*3),0,6.283,a,.45,1);ringPx(c,x,y,8,t*2,t*2+2.5,b,.6,1);if(Math.random()<.15)spark(x+cam.x+(Math.random()-.5)*20,y+cam.y-Math.random()*6,0,-25,Math.random()<.5?a:b,.6)}
 const capeColor=()=>{const d=cosOf('dye');if(d)return rbw(d[4][0],performance.now()/1000);const it=eqItem('cape');return it?it.col:COLORS[me.color][0]};
 const BOOST={xb:['경험치 부스터',1.5],db:['드롭 부스터',1.5],xb2:['고급 경험치 부스터',2],db2:['고급 드롭 부스터',2]};
-const BOOST_PR={xb:[2e4,12e4],db:[25e3,15e4],xb2:[3e7,18e7],db2:[3e7,18e7]};
+const BOOST_PR={xb:[2e4,12e4],db:[25e3,15e4],xb2:[2e5,12e5],db2:[2e5,12e5]};
 const boostMul=k=>boostOn(k+'2')?2:boostOn(k)?1.5:1;
 const boostOn=k=>(me[k]||0)>Date.now();
 const bagMax=()=>BAG_MAX+Math.min(100,me.bagX||0);
@@ -3853,11 +3858,12 @@ const CS_FREE=[['dust',300000],['sc_w',5],['sc_a',5],['pot_x',5]];
 const SC_DUST=800;
 /* 주간 패키지 [키, 이름, 설명, 원가, 판매가, 색, 지급] — 주 1회씩 */
 const CS_PACK=[
-  ['pk_hunt','사냥 패키지','고급 경험치 부스터 7일 + 고급 드롭 부스터 7일 (경험치·드롭 ×2)',36e7,25e7,'#7ff0ff',()=>{for(const k of ['xb2','db2'])me[k]=Math.max(me[k]||0,Date.now())+7*864e5}],
+  ['pk_hunt','사냥 패키지','고급 경험치 부스터 7일 + 고급 드롭 부스터 7일 (경험치·드롭 ×2)',24e5,17e5,'#7ff0ff',()=>{for(const k of ['xb2','db2'])me[k]=Math.max(me[k]||0,Date.now())+7*864e5}],
   ['pk_enh','강화 패키지','무기·방어 강화 주문서 각 100장 + 한계돌파석 10개 + 별의 돌 5개',57e5,4e6,'#ffa31a',()=>{addItem('sc_w',100);addItem('sc_a',100);addItem('lb_stone',10);addItem('star_st',5)}],
   ['pk_new','새싹 패키지','엘릭서 30개 + 경험의 두루마리 10장 + 경험치·드롭 부스터 각 1일',73000,50000,'#6ee7b7',()=>{addItem('pot_x',30);addItem('bf_exp',10);for(const k of ['xb','db'])me[k]=Math.max(me[k]||0,Date.now())+864e5}],
 ];
-function csBuy(price,fn,msg){if(!payDust(price))return;fn();recalc();hudKey='';invChanged();persist();sys(msg);toast(msg,1600);burst(me.x,me.y-14,16,['#c9a8ff','#ffffff'],80,.5);renderCash()}
+function csBuy(price,fn,msg){const snap=JSON.stringify(me.bag),csn=JSON.stringify(me.cs||null);if(!payDust(price))return;let fail=false;const a0=addItem;addItem=function(...a){const r=a0.apply(this,a);if(r===false)fail=true;return r};try{fn()}finally{addItem=a0}
+  if(fail){me.bag=JSON.parse(snap);me.cs=JSON.parse(csn);invChanged();toast('가방이 가득 찼어요 · 가루를 돌려드렸어요',2500);sys('가방이 가득 차서 살 수 없어요. 가방을 비운 뒤 다시 사세요 (가루는 그대로예요).');renderCash();return}recalc();hudKey='';invChanged();persist();sys(msg);toast(msg,1600);burst(me.x,me.y-14,16,['#c9a8ff','#ffffff'],80,.5);renderCash()}
 function csHead(g,t,sub){const h=document.createElement('div');h.className='cshd';h.textContent=t;if(sub){const s=document.createElement('small');s.textContent=' '+sub;h.appendChild(s)}g.appendChild(h)}
 function renderCashHome(g,sum){const s=csState();sum.textContent='매일 무료 선물을 받고, 이번 주 특가와 패키지를 확인하세요. 패키지는 일주일에 한 번씩 살 수 있어요.';
   csHead(g,'행운의 룰렛','복불복! 가루 100만으로 한 번');roulCard(g);
@@ -3867,7 +3873,7 @@ function renderCashHome(g,sum){const s=csState();sum.textContent='매일 무료 
   csHead(g,'주간 패키지','주 1회');
   for(const [k,nm,desc,orig,price,col,give] of CS_PACK){const left=csLeft(k,1);g.appendChild(cashRow(nm,desc,left?`가루 ${fmtK(price)} (원래 ${fmtK(orig)})`:'이번 주 구매 완료','구매',left>0&&countItem('dust')>=price,()=>{if(csLeft(k,1)<1)return;csBuy(price,()=>{csTake(k);give()},`${nm}을(를) 샀어요!`)},col,left?`${Math.round((1-price/orig)*100)}% 할인`:''))}
   csHead(g,'알아두기');
-  g.appendChild(wideCard(cashRow('+2·+3 장비 강화권','실패·파괴 없이 장비를 바로 +2/+3 올려요. 던전 보스와 보스 군단 보스가 아주 드물게 떨어뜨려요 (+1 강화권은 [강화] 탭에서 주 2장 살 수 있어요).','보스 드롭 전용','보스에게서',false,()=>{},'#ffd35a')));
+  g.appendChild(wideCard(cashRow('+2·+3 장비 강화권','실패·파괴 없이 장비를 바로 +2/+3 올려요. 던전 보스와 보스 군단 보스가 아주 드물게 떨어뜨려요 (+1 강화권은 [장비] 탭의 [강화 재료]에서 주 2장 살 수 있어요).','보스 드롭 전용','보스에게서',false,()=>{},'#ffd35a')));
 }
 function renderCashEnh(g,sum){sum.textContent=`강화에 필요한 재료를 마력 가루로 사요. 지금 가루 ${fmtK(countItem('dust'))}`;
   csHead(g,'강화 주문서','최대 +20까지 쓰는 기본 재료');
@@ -3875,7 +3881,7 @@ function renderCashEnh(g,sum){sum.textContent=`강화에 필요한 재료를 마
   csHead(g,'한계 돌파 · 별 강화','+21~+30 재료');
   for(const [n,pr] of [[1,3e5],[10,27e5]])g.appendChild(cashRow(`한계돌파석 ×${n}`,`+20 넘어 +25까지 강화할 때 1개씩 · 가진 수 ${countItem('lb_stone')}`,`가루 ${fmtK(pr)}`,'구매',countItem('dust')>=pr,()=>csBuy(pr,()=>addItem('lb_stone',n),`한계돌파석 ${n}개를 샀어요.`),'#ffa31a',n>1?'10% 할인':''));
   g.appendChild(cashRow('별의 돌',`별 강화(+26~+30) 재료 · 가진 수 ${countItem('star_st')}`,`가루 ${fmtK(STAR_DUST)}`,'구매',countItem('dust')>=STAR_DUST,()=>csBuy(STAR_DUST,()=>addItem('star_st',1),'별의 돌을 샀어요.'),'#ff6ad5'));
-  {const n=Math.min(100,Math.floor(countItem('dust')/STAR_DUST));g.appendChild(cashRow(`별의 돌 ${n||''}개 한꺼번에`,'가진 가루로 살 수 있는 만큼 (최대 100개)',n?`가루 ${fmtK(n*STAR_DUST)}`:'가루 부족','구매',n>0,()=>{const k=Math.min(100,Math.floor(countItem('dust')/STAR_DUST));if(k)csBuy(k*STAR_DUST,()=>addItem('star_st',k),`별의 돌 ${k}개를 샀어요.`)},'#ff6ad5'))}
+  {const n=Math.min(100,Math.floor(countItem('dust')/STAR_DUST));g.appendChild(cashRow(n?`별의 돌 ${n}개 한꺼번에`:'별의 돌 한꺼번에','가진 가루로 살 수 있는 만큼 (최대 100개)',n?`가루 ${fmtK(n*STAR_DUST)}`:'가루 부족','구매',n>0,()=>{const k=Math.min(100,Math.floor(countItem('dust')/STAR_DUST));if(k)csBuy(k*STAR_DUST,()=>addItem('star_st',k),`별의 돌 ${k}개를 샀어요.`)},'#ff6ad5'))}
   g.appendChild(cashRow('파괴 방지 주문서',`별 강화 +27부터 장비 파괴를 1번 막아줘요 · 가진 수 ${countItem('star_guard')}`,'가루 20만','구매',countItem('dust')>=2e5,()=>csBuy(2e5,()=>addItem('star_guard',1),'파괴 방지 주문서를 샀어요.'),'#7ff0ff'));
   csHead(g,'장비 강화권','실패·하락·파괴 없음');
   {const left=csLeft('en1',2);g.appendChild(cashRow('+1 장비 강화권',`장비 하나를 바로 +1 (가방에서 장비를 고르고 [+1 강화권]). 이번 주 남은 수량 ${left}/2 · 가진 수 ${countItem('en_1')}`,left?'가루 1억':'이번 주 매진','구매',left>0&&countItem('dust')>=1e8,()=>{if(csLeft('en1',2)<1)return;csBuy(1e8,()=>{csTake('en1');addItem('en_1',1)},'+1 장비 강화권을 샀어요!')},'#9dffa8','주 2장'))}
@@ -4004,7 +4010,7 @@ function applyUnlocks(silent){if(!started)return;me.unl=me.unl||{};let fresh=[];
 setInterval(()=>{try{applyUnlocks(false)}catch(e){}},1000);
 
 /* ================= 캐시상점 추가 상품: 별빛 정기권 · 승급 패키지 · 30일 부스터 · 영원 장비 상자 · 강화권 상자 · 한계돌파석 ×100 ================= */
-const PASS_PRICE=2e7,PASS_DAYS=30,PASS_GIFT=[['dust',1e6],['star_st',1],['lb_stone',3],['pot_x',10]];
+const PASS_PRICE=2e7,PASS_DAYS=30,PASS_GIFT=[['dust',5e5],['star_st',1],['lb_stone',3],['pot_x',10]];
 const passOn=()=>(csState().pass||0)>Date.now();
 const passLeft=()=>Math.max(0,Math.ceil(((csState().pass||0)-Date.now())/864e5));
 function csCards(g){const tab=cashTab,s=csState(),dust=countItem('dust');
@@ -4019,7 +4025,7 @@ function csCards(g){const tab=cashTab,s=csState(),dust=countItem('dust');
     g.appendChild(cashRow('승급 패키지','한계돌파석 50개 + 별의 돌 20개 (성좌 승급 1번에 필요한 재료)',left?`가루 ${fmtK(pr)} (원래 ${fmtK(orig)})`:'이번 주 구매 완료','구매',left>0&&dust>=pr,()=>{if(csLeft('pk_up',1)<1)return;csBuy(pr,()=>{csTake('pk_up');addItem('lb_stone',50);addItem('star_st',20)},'승급 패키지를 샀어요!')},'#7ab0ff',left?'36% 할인':''));
   }
   if(tab==='grow'){
-    for(const [k,nm] of [['xb2','고급 경험치 부스터'],['db2','고급 드롭 부스터']]){const pr=6e8;g.appendChild(cashRow(`${nm} 30일`,`${k==='xb2'?'경험치':'드롭률'} ×2, 30일 (7일권 4번보다 싸요)${boostOn(k)?` · 지금 ${Math.ceil((me[k]-Date.now())/864e5)}일 남음 → 30일 더`:''}`,`가루 ${fmtK(pr)}`,'구매',dust>=pr,()=>csBuy(pr,()=>{me[k]=Math.max(me[k]||0,Date.now())+30*864e5},`${nm} 30일을 샀어요!`),'#ffd35a','17% 할인'))}
+    for(const [k,nm] of [['xb2','고급 경험치 부스터'],['db2','고급 드롭 부스터']]){const pr=4e6;g.appendChild(cashRow(`${nm} 30일`,`${k==='xb2'?'경험치':'드롭률'} ×2, 30일 (7일권 4번보다 싸요)${boostOn(k)?` · 지금 ${Math.ceil((me[k]-Date.now())/864e5)}일 남음 → 30일 더`:''}`,`가루 ${fmtK(pr)}`,'구매',dust>=pr,()=>csBuy(pr,()=>{me[k]=Math.max(me[k]||0,Date.now())+30*864e5},`${nm} 30일을 샀어요!`),'#ffd35a','17% 할인'))}
   }
   if(tab==='enh'){
     {const pr=255e5;g.appendChild(cashRow('한계돌파석 ×100',`성좌·은하·개벽 승급용 대량 묶음 · 가진 수 ${countItem('lb_stone')}`,`가루 ${fmtK(pr)}`,'구매',dust>=pr,()=>csBuy(pr,()=>addItem('lb_stone',100),'한계돌파석 100개를 샀어요.'),'#ffa31a','15% 할인'))}
@@ -4046,7 +4052,7 @@ function drawRoul(cv,ang){const c=cv.getContext('2d'),W=cv.width,R=W/2-6,n=ROUL.
     c.save();c.rotate(a0+Math.PI/n);c.fillStyle=i===8?'#ffffff':'#14102a';c.font='bold 11px sans-serif';c.textAlign='right';ROUL[i][0].split('\n').forEach((t,k)=>c.fillText(t,R-8,k*12-1));c.restore()}
   c.beginPath();c.arc(0,0,16,0,Math.PI*2);c.fillStyle='#ffd35a';c.fill();c.strokeStyle='#1b1530';c.stroke();c.restore();
   c.beginPath();c.moveTo(W/2-9,2);c.lineTo(W/2+9,2);c.lineTo(W/2,20);c.closePath();c.fillStyle='#ffffff';c.fill();c.strokeStyle='#1b1530';c.lineWidth=2;c.stroke()}
-function roulCard(g){const card=wideCard(cashRow('행운의 룰렛',`가루 100만으로 한 번 돌려요. 확률: ${ROUL.map(x=>`${x[0].replace('\n',' ')} ${x[2]}%`).join(' · ')}`,`가루 ${fmtK(ROUL_PRICE)} / 1회`,'돌리기',countItem('dust')>=ROUL_PRICE&&!roulBusy,()=>spinRoul(card),'#ffcc4d','복불복'));
+function roulCard(g){const card=wideCard(cashRow('행운의 룰렛',`가루 100만으로 한 번 돌려요. 확률: ${ROUL.map(x=>`${x[0].replace('\n',' ')} ${x[2]}%`).join(' · ')}`,`가루 ${fmtK(ROUL_PRICE)} / 1회`,'돌리기',countItem('dust')>=ROUL_PRICE&&!roulBusy&&me.bag.length<bagMax(),()=>spinRoul(card),'#ffcc4d','복불복'));
   const cv=document.createElement('canvas');cv.width=cv.height=240;cv.className='roulcv';drawRoul(cv,roulAng);card.insertBefore(cv,card.querySelector('.row'));
   const b10=document.createElement('button');b10.type='button';b10.className='btn sm alt';b10.textContent='10번 한꺼번에';b10.disabled=countItem('dust')<ROUL_PRICE*10||roulBusy;
   b10.addEventListener('click',()=>{if(roulBusy||!payDust(ROUL_PRICE*10))return;const got={};for(let k=0;k<10;k++){const i=roulPick(),t=ROUL[i][3]();got[t]=(got[t]||0)+1}invChanged();persist();const msg=Object.entries(got).map(([t,n])=>n>1?`${t} ×${n}`:t).join(', ');sys('룰렛 10번: '+msg);toast('룰렛 10번 결과는 채팅창에!',2400);renderCash()});
@@ -5191,9 +5197,9 @@ const VB_PRICE={1:5e5,10:45e5};
 let renderCashBox=function(g,sum){const k=me.trBest||0,vt=k>=1,il=k>34?k-34:0,xt=xtMax(k),pity=me.pity||0,full=n=>me.bag.length+n<=bagMax();
   sum.textContent=vt?`수련장 최고 ${k}단계 기준 장비가 나와요 (장비 보물고 ${k}단계와 같아요${il?` · 아이템Lv.${il}`:''}${xt?` · ${XT_NAMES[xt-1]} 장비까지`:''}). 내 직업용 장비만 나와요.`:`아직 수련장 전이라 내가 깬 가장 높은 층(${Math.max(0,topTier())+1}층) 기준이에요. 수련장에 들어가면 보물고 기준으로 바뀌어요.`;
   const open=(lv,n,price,label)=>()=>{if(!payDust(price))return;const got=[];for(let i=0;i<n;i++)got.push(openBox(lv));invChanged();persist();sys(`${label}: ${got.join(', ')}`);renderCash()};
-  for(const [n,p0] of [[1,3e4],[10,27e4]]){const price=vt?VB_PRICE[n]:p0;g.appendChild(cashRow(`장비 상자 ${n}개`,vt?`각성 9% · 레전드 0.5% · 150번째 레전드 확정 (지금 ${pity}/150)${n===10?' · 10% 할인':''}`:`접두어가 붙은 장비${n===10?' · 10% 할인':''}`,`가루 ${fmtK(price)}`,'열기',countItem('dust')>=price&&full(n),open(1,n,price,'장비 상자'),'#ffd35a'))}
-  for(const [n,price] of [[1,5e6],[10,45e6]])g.appendChild(wideCard(cashRow(`고급 장비 상자 ${n}개`,`${vt?'각성':'초월'} 이상 확정 · 레전드 ${vt?5:3}% · 30번째 레전드 확정 (지금 ${me.pity2||0}/30)${n===10?' · 10% 할인':''}`,`가루 ${fmtK(price)}`,'열기',countItem('dust')>=price&&full(n),open(2,n,price,'고급 장비 상자'),'#ffa31a')));
-  g.appendChild(wideCard(cashRow('태초 상자','레전드 확정 · 1.5% 태초 Ⅱ · 0.3% 신화(무한)','가루 5억','열기',countItem('dust')>=5e8&&full(1),open(3,1,5e8,'태초 상자'),'#ff6ad5')))}
+  for(const [n,p0] of [[1,3e4],[10,27e4]]){const price=vt?VB_PRICE[n]:p0;g.appendChild(cashRow(`장비 상자 ${n}개`,vt?`각성 9% · 레전드 ${+(0.5*SET_DROP).toFixed(2)}% · 150번째 레전드 확정 (지금 ${pity}/150)${n===10?' · 10% 할인':''}`:`접두어가 붙은 장비${n===10?' · 10% 할인':''}`,`가루 ${fmtK(price)}`,'열기',countItem('dust')>=price&&full(n),open(1,n,price,'장비 상자'),'#ffd35a'))}
+  for(const [n,price] of [[1,5e6],[10,45e6]])g.appendChild(wideCard(cashRow(`고급 장비 상자 ${n}개`,`${vt?'각성':'초월'} 이상 확정 · 레전드 ${+((vt?5:3)*SET_DROP).toFixed(2)}% · 30번째 레전드 확정 (지금 ${me.pity2||0}/30)${n===10?' · 10% 할인':''}`,`가루 ${fmtK(price)}`,'열기',countItem('dust')>=price&&full(n),open(2,n,price,'고급 장비 상자'),'#ffa31a')));
+  g.appendChild(wideCard(cashRow('태초 상자',`레전드 확정 · ${+(1.5*SET_DROP).toFixed(2)}% 태초 Ⅱ · ${+(0.3*SET_DROP).toFixed(2)}% 신화(무한)`,'가루 5억','열기',countItem('dust')>=5e8&&full(1),open(3,1,5e8,'태초 상자'),'#ff6ad5')))}
 
 /* 캐시상점 탭 4개: 오늘 · 성장 · 장비 · 꾸미기 (안에서 작은 칸으로 나눔) */
 const CS_SUB={home:[['home','오늘']],grow:[['grow','부스터·편의'],['ins','각인']],enh:[['enh','강화 재료'],['box','장비 상자']],pet:[['pet','펫'],['mount','탈것'],['cos','외형']]};
@@ -5409,10 +5415,10 @@ COS.push(['w_bone','wing','뼈 날개',3e8,['#e8e0c8','#7affc8']],['w_immortal',
 for(const c of COS.slice(-8)){COS_BY[c[0]]=c;NEW_CASH.add(c[0])}
 MOUNTS.push(['m_bonedragon','뼈 용',15e8,.38,['#e8e0c8','#3a2a4a','#7affc8'],'dragon'],['m_immortal','불멸의 봉황',3e9,.42,['#ff7a4a','#ffd35a','#fff27a'],'bird']);
 for(const m of MOUNTS.slice(-2)){MOUNT_BY[m[0]]=m;NEW_CASH.add(m[0])}
-setTimeout(()=>{const P={id:'skullpet',name:'꼬마 해골',sp:'lich',pal:mkP('#e8e0c8','#2a1a3a','#7affc8'),kind:'ranged',premium:1,price:12e8,mul:6,proj:'orb',cd:.5,col:'#7affc8',drop:.35,exp:.35,desc:'해골탄 연사 (공격력 600%) + 드롭률·경험치 +35%'};
+setTimeout(()=>{const P={id:'skullpet',name:'꼬마 해골',sp:'lich',pal:mkP('#e8e0c8','#2a1a3a','#7affc8'),kind:'ranged',premium:1,price:36e7,mul:6,proj:'orb',cd:.5,col:'#7affc8',drop:.35,exp:.35,desc:'해골탄 연사 (공격력 600%) + 드롭률·경험치 +35%'};
   P.D={id:'pet_'+P.id,sp:P.sp,pal:palFor(P.sp,P.pal)};PETS.push(P);PET_BY[P.id]=P;NEW_CASH.add(P.id)},0);
 /* 네크로맨서 출시 패키지: 한 번만 · 따로 사는 것보다 40% 싸게 */
-const NEC_PACK={cos:['w_bone','n_skull','d_necro'],pet:'skullpet',price:Math.round((3e8+1e8+5e7+12e8)*.6)};
+const NEC_PACK={cos:['w_bone','n_skull','d_necro'],pet:'skullpet',price:Math.round((3e8+1e8+5e7+36e7)*.6)};
 const necPackOwned=()=>NEC_PACK.cos.every(k=>me.cos.own.includes(k))&&(me.pets||[]).includes(NEC_PACK.pet);
 /* 특성 포인트 두루마리: 무한 특성용 · 주 5장까지 */
 const TP_SCROLL=2e8,TP_WEEK=5;
@@ -5421,7 +5427,7 @@ const YBOX_PRICE=3e9;
 function yBoxOpen(){const k=me.trBest||0,g=Math.random()<.05?2:1,id='Y'+g+gearPre(),il=k>34?k-34:0;if(!ITEMS[id])return '?';addItem(id,1,0,rollOpts(id),il||undefined);toast(`✦ ${gLabel(id)} 장비! ${ITEMS[id].name}`,4500);news({k:'leg',i:id});return nameOf(id,0,il)}
 {const c0=csCards;csCards=function(g){const r=c0(g),dust=countItem('dust');
   if(cashTab==='home'){csHead(g,'신상품','네크로맨서 · 새 등급 기념');
-    const own=necPackOwned();g.appendChild(wideCard(cashRow('네크로맨서 출시 패키지',`뼈 날개 + 해골 이름표 + 사령 망토 + 꼬마 해골 펫 (따로 사면 가루 ${fmtK(16.5e8)}) · 한 번만`,own?'받았어요':`가루 ${fmtK(NEC_PACK.price)}`,'사기',!own&&dust>=NEC_PACK.price,()=>csBuy(NEC_PACK.price,()=>{me.cos=me.cos||{own:[]};for(const k of NEC_PACK.cos)if(!me.cos.own.includes(k))me.cos.own.push(k);me.pets=me.pets||[];if(!me.pets.includes(NEC_PACK.pet))me.pets.push(NEC_PACK.pet)},'네크로맨서 출시 패키지! 꾸미기 탭에서 끼세요'),'#7affc8','40% 할인')));
+    const own=necPackOwned();g.appendChild(wideCard(cashRow('네크로맨서 출시 패키지',`뼈 날개 + 해골 이름표 + 사령 망토 + 꼬마 해골 펫 (따로 사면 가루 ${fmtK(8.1e8)}) · 한 번만`,own?'받았어요':`가루 ${fmtK(NEC_PACK.price)}`,'사기',!own&&dust>=NEC_PACK.price,()=>csBuy(NEC_PACK.price,()=>{me.cos=me.cos||{own:[]};for(const k of NEC_PACK.cos)if(!me.cos.own.includes(k))me.cos.own.push(k);me.pets=me.pets||[];if(!me.pets.includes(NEC_PACK.pet))me.pets.push(NEC_PACK.pet)},'네크로맨서 출시 패키지! 꾸미기 탭에서 끼세요'),'#7affc8','40% 할인')));
     g.appendChild(wideCard(cashRow('불멸 장비 상자',`내 직업용 [불멸] 장비 확정 · 5% [천상] · 아이템Lv는 수련장 최고 단계 기준${me.trBest>34?` (지금 Lv.${me.trBest-34})`:''}`,`가루 ${fmtK(YBOX_PRICE)}`,'열기',dust>=YBOX_PRICE&&me.bag.length<bagMax(),()=>{if(!payDust(YBOX_PRICE))return;const n=yBoxOpen();invChanged();persist();sys(`불멸 장비 상자: ${n}`);renderCash()},'#ff7a4a','신상')));}
   if(cashTab==='grow'){const left=csLeft('tp_scroll',TP_WEEK);
     g.appendChild(cashRow('특성 포인트 두루마리',`환생 특성 포인트 +5 · 무한 특성에 쓰세요 · 이번 주 ${left}/${TP_WEEK}장 남음`,`가루 ${fmtK(TP_SCROLL)}`,'사기',left>0&&dust>=TP_SCROLL,()=>csBuy(TP_SCROLL,()=>{csTake('tp_scroll');me.rbTP=(me.rbTP||0)+5},'특성 포인트 +5!'),'#ff9ad8','신상'))}
@@ -5518,6 +5524,22 @@ function godDraw(c){const now=performance.now(),T=now/1000,cx=cam.x,cy=cam.y;
 
 /* 전 직업 3차 피해 다시 맞춤 (2026-11-26 측정 · 흔들림 줄이려고 두 번 측정한 값/반걸음 반영) */
 Object.assign(JOB_BAL,{"elemlord":0.292,"swordgod":0.65,"asura":0.832,"boneking":0.319,"archwiz":0.496,"crusader":0.738,"sylph":0.757,"deathknight":0.315,"beastking":0.407,"nreaper":0.439,"deathgod":1.235,"guardian":3.669,"soulking":0.481,"phoenixc":0.968,"skyhawk":0.471,"sunlance":0.944,"thunderbird":0.68,"raiken":1.022,"shura":0.971,"doomcaller":0.479,"plaguelord":0.515,"blizzardc":0.992,"archangel":3.437,"infernal":0.258,"dragonlord":1.126,"ifrit":0.913,"stareye":0.83,"demonking":0.503,"raijin":0.868,"mangeom":1.115,"oukaken":1.422,"hanagami":1.522,"voidlance":0.827,"dryad":1.203,"treant":1.355,"bowgod":0.949,"oniou":1.324,"nightlance":1.075,"frostqueen":0.886,"vampire":0.682,"trapper":0.357,"windgod":1.451,"stormlance":0.951,"forestsage":0.75,"mugeom":0.891,"darklord":0.637,"hades":0.835,"nbloodking":0.676,"cursekin":0.81,"stormbow":0.624,"thunderwind":1.309,"infernolance":0.877,"shadowking":0.787,"blastking":0.313,"punisher":0.959,"starsaint":0.743,"illusion":0.759,"warlance":1.788,"starlord":0.416,"fortress":2.118,"bloodking":2.629,"venomking":0.927,"bloodlord":2.285,"voidstar":0.443,"timelord":1.88,"voidlord":0.807});
+/* ================= 첫걸음 카드 5장: 처음 하는 사람에게 할 일을 하나씩 + 끝낼 때마다 선물 ================= */
+const FS=[
+  ['1층 보스 잡기','분수대(E) → 1층 · 맨 안쪽 방의 보스를 잡아요',()=>!!me.cleared[0],()=>{addItem('pot_s',10);me.gold+=500;return '체력 포션 10개 · 금화 500'}],
+  ['장비 3칸 끼기','몬스터가 떨어뜨린 장비를 주우면 더 좋은 건 저절로 껴요 · 가방(I)에서 눌러 직접 껴도 돼요',()=>EQ_KINDS.filter(([k])=>me.eq[k]).length>=3,()=>{addItem('sc_w',3);addItem('sc_a',3);return '무기·방어구 강화 주문서 각 3장 (다음 카드에 써요)'}],
+  ['강화 +3 만들기','가방(I) → 장비 누르기 → [강화] · 주문서가 없으면 [주문서 만들고 강화]',()=>EQ_KINDS.some(([k])=>(me.eqE[k]||0)>=3),()=>{addItem('bf_exp',1);addItem('dust',300);return '경험의 두루마리 1장 · 마력 가루 300'}],
+  ['경험의 두루마리 읽기','가방(I)에서 [경험의 두루마리]를 눌러 읽어요 · 20분 동안 경험치 2배',()=>(me.buffs&&me.buffs.exp>0),()=>{me.gold+=2000;addItem('pot_s',10);return '금화 2,000 · 체력 포션 10개'}],
+  ['2층 열기','2층 보스를 잡으면 다음 층이 열려요 · 층이 오를수록 장비가 좋아져요',()=>!!me.cleared[1],()=>{addItem('dust',1000);me.gold+=5000;return '마력 가루 1,000 · 금화 5,000 · 이제 ▶ 안내를 따라가세요!'}]];
+function fsGoal(){const n=me.fs||0;if(n>=FS.length||(me.rb||0)>0||me.lvl>=100)return null;const [t,d]=FS[n];return [`첫걸음 ${n+1}/${FS.length} · ${t} — ${d}`,n===0||n===4?()=>togglePanel('hub'):()=>togglePanel('bag')]}
+setInterval(()=>{try{if(!started||me.dead)return;const n=me.fs||0;if(n>=FS.length)return;if((me.rb||0)>0||me.lvl>=100){me.fs=FS.length;return}
+  if(FS[n][2]()){const got=FS[n][3]();me.fs=n+1;invChanged();persist();toast(`✔ 첫걸음 ${n+1}/${FS.length} 완료! ${got}`,3500);sys(`✔ 첫걸음 [${FS[n][0]}] 완료 · 선물: ${got}`);burst(me.x,me.y-14,30,['#7ff0a0','#ffd35a','#ffffff'],110,.7);try{sfx('lvup')}catch(e){}}}catch(e){}},1000);
+{const g0=nextGoal;nextGoal=function(){const f=fsGoal();if(f&&!(me.lvl>=ADV_LV&&!advOf()))return f;return g0()}}
+/* ================= 함께 보물고: 같은 보물고 단계에 친구가 있으면 장비가 더 나와요 (최대 2명까지 보너스) ================= */
+const coopN=()=>{if(!Z||!Z.vault)return 0;let n=0;for(const r of remotes.values())if(!r.other&&r.z===zoneId)n++;return Math.min(2,n)};
+{const v1=vaultList;vaultList=function(D,E,r){const out=v1(D,E,r),n=coopN();if(n&&r()<.25*n){const extra=v1(D,E,r).filter(([id])=>isGear(id)).slice(0,1);out.push(...extra)}return out}}
+let coopLast=-1;setInterval(()=>{try{if(!started||!Z||!Z.vault){coopLast=-1;return}const n=coopN();if(n!==coopLast){if(n>0)toast(`함께 보물고! 친구 ${n}명 · 장비가 ${n*25}% 더 자주 나와요`,3000);else if(coopLast>0)sys('함께 보물고 보너스가 끝났어요 (같은 단계의 친구가 나갔어요).');coopLast=n}}catch(e){}},2000);
+
 function makeDuel(k){k=Math.max(1,Math.min(DUEL_MAX,k));const T=ABYSS_FROM+9,z=makeArena(T);
   z.id='pv'+k;z.duel=k;z.hpMul=duelHp(k);z.dmgMul=duelDmg(k);z.expMul=3;
   z.title=`대련장 ${k}단계`;z.sub=`PK ${DUEL_N}명 + 챔피언 · 체력 x${duelHp(k).toFixed(1)} · 공격 x${duelDmg(k).toFixed(1)} (심연 10단계 PK 기준) · 챔피언을 쓰러뜨리면 다음 단계`;return z}
@@ -6071,7 +6093,7 @@ const PETS=[
   {id:'nebpet',name:'성운 해파리',sp:'nebjelly',pal:{...mkP('#9a7aff','#ff9ad8','#ffffff'),w:'#ffffff'},kind:'ranged',premium:1,price:8e8,mul:6.5,proj:'orb',cd:.55,col:'#c9a8ff',drop:.45,exp:.45,desc:'성운 구슬 연사 (공격력 650%) + 드롭률·경험치 +45%'},
   {id:'eyepet',name:'천상의 눈',sp:'eyewing',pal:{...mkP('#fff3b0','#7ff0ff','#7ab0ff'),w:'#f4efe6',k:'#140f1e'},kind:'ranged',premium:1,price:15e8,mul:8.5,proj:'orb',cd:.5,col:'#fff3b0',drop:.4,exp:.6,desc:'천상의 빛줄기 (공격력 850%) + 경험치 +60% · 드롭률 +40%'},
   {id:'starpet',name:'성좌 정령',sp:'prism',pal:{...mkP('#7ab0ff','#ffffff','#ffe066'),w:'#ffe066'},kind:'ranged',premium:1,price:3e9,mul:10,proj:'orb',cd:.45,col:'#7ab0ff',drop:.6,exp:.6,desc:'별빛 구체 연사 (공격력 1000%) + 드롭률·경험치 +60% · 가장 강한 펫'},
-  {id:'chaosgod',name:'혼돈의 용신',sp:'whelp',pal:mkP('#3a1a6a','#ff4a6a','#7ff0ff'),kind:'ranged',premium:1,price:150000,mul:4.5,proj:'fire',cd:.75,col:'#ff4a6a',drop:.3,exp:.3,desc:'혼돈의 브레스 (공격력 450%) + 드롭률·경험치 +30%'},
+  {id:'chaosgod',name:'혼돈의 용신',sp:'whelp',pal:mkP('#3a1a6a','#ff4a6a','#7ff0ff'),kind:'ranged',premium:1,price:3e7,mul:4.5,proj:'fire',cd:.75,col:'#ff4a6a',drop:.3,exp:.3,desc:'혼돈의 브레스 (공격력 450%) + 드롭률·경험치 +30%'},
 ];
 const PET_BY={};for(const P of PETS){P.D={id:'pet_'+P.id,sp:P.sp,pal:palFor(P.sp,P.pal)};PET_BY[P.id]=P}
 const pet={x:0,y:0,cd:0,tgt:null,face:1,hitT:-9};
@@ -6223,7 +6245,7 @@ function hurtPlayer(d,fromX,fromY){
   const a=Math.atan2(me.y-fromY,me.x-fromX);for(let i=0;i<6;i++)moveBody(me,Math.cos(a)*1.5,Math.sin(a)*1.5,5,4);
   if(me.hp<=0&&trv('t_rev')&&!((me.revAt||0)>Date.now())){me.revAt=Date.now()+6e5;me.hp=Math.round(me.maxHp*.5);me.iframe=2;toast('부활! (10분 뒤 다시 가능)',2500);floatText(me.x,me.y-40,'부활!','#6ee7b7',true);burst(me.x,me.y-12,60,['#6ee7b7','#ffffff'],150,1)}
   if(me.hp<=0&&udOn()){if(udLife())return true;me.hp=0;udEnd('dead');return true}
-  if(me.hp<=0){me.dead=2.2;toast(Z.T>=0?'쓰러졌어요… 던전 입구에서 다시 일어나요':'쓰러졌어요… 분수대에서 다시 일어나요',2000);{const pct=Z.T<0?0:Z.T>=HELL_FROM?.15:Z.T>=50?.1:.05;if(pct){if(me.lvl>=LV_MAX){const loss=Math.min(me.texp||0,Math.round(needTl((me.tlv||0)+1)*pct));me.texp=(me.texp||0)-loss;if(loss){sys(`쓰러져서 경험치 ${loss.toLocaleString()}을(를) 잃었어요 (다음 레벨 필요량의 ${pct*100}%)`);floatText(me.x,me.y-44,`-${loss.toLocaleString()} EXP`,'#ff5a5a',true)}}else{const loss=Math.min(me.exp,Math.round(needLv(me.lvl)*pct));me.exp-=loss;if(loss){sys(`쓰러져서 경험치 ${loss.toLocaleString()}을(를) 잃었어요 (다음 레벨 필요량의 ${pct*100}%)`);floatText(me.x,me.y-44,`-${loss.toLocaleString()} EXP`,'#ff5a5a',true)}}}}hudKey='';persist()}
+  if(me.hp<=0){me.dead=2.2;toast(Z.colo?'쓰러졌어요… 기록을 남기고 마을로 돌아가요 (경험치는 그대로)':Z.vault?'쓰러졌어요… 보물고 입구에서 다시 일어나요 (경험치는 그대로)':Z.T>=0?'쓰러졌어요… 던전 입구에서 다시 일어나요':'쓰러졌어요… 분수대에서 다시 일어나요',2000);{const pct=Z.colo||Z.vault?0:Z.T<0?0:Z.T>=HELL_FROM?.15:Z.T>=50?.1:.05;if(pct){if(me.lvl>=LV_MAX){const loss=Math.min(me.texp||0,Math.round(needTl((me.tlv||0)+1)*pct));me.texp=(me.texp||0)-loss;if(loss){sys(`쓰러져서 경험치 ${loss.toLocaleString()}을(를) 잃었어요 (다음 레벨 필요량의 ${pct*100}%)`);floatText(me.x,me.y-44,`-${loss.toLocaleString()} EXP`,'#ff5a5a',true)}}else{const loss=Math.min(me.exp,Math.round(needLv(me.lvl)*pct));me.exp-=loss;if(loss){sys(`쓰러져서 경험치 ${loss.toLocaleString()}을(를) 잃었어요 (다음 레벨 필요량의 ${pct*100}%)`);floatText(me.x,me.y-44,`-${loss.toLocaleString()} EXP`,'#ff5a5a',true)}}}}hudKey='';persist()}
   return true;
 }
 const TLV_MAX=2001,needT=t=>t<=999?Math.round(needExp(LV_MAX-1+t)*1.5):Math.round(needExp(LV_MAX-1+999)*1.5*(1+(t-999)/1000));   // 레벨 통합: Lv.1~3000 (999 이후는 내부적으로 tlv)
@@ -6592,6 +6614,7 @@ function renderOpt(){
     if(choices.length>4){r.classList.add('wide');r.append(b,sm,seg)}else r.append(b,seg,sm);body.appendChild(r)};
   const OF=[['켜기',true],['끄기',false]],PCT=[['끄기',0],['30%',.3],['50%',.5],['70%',.7]];
   sec('게임');
+  row('보물 자석','켜면 지금 낀 것보다 약한 장비(레전드 미만)는 줍는 순간 마력 가루로 바뀌어요. 더 센 장비와 레전드 이상, 강화한 장비는 그대로 주워요',[['켜기',true],['끄기',false]],me.magnet!==false,v=>{me.magnet=v});
   row('캐릭터 장식','5~7차 전직의 큰 빛 장식과 7차 빛 구슬·왕관을 줄여서 스킬과 몬스터가 잘 보이게 해요',[['보통',false],['줄이기',true]],!!me.lowDeco,v=>{me.lowDeco=v});
   row('PK AI 등장','5층부터 던전에 플레이어를 노리는 AI 모험가가 나와요 (다음 입장부터 적용)',OF,me.pkOn!==false,v=>{me.pkOn=v});
   sec('저장');
@@ -6663,7 +6686,7 @@ function renderAdv2(){const cur=advOf();if(!cur)return;const done=adv2Of(),g=$('
     if(on){b.textContent='2차 전직 완료';b.disabled=true}else if(done){b.textContent='다른 길을 골랐어요';b.disabled=true}
     else if(me.lvl<ADV2_LV){b.textContent=`Lv.${ADV2_LV}에 열려요 (지금 Lv.${me.lvl})`;b.disabled=true}else{b.textContent=`${A2.name}(으)로 2차 전직`;b.addEventListener('click',()=>doAdvance2(A2.id))}
     el.append(nm,sm,sk,b);g.appendChild(el)}
-  if(done)$('advsum').textContent=`${cur.name} → ${done.name} 2차 전직 완료! 옵션(O)에서 1차 스킬로 바꿔 쓸 수도 있어요.`;else if(me.lvl>=ADV2_LV)$('advsum').textContent=`Lv.${ADV2_LV} 달성! 2차 전직은 두 갈래 중 하나를 골라요. 한 번 고르면 바꿀 수 없어요.`}
+  if(done)$('advsum').textContent=`${cur.name} → ${done.name} 2차 전직 완료! 옵션(O)에서 1차 스킬로 바꿔 쓸 수도 있어요.`;else if(me.lvl>=ADV2_LV)$('advsum').textContent=`Lv.${ADV2_LV} 달성! 2차 전직은 ${(n=>n===2?'두':n===3?'세':n)(Object.values(ADV2).filter(x=>a2From(x,cur.id)).length)} 갈래 중 하나를 골라요. 한 번 고르면 바꿀 수 없어요.`}
 function doAdvance(A){if(me.lvl<ADV_LV||advOf()||A.cls!==me.cls)return;me.adv[me.cls]=A.id;recalc();me.hp=me.maxHp;me.mp=me.maxMp;refreshSkills();buildSkillBar();hudKey='';persist();
   toast(`전직! ${A.name}`,3000);sys(`${A.name}(으)로 전직했어요! ${A.desc}`);
   for(let k=0;k<4;k++)fxs.push({k:'ring',x:me.x,y:me.y,t:-k*.15,dur:.8,col:k%2?'#ffffff':A.col,r:40+k*30});
@@ -6719,7 +6742,8 @@ const GST=[['atk','공격'],['def','방어'],['hp','체력'],['mp','마나'],['c
 const gstVal=(it,e,k)=>(it[k]||0)+enhBonus(it,e,k);
 const gstFmt=(v,u)=>u==='x%'?(Math.round(v*1000)/10)+'%':u==='%'?Math.round(v)+'%':Math.round(v).toLocaleString();
 /* 전투력: 공격(치명타·스킬 배율 반영) + 방어 + 체력을 한 숫자로 */
-const cpNow=()=>Math.round(atkOf()*(1+Math.min(1.5,critOf())*.8)*Math.sqrt(Math.max(1,skillMul()))*2+defOf()*1.5+me.maxHp*.25);
+const critOver=()=>Math.min(2.2,Math.max(0,critOf()-1)*.5);   /* 치명타 100%를 넘긴 만큼 → 치명타 피해 (최대 +220%) */
+const cpNow=()=>Math.round(atkOf()*(1+Math.min(1,critOf())*(.8+critOver()))*Math.sqrt(Math.max(1,skillMul()))*2+defOf()*1.5+me.maxHp*.25);
 function cpIfEquip(i){const s=me.bag[i];if(!s||!isGear(s.id))return null;const it=ITEMS[s.id];if(it.cls&&it.cls!==me.cls)return null;const k=it.kind,sv=[me.eq[k],me.eqE[k],me.eqO[k]],hp=me.hp,mp=me.mp;
   try{me.eq[k]=s.id;me.eqE[k]=s.e||0;me.eqO[k]=s.o||[];recalc();return cpNow()}finally{me.eq[k]=sv[0];me.eqE[k]=sv[1];me.eqO[k]=sv[2];recalc();me.hp=Math.min(hp,me.maxHp);me.mp=Math.min(mp,me.maxMp)}}
 /* 장비 프리셋 3개: 지금 장비 구성을 저장했다가 한 번에 바꿔 끼기 (가방에 그 장비가 있어야 함) */
@@ -6756,6 +6780,7 @@ function renderBag(){
     gr.appendChild(el)}
   const tl=$('bagtools');tl.textContent='';const tb=(txt,fn,cls='alt')=>{const b=document.createElement('button');b.type='button';b.className='btn sm '+cls;b.textContent=txt;b.addEventListener('click',fn);tl.appendChild(b)};
   const dn=document.createElement('span');dn.innerHTML='마력 가루 <b></b>개';dn.querySelector('b').textContent=countItem('dust');tl.appendChild(dn);
+  tb(me.magnet!==false?'🧲 보물 자석 켜짐':'🧲 보물 자석 꺼짐',()=>{me.magnet=me.magnet===false;persist();toast(me.magnet?'보물 자석 켬: 약한 장비는 줍는 순간 가루로':'보물 자석 끔',2200);renderBag()},me.magnet!==false?'teal':'alt');
   tb('가방 정리',sortBag);tb('더 좋은 장비 모두 장착 ▲',equipBest,'teal');tb('약한 장비·다른 직업 장비 모두 분해 ▼',weakDisassemble,'teal');tb('일반 장비 모두 분해',bulkDisassemble);tb('무기 주문서 제작 (가루 15)',()=>craft('sc_w'));tb('방어구 주문서 제작 (가루 15)',()=>craft('sc_a'));
   const det=$('detail');det.textContent='';det.classList.remove('has');det.parentNode.classList.remove('has');
   const id=sel?(sel.from==='eq'?me.eq[sel.k]:me.bag[sel.i]?.id):null;
@@ -6780,7 +6805,7 @@ function renderBag(){
       cmp.style.color=a<b?'#ff8a9a':'#6ee7b7';cmp.textContent=a<b?`▼ 착용 중인 ${nameOf(me.eq[it.kind],me.eqE[it.kind]||0,me.eqIL&&me.eqIL[it.kind])}보다 약해요`:a>b?`▲ 착용 중인 ${nameOf(me.eq[it.kind],me.eqE[it.kind]||0,me.eqIL&&me.eqIL[it.kind])}보다 강해요`:'착용 중인 장비와 비슷해요';ds.append(cmp)}}
   const row=document.createElement('div');row.className='row';
   const mk=(txt,cls,fn)=>{const b=document.createElement('button');b.type='button';b.className='btn sm '+cls;b.textContent=txt;b.addEventListener('click',fn);row.appendChild(b)};
-  const enhBtn=()=>{if(isGear(id)&&e<20){const sc=it.kind==='weapon'?'sc_w':'sc_a';mk(`강화 (${ITEMS[sc].name.replace(' 주문서','')} ${countItem(sc)}장)`,'teal',()=>enhance(sel.from==='eq'?{from:'eq',k:sel.k}:{from:'bag',i:sel.i}))}};
+  const enhBtn=()=>{if(isGear(id)&&e<20){const sc=it.kind==='weapon'?'sc_w':'sc_a';const tgt=sel.from==='eq'?{from:'eq',k:sel.k}:{from:'bag',i:sel.i};if(countItem(sc)>0||e>=LEG_BASE)mk(`강화 (${ITEMS[sc].name.replace(' 주문서','')} ${countItem(sc)}장)`,'teal',()=>enhance(tgt));else mk(`주문서 만들고 강화 (가루 15)`,'teal',()=>{const n0=countItem(sc);craft(sc);if(countItem(sc)>n0)enhance(tgt);else sys('강화 주문서를 만들 마력 가루가 모자라요. 안 쓰는 장비를 분해하면 가루가 나와요.')})}};
   const entBtn=()=>{if(!isGear(id))return;const cap=it.legend?LEG_CAP:20;if(e>=cap)return;for(const n of [1,2,3]){const c=countItem('en_'+n);if(c)mk(`+${n} 강화권 (${c}장)`,'teal',()=>useEnt(n,sel.from==='eq'?{from:'eq',k:sel.k}:{from:'bag',i:sel.i}))}};
   if(sel.from==='eq'){mk('벗기','alt',()=>unequip(sel.k));enhBtn();entBtn()}
   else{const i=sel.i;if(it.kind!=='mat')mk(it.kind==='potion'?(it.icon==='scroll'?'읽기':'마시기'):'장착하기','',()=>useAt(i));enhBtn();entBtn();
@@ -6905,7 +6930,7 @@ function upsertPeer(p){
   if(p.sameTab||p.kind!=='viewer')return;
   const pr=p.presence||{};let r=remotes.get(p.peer);
   if(!r){r={x:NaN,y:NaN,rx:NaN,ry:NaN,nick:'',dir:'down',moving:false,lvl:1,color:0,hair:0,w:'',z:'town',atkStart:-1e9,lastA:null,lastS:null,lastK:null,lastNw:undefined,bubble:'',bubbleUntil:0,other:p.isMe};remotes.set(p.peer,r)}
-  const z=typeof pr.z==='string'&&/^(town|wb|tw[0-9]{1,5}|tr[0-9]{1,2}|rf[0-9]{1,3}|d[0-9]{1,3})$/.test(pr.z)?pr.z:'town',zchg=z!==r.z;r.z=z;
+  const z=typeof pr.z==='string'&&/^(town|wb|colo|tw[0-9]{1,5}|tr[0-9]{1,4}|rf[0-9]{1,3}|vt[0-9]{1,4}|pv[0-9]{1,3}|d[0-9]{1,3})$/.test(pr.z)?pr.z:'town',zchg=z!==r.z;r.z=z;
   const x=num(pr.x,0,60*16),y=num(pr.y,0,44*16);
   if(x!==null&&y!==null){r.x=x;r.y=y;if(zchg||isNaN(r.rx)||Math.hypot(r.rx-x,r.ry-y)>96){r.rx=x;r.ry=y}}
   r.dir=DIRV[pr.d]?pr.d:'down';r.moving=!!pr.m;r.lvl=Math.round(num(pr.l,1,LV_MAX)??1);r.av=ADV[pr.av]?pr.av:'';r.tl=Math.round(num(pr.tl,0,TLV_MAX)??0);r.a3=typeof pr.a3==='string'&&ADV3[pr.a3]?pr.a3:'';r.a4=r.a3?(pr.a4===3?3:pr.a4===2?2:pr.a4?1:0):0;r.rb=Math.max(0,Math.min(999,Math.round(+pr.rb||0)));r.cs=typeof pr.cs==='string'?pr.cs.split('|').slice(0,5).map(x=>COS_BY[x]||MOUNT_BY[x]?x:''):null;r.zs=Number.isInteger(pr.zs)&&pr.zs>0&&pr.zs<2147483648?pr.zs:0;r.tb=Math.max(0,Math.min(1e5,Math.round(+pr.tb||0)));r.wb=pr.wb&&typeof pr.wb==='object'&&Number.isFinite(+pr.wb.i)&&Number.isFinite(+pr.wb.d)?{i:+pr.wb.i,d:Math.max(0,Math.min(1e18,+pr.wb.d))}:null;r.a2=r.av&&typeof pr.a2==='string'&&ADV2[pr.a2]&&a2From(ADV2[pr.a2],r.av)?pr.a2:r.av&&pr.a2===1?A2OF[r.av]:'';r.color=clampIdx(pr.c);r.hair=clampHair(pr.h);r.cls=pr.cl==='m'?'mage':pr.cl==='r'?'rogue':pr.cl==='a'?'archer':pr.cl==='s'?'samurai':pr.cl==='l'?'lancer':pr.cl==='e'?'shaman':pr.cl==='n'?'necro':'knight';
@@ -7064,7 +7089,7 @@ function enter(){
   sys('무한대로 던전 키우기에 온 걸 환영해요! 이동은 방향키/WASD, 공격은 스페이스, 가방 I, 도감 B.');
   sys('마을 가운데 분수대에서 E를 누르면 모든 던전(1~100층·헬·심연·수련장·탑·월드 보스)으로 갈 수 있어요.');
   setTimeout(()=>{sys('[공지] 초월의 증표(3차 전직 재료)는 90~100층 신화 보스(10%), 헬 층 보스(20%), 헬 신화 보스(50%)가 떨어뜨려요. 자세한 내용은 공지(N) 또는 마을 분수대 왼쪽 아래 게시판.');toast('공지: 초월의 증표 얻는 곳 → 공지(N)',3500)},1500);
-  sys('숫자키 1~7로 스킬을 써요. 쿨타임은 없고 마나만 있으면 계속 쓸 수 있어요. 마나가 모자라면 R.');
+  sys('숫자키(스킬 칸 번호)로 스킬을 써요. 쿨타임은 없고 마나만 있으면 계속 쓸 수 있어요. 마나가 모자라면 R.');
   if(me.cls==='mage')sys('마법사는 스페이스로 마법탄을 쏴요. 지팡이를 장착하면 더 강해져요.');
   if(me.cls==='lancer')sys('창술사는 스페이스로 창을 길게 찔러요. 앞쪽 일직선을 꿰뚫는 스킬이 많고, 40레벨 8번 [천룡창]은 화면 끝까지 꿰뚫어요.');
   if(me.cls==='necro')sys('네크로맨서는 스페이스로 해골탄을 쏴요. 스킬로 해골 병사·마법사·뼈 거인을 불러 함께 싸우고, 저주로 적이 받는 피해를 늘려요. 적이 죽은 자리에 남은 시체는 [시체 폭발]로 터뜨려요.');
@@ -7084,7 +7109,7 @@ $('sform').addEventListener('submit',e=>{e.preventDefault();
 /* ---------- 실행 ---------- */
 function applySave(sv){
   const fresh=!sv.nick&&!sv.lvl;
-  me.pkOn=sv.pkOn!==false;me.lowDeco=!!sv.lowDeco;me.x10=Math.max(0,Math.min(Date.now()+864e5*400,Number(sv.x10)||0));me.evX10=!!sv.evX10;me.tlv=Math.round(num(sv.tlv,0,TLV_MAX)??0);me.texp=Math.max(0,Math.round(num(sv.texp,0,1e13)??0));
+  me.pkOn=sv.pkOn!==false;me.fs=Math.max(0,Math.min(9,Math.round(+sv.fs||0)));if(!sv.fs&&((+sv.lvl||1)>=30||(+sv.rb||0)>0))me.fs=9;me.magnet=sv.magnet!==false;me.lowDeco=!!sv.lowDeco;me.x10=Math.max(0,Math.min(Date.now()+864e5*400,Number(sv.x10)||0));me.evX10=!!sv.evX10;me.tlv=Math.round(num(sv.tlv,0,TLV_MAX)??0);me.texp=Math.max(0,Math.round(num(sv.texp,0,1e13)??0));
   const fix=id=>LEGACY[id]||id;
   me.nick=cleanStr(sv.nick,12)||'';
   me.color=sv.v===2?clampIdx(sv.color):0;me.hair=sv.v===2?clampHair(sv.hair):0;
@@ -7105,7 +7130,7 @@ function applySave(sv){
 }
 function slotInfo(i){const a=loadSlot(i),c=cloud.sum[i],sv=c&&(c.ts||0)>(a.ts||0)?c:a;if(!sv||!(sv.nick||sv.lvl))return null;
   const cls=(['mage','rogue','archer','samurai','lancer','shaman','necro'].includes(sv.cls)?sv.cls:'knight');const id4=sv.adv4&&sv.adv4[cls],id3=sv.adv3&&sv.adv3[cls],id2=sv.adv2&&sv.adv2[cls],id1=sv.adv&&sv.adv[cls];
-  const job=(id4&&ADV4[id4]&&ADV4[id4].name)||(id3&&ADV3[id3]&&ADV3[id3].name)||(id2&&ADV2[id2]&&ADV2[id2].name)||(id1&&ADV[id1]&&ADV[id1].name)||CLSN[cls];
+  const job=(id4&&ADV4[id4]&&((sv.adv7&&sv.adv7[cls]===id4?'천제 ':sv.adv6&&sv.adv6[cls]===id4?'절대 ':'')+ADV4[id4].name))||(id3&&ADV3[id3]&&ADV3[id3].name)||(id2&&ADV2[id2]&&ADV2[id2].name)||(id1&&ADV[id1]&&ADV[id1].name)||CLSN[cls];
   const lv=Math.round(num(sv.lvl,1,LV_MAX)??1),tl=Math.round(+sv.tlv||0);return{nick:cleanStr(sv.nick,12)||'모험가',lv:`Lv.${lv>=LV_MAX?lv+tl:lv}`,job}}
 /* 캐릭터마다 직업 고정: 이미 키운 캐릭터는 직업을 바꿀 수 없고, 다른 직업은 빈 칸에서 새로 */
 function clsLocked(){return !!slotInfo(slot)}
