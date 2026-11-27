@@ -1784,7 +1784,7 @@ let slot=0;try{slot=Math.max(0,Math.min(999,Math.floor(Number(localStorage.getIt
 const slotKey=i=>i?STORE+':'+i:STORE;
 function loadSlot(i){try{return JSON.parse(localStorage.getItem(slotKey(i)))||{}}catch{return{}}}
 function loadSave(){return loadSlot(slot)}
-function saveObj(){return{pkOn:me.pkOn!==false,trophy:me.trophy||{},rbStart:me.rbStart||0,rbBest:me.rbBest||0,fs:me.fs||0,magnet:me.magnet!==false,lowDeco:!!me.lowDeco,lvms:me.lvms||0,trBest:me.trBest||0,trKC:me.trKC||{},eqIL:me.eqIL||{},slotE:me.slotE||{},tlv:me.tlv||0,texp:me.texp||0,ts:Date.now(),rb:me.rb||0,tr:me.tr||{},att:me.att||null,dq:me.dq||null,st:me.st||{},achN:me.achN||0,tlvMax:me.tlvMax||0,revAt:me.revAt||0,cos:me.cos||{own:[]},xb:me.xb||0,db:me.db||0,xb2:me.xb2||0,db2:me.db2||0,pity2:me.pity2||0,bagX:me.bagX||0,pity:me.pity||0,ltd:me.ltd||null,cs:me.cs||null,gseen:me.gseen||null,unl:me.unl||null,gotRd:!!me.gotRd,gotBw:!!me.gotBw,gotKt:!!me.gotKt,gotSp:!!me.gotSp,gotEo:!!me.gotEo,gotNk:!!me.gotNk,ki:Math.round(me.ki||0),bsrBest:me.bsrBest||0,stree:me.stree||{},altar:me.altar||null,gshop:me.gshop||null,eqLk:me.eqLk||{},eqPre:me.eqPre||[],raidClr:me.raidClr||{},rbTP:me.rbTP||0,adv5:me.adv5,adv6:me.adv6,adv7:me.adv7||{},towerBest:me.towerBest||0,duelBest:me.duelBest||0,udBest:me.udBest||0,coloBest:me.coloBest||0,enhV:ENH_VER,ins:me.ins||{a:0,h:0,d:0},wbGot:me.wbGot||0,x10:me.x10||0,evX10:!!me.evX10,eqO:me.eqO,adv3:me.adv3,adv4:me.adv4,awk:Math.floor(me.awk||0),adv2:me.adv2,sk1:!!me.sk1,adv:me.adv,pets:me.pets,petLv:me.petLv||{},pet:me.pet,autoDisOther:!!me.autoDisOther,autoDisSet:me.autoDisSet,adsV:2,autoLoot:!!me.autoLoot,autoEq:!!me.autoEq,autoHp:me.autoHp,autoMp:me.autoMp,autoDis:!!me.autoDis,sbuf:me.sbuf,nick:me.nick,color:me.color,hair:me.hair,cls:me.cls,gotStaff:me.gotStaff,eqE:me.eqE,lvl:me.lvl,exp:me.exp,gold:me.gold,bag:me.bag,eq:me.eq,kills:me.kills,cleared:me.cleared,v:2}}
+function saveObj(){return{pkOn:me.pkOn!==false,trophy:me.trophy||{},rbStart:me.rbStart||0,rbBest:me.rbBest||0,coDoor:me.coDoor||0,fs:me.fs||0,magnet:me.magnet!==false,lowDeco:!!me.lowDeco,lvms:me.lvms||0,trBest:me.trBest||0,trKC:me.trKC||{},eqIL:me.eqIL||{},slotE:me.slotE||{},tlv:me.tlv||0,texp:me.texp||0,ts:Date.now(),rb:me.rb||0,tr:me.tr||{},att:me.att||null,dq:me.dq||null,st:me.st||{},achN:me.achN||0,tlvMax:me.tlvMax||0,revAt:me.revAt||0,cos:me.cos||{own:[]},xb:me.xb||0,db:me.db||0,xb2:me.xb2||0,db2:me.db2||0,pity2:me.pity2||0,bagX:me.bagX||0,pity:me.pity||0,ltd:me.ltd||null,cs:me.cs||null,gseen:me.gseen||null,unl:me.unl||null,gotRd:!!me.gotRd,gotBw:!!me.gotBw,gotKt:!!me.gotKt,gotSp:!!me.gotSp,gotEo:!!me.gotEo,gotNk:!!me.gotNk,ki:Math.round(me.ki||0),bsrBest:me.bsrBest||0,stree:me.stree||{},altar:me.altar||null,gshop:me.gshop||null,eqLk:me.eqLk||{},eqPre:me.eqPre||[],raidClr:me.raidClr||{},rbTP:me.rbTP||0,adv5:me.adv5,adv6:me.adv6,adv7:me.adv7||{},towerBest:me.towerBest||0,duelBest:me.duelBest||0,udBest:me.udBest||0,coloBest:me.coloBest||0,enhV:ENH_VER,ins:me.ins||{a:0,h:0,d:0},wbGot:me.wbGot||0,x10:me.x10||0,evX10:!!me.evX10,eqO:me.eqO,adv3:me.adv3,adv4:me.adv4,awk:Math.floor(me.awk||0),adv2:me.adv2,sk1:!!me.sk1,adv:me.adv,pets:me.pets,petLv:me.petLv||{},pet:me.pet,autoDisOther:!!me.autoDisOther,autoDisSet:me.autoDisSet,adsV:2,autoLoot:!!me.autoLoot,autoEq:!!me.autoEq,autoHp:me.autoHp,autoMp:me.autoMp,autoDis:!!me.autoDis,sbuf:me.sbuf,nick:me.nick,color:me.color,hair:me.hair,cls:me.cls,gotStaff:me.gotStaff,eqE:me.eqE,lvl:me.lvl,exp:me.exp,gold:me.gold,bag:me.bag,eq:me.eq,kills:me.kills,cleared:me.cleared,v:2}}
 /* ---------- 저장 안전장치 ----------
    ① 다른 창에서 같은 게임이 열리면 이 창은 저장을 멈춤 (옛 창이 새 진행을 덮어써서 아이템이 사라지는 문제 방지)
    ② 15초마다·창을 닫거나 숨길 때 자동 저장  ③ 로그인한 계정은 클라우드(계정)에도 저장 */
@@ -1855,17 +1855,17 @@ let fxAdv='';const AX=()=>fxAdv?1.5:1;
 /* 성장 공식 (개편): 초월 레벨 100당 +33% (예전 +100%) */
 const TLV_DIV=300,tlvF=()=>1+(me.tlv||0)/TLV_DIV;
 const growthAdj=t=>(1+t/TLV_DIV)/(1+t/100);
-const atkOf=()=>Math.round((1+Math.floor(me.lvl/3)+eqSum('atk'))*(1+eqSum('atkp')/100)*tlvF()*(me.buffs.atk>0?1.3:1)*(hasB('b_warcry')?1.25:1)*(advOf()?.id==='sword'?1.4:1)*(adv2Id()==='blade'?1.5:1)*(1+.05*(me.asuraN||0))*(adv2Id()==='blood'?2-Math.max(0,Math.min(1,me.hp/Math.max(1,me.maxHp))):1)*((me.pactT||0)>0?2:1)*(adv2Id()==='judge'?1.3:1)*((me.bannerT||0)>0?1.3:1)*(typeof adv7On==='function'&&adv7On()?1.3:1));
+const atkOf=()=>Math.round((1+Math.floor(me.lvl/3)+eqSum('atk'))*(1+eqSum('atkp')/100)*tlvF()*(me.buffs.atk>0?1.3:1)*(hasB('b_warcry')?1.25:1)*(advOf()?.id==='sword'?1.4:1)*(adv2Id()==='blade'?1.5:1)*(1+.05*(me.asuraN||0))*(adv2Id()==='blood'?2-Math.max(0,Math.min(1,me.hp/Math.max(1,me.maxHp))):1)*((me.pactT||0)>0?2:1)*(adv2Id()==='judge'?1.3:1)*((me.bannerT||0)>0?1.3:1)*(typeof adv7On==='function'&&adv7On()?1.3:1)*(typeof awkX==='function'?awkX('atkX'):1));
 const defOf=()=>{let d=eqSum('def');if(me.buffs.def>0)d=Math.round(d*1.5)+3;if(hasB('b_steel'))d=Math.round(d*1.4)+4;if(hasB('b_marmor'))d+=15;if(advOf()?.id==='paladin')d=Math.round(d*1.5)+10;return Math.round(d*(1+eqSum('defp')/100)*tlvF())};
 const spdOf=()=>76*(1+Math.min(1,eqSum('spd')))*(me.buffs.spd>0?1.3:1)*(hasB('b_haste')?1.25:1)*((me.slowT||0)>0?.5:1)*(adv2Id()==='chrono'?1.2:1)*((me.hasteT||0)>0?1.5:1);
 const critOf=()=>me.critAllT>0?1:(5+(adv2Id()==='blade'?15:0)+eqSum('crit')+(hasB('b_berserk')?10:0)+(advOf()?.id==='sword'?15:0))/100;
 /* 3차 전직별 스킬 피해 보정 (전 경로 같은 장비·레벨로 잰 스킬 피해를 비슷하게 맞춤, 수호형 2개는 70%) */
 const JOB_BAL={starlord:.45,voidstar:.6,swordgod:.72,asura:.8,bloodking:1.49,bloodlord:.98,archangel:2.13,guardian:2.28,punisher:.66,crusader:1.9,elemlord:.53,archwiz:.89,timelord:2.46,voidlord:1.05,hades:1.59,cursekin:1.8,demonking:.44,infernal:.23,starsaint:.64,darklord:.5,deathgod:1.76,venomking:1.45,shadowking:3.38,illusion:2.89,windgod:1.25,thunderwind:1.1,bowgod:.62,stareye:.52,blastking:.28,trapper:.43,beastking:1.13,skyhawk:1.22,forestsage:1,stormbow:.52};
-const skillMul=()=>{const A=advOf();return (1+eqSum('sk')+(hasB('b_focus')?.3:0)+(A?.id==='arch'?.5:A?.id==='dark'?.3:0)+(adv2Id()==='sage'?.8:0)+(adv2Id()==='hell'?.6:0)+(adv2Id()==='astral'?.4:0)+(adv3Id()==='archwiz'||adv3Id()==='infernal'?.5:0))*(A?2:1)*(adv2Id()?2:1)*(adv3Id()?2:1)*(adv4Of()?1.25:1)*((me.demonT||0)>0?1.5:1)*(JOB_BAL[adv3Id()]||1)};
+const skillMul=()=>{const A=advOf();return (1+eqSum('sk')+(hasB('b_focus')?.3:0)+(A?.id==='arch'?.5:A?.id==='dark'?.3:0)+(adv2Id()==='sage'?.8:0)+(adv2Id()==='hell'?.6:0)+(adv2Id()==='astral'?.4:0)+(adv3Id()==='archwiz'||adv3Id()==='infernal'?.5:0))*(A?2:1)*(adv2Id()?2:1)*(adv3Id()?2:1)*(adv4Of()?1.25:1)*((me.demonT||0)>0?1.5:1)*(JOB_BAL[adv3Id()]||1)*(adv5On()?((window.LATE_BAL||{})[adv3Id()]||1):1)};
 const atkInterval=()=>(me.cls==='mage'?.45:me.cls==='rogue'?.24:me.cls==='archer'?.3*(stCh('a1')==='A'?.8:1):me.cls==='samurai'?.32:me.cls==='lancer'?.36:me.cls==='shaman'?.42:me.cls==='necro'?.42:.35)*(eqItem('weapon')?.as||1)/(hasB('b_berserk')||hasB('b_haste')?1.3:1)/(hasB('b_frenzy')||hasB('b_rapid')||hasB('b_rush')||hasB('b_lfury')?1.4:1);
 // 레벨당 성장: 기사 체력 +14·마나 +6 / 마법사 체력 +9·마나 +13
 const HP_PER=()=>me.cls==='mage'?9:me.cls==='rogue'||me.cls==='archer'?11:me.cls==='samurai'?13:me.cls==='lancer'?13:me.cls==='shaman'?10:me.cls==='necro'?11:14,MP_PER=()=>me.cls==='mage'?13:me.cls==='shaman'?12:me.cls==='necro'?12:me.cls==='lancer'?7:me.cls==='rogue'?8:me.cls==='archer'?9:me.cls==='samurai'?7:6;
-function recalc(){const mg=me.cls==='mage';me.maxHp=Math.round(((mg?22:me.cls==='rogue'||me.cls==='archer'?26:me.cls==='samurai'?28:me.cls==='lancer'?29:me.cls==='shaman'?24:me.cls==='necro'?25:30)+HP_PER()*(me.lvl-1)+eqSum('hp'))*(hasB('b_vow')?1.3:1)*(advOf()?.id==='paladin'?1.8:1)*(adv2Id()==='heaven'?1.5:1)*(1+eqSum('hpp')/100)*tlvF());me.hp=Math.min(me.hp,me.maxHp);me.maxMp=Math.round(((mg?60:40)+MP_PER()*(me.lvl-1)+eqSum('mp'))*(hasB('b_flow')?1.2:1)*(advOf()?.id==='arch'?1.5:1)*(1+eqSum('mpp')/100));me.mp=Math.min(me.mp,me.maxMp)}
+function recalc(){const mg=me.cls==='mage';me.maxHp=Math.round(((mg?22:me.cls==='rogue'||me.cls==='archer'?26:me.cls==='samurai'?28:me.cls==='lancer'?29:me.cls==='shaman'?24:me.cls==='necro'?25:30)+HP_PER()*(me.lvl-1)+eqSum('hp'))*(hasB('b_vow')?1.3:1)*(advOf()?.id==='paladin'?1.8:1)*(adv2Id()==='heaven'?1.5:1)*(1+eqSum('hpp')/100)*tlvF()*(typeof awkX==='function'?awkX('hpX'):1));me.hp=Math.min(me.hp,me.maxHp);me.maxMp=Math.round(((mg?60:40)+MP_PER()*(me.lvl-1)+eqSum('mp'))*(hasB('b_flow')?1.2:1)*(advOf()?.id==='arch'?1.5:1)*(1+eqSum('mpp')/100));me.mp=Math.min(me.mp,me.maxMp)}
 
 /* ---------- 지역 ---------- */
 const zones={};let Z=null,zoneId='town';
@@ -3435,25 +3435,38 @@ function drawHub(c,t,lo){if(Z.id!=='town')return;const x=FOUNTP.x-cam.x,y=FOUNTP
   c.globalAlpha=1;if(Math.random()<.35)spark(FOUNTP.x+(Math.random()-.5)*30,FOUNTP.y-Math.random()*10,0,-25,pick(['#7ff0ff','#c47bff','#ff5a4a','#5affd8']),.7)}
 function renderHub(){const ul=$('hubl');ul.textContent='';const w=wbNow();
   const rows=[['군단','보스 군단 ★ 강자 전용','#ff8a3d',endOK(),endOK()?`던전 보스급만 ${BSR_N}마리 · 내 공격력에 맞춰 강해짐 · 최고 ${me.bsrBest||0}단계`:`Lv.${LV_MAX}부터`,()=>togglePanel('bsr')],
-    ['무한','무한 던전 ★ 추천','#7ff0ff',true,run?`모험 중 · ${run.f}층`:`최고 ${me.udBest||0}층 · 매번 새로운 강화 조합 · 깜짝 이벤트`,()=>togglePanel('ud')],
+    ['무한','무한 던전','#7ff0ff',true,run?`모험 중 · ${run.f}층`:`최고 ${me.udBest||0}층 · 매번 새로운 강화 조합 · 깜짝 이벤트`,()=>togglePanel('ud')],
     ['일반','일반 던전 1~100층','#c9a8ff',true,'열려 있는 층으로 바로 이동',()=>togglePanel('dmenu')],
     ['헬','헬 1~10단계','#ff5a4a',hell0(),hell0()?'100층보다 훨씬 강한 몬스터 · 헬 장비':'100층 보스를 쓰러뜨리면 열려요',()=>openHell('hell')],
     ['심연','심연 1~10단계','#c47bff',abyss0(),abyss0()?'헬보다 강한 몬스터 · [초월] 심연 장비':'헬 10단계 보스를 쓰러뜨리면 열려요',()=>openHell('abyss')],
     ['수련',`초월의 수련장 1~${TR_N}단계`,'#5affd8',endOK(),endOK()?`Lv.1000~3000 레벨 올리기 · 지금 Lv.${LVT()}`:`Lv.${LV_MAX}부터`,()=>togglePanel('train')],
     ['탑','무한의 탑','#7ff0ff',endOK(),endOK()?`끝없는 층 · 내 최고 ${me.towerBest||0}층 · 랭킹`:`Lv.${LV_MAX}부터`,()=>togglePanel('tower')],
-    ['콜로세움','콜로세움 ★ 신규','#ff4a4a',endOK(),endOK()?`끝없이 몰려오는 몬스터 · 드롭 많음 · 몬스터 Lv.1 → 9,999,999 · 최고 ${me.coloBest||0}웨이브`:`Lv.${LV_MAX}부터`,()=>{closePanels();delete zones.colo;enterZone('colo');sys('콜로세움! 몬스터가 끝없이 몰려와요. 12마리 잡거나 10초마다 다음 웨이브 · 몬스터 레벨이 계속 올라가요. 돌아갈 땐 귀환(G).')}],
+    ['콜로세움','콜로세움','#ff4a4a',endOK(),endOK()?`끝없이 몰려오는 몬스터 · 몇 웨이브까지 버티나 기록 도전 · 몬스터 Lv.1 → 9,999,999 · 최고 ${me.coloBest||0}웨이브`:`Lv.${LV_MAX}부터`,()=>{closePanels();delete zones.colo;enterZone('colo');sys('콜로세움! 25웨이브마다 쉼터 문이 열려요 (상자 받고 나가기 / 더 버티기). 몬스터가 끝없이 몰려와요. 12마리 잡거나 10초마다 다음 웨이브 · 몬스터 레벨이 계속 올라가요. 돌아갈 땐 귀환(G).')}],
     ['보물고','장비 보물고','#ffd35a',endOK(),endOK()?`장비·무기·장신구만 나와요 · 수련장과 같은 단계까지`:`Lv.${LV_MAX}부터`,()=>togglePanel('rift')],
     ['레이드','윤회 보스 레이드 (환생 전용)','#4affd0',(me.rb||0)>0,(me.rb||0)>0?`보스 ${RAID.filter((_,i)=>(me.rb||0)>=raidRb(i+1)).length}/${RAID_N} 열림 · 경고를 피하며 싸우는 보스 · 첫 처치 특성 +2`:'한 번 이상 환생하면 열려요',()=>togglePanel('rraid')],
     ['기념','환생 기념 보상','#ffd35a',(me.rb||0)>0,(()=>{const nx=RB_MS.find(x=>x[0]>(me.rb||0));return nx?`다음: 환생 ${nx[0]}회 · ${nx[1]}`:'모든 기념 보상을 받았어요'})(),()=>togglePanel('rraid')],
     ['태초','태초의 영역 (환생 75회+)','#b48aff',(me.rb||0)>=REALM_RB,(me.rb||0)>=REALM_RB?`환생 ${me.rb}회 · ${Math.min(REALM_MAX,1+Math.floor(((me.rb||0)-REALM_RB)/REALM_STEP))}단계까지 · 태초 Ⅱ·무한 장비`:`환생 ${REALM_RB}회부터 (지금 ${me.rb||0}회)`,()=>togglePanel('realm')],
     ['대련','대련장 (PK 결투장)','#ff6a8a',me.lvl>=LV_MAX||(me.rb||0)>0,me.lvl>=LV_MAX||(me.rb||0)>0?`아주 강한 PK AI만 · 최고 ${me.duelBest||0}단계 / ${DUEL_MAX}`:`Lv.${LV_MAX}부터`,()=>togglePanel('duel')],
     ['보스','월드 보스','#ffd35a',endOK()&&w.active,!endOK()?`Lv.${LV_MAX}부터 · 매시 정각 10분`:w.active?`출현 중! ${Math.ceil(w.left/6e4)}분 남음 · 다 같이 잡기`:`다음 출현까지 ${Math.ceil(w.next/6e4)}분 (매시 정각 10분)`,()=>{closePanels();enterWB()}]];
-  {const ORD=['일반','무한','헬','심연','수련','콜로세움','보물고','탑','대련','보스','군단','균열','레이드','기념','태초'];rows.sort((a,b)=>ORD.indexOf(a[0])-ORD.indexOf(b[0]));let lk=0;const vis=rows.filter(r=>r[3]);for(const r of rows){if(!r[3]&&lk++<2)vis.push(r)}rows.length=0;rows.push(...vis)}
-  for(const [tag,name,col,ok,desc,fn] of rows){const li=document.createElement('li');li.className=ok?'':'lock';if(!ok&&!ul.querySelector('.nexthd')){const hd=document.createElement('li');hd.className='nexthd';hd.style.cssText='display:block;border:0;background:none;color:var(--muted);font-size:13px;padding:6px 2px 0';hd.textContent='다음에 열려요';ul.appendChild(hd)}
+  if(me.lvl>=ADV_LV||(me.rb||0)>0)rows.push(['각인','가루 각인','#ffb0e0',true,`모은 마력 가루를 영구 공격·체력·방어로 · 지금 공격 Lv.${(me.ins&&me.ins.a)||0} 체력 Lv.${(me.ins&&me.ins.h)||0} 방어 Lv.${(me.ins&&me.ins.d)||0}`,()=>{closePanels();showIns()}]);
+  const GRP=[['레벨 올리기',['일반','헬','심연','수련']],['장비 모으기',['보물고','무한','태초','각인']],['기록 도전',['콜로세움','탑','군단','대련']],['함께 · 환생',['보스','레이드','기념']]];
+  {const g=nextGoal();const li=document.createElement('li');li.style.cssText='display:block;border:1px solid #ffd35a;color:#ffd35a;font-size:14px;padding:8px 10px';li.textContent='▶ 지금 추천: '+g[0];ul.appendChild(li)}
+  let lockShown=0;
+  for(const [gn,tags] of GRP){const rs=tags.map(t=>rows.find(r=>r[0]===t)).filter(Boolean);const vis=rs.filter(r=>r[3]);const lk=rs.find(r=>!r[3]);if(lk&&lockShown<2&&vis.length<4){vis.push(lk);lockShown++}if(!vis.length)continue;
+    const hd=document.createElement('li');hd.style.cssText='display:block;border:0;background:none;color:#fff;font-size:16px;font-weight:bold;padding:10px 2px 2px';hd.textContent=gn;ul.appendChild(hd);
+  for(const [tag,name,col,ok,desc,fn] of vis){const li=document.createElement('li');li.className=ok?'':'lock';
     const no=document.createElement('div');no.className='no';no.textContent=tag;no.style.color=col;no.style.fontSize='13px';
-    const mid=document.createElement('div');const dn=document.createElement('div');dn.className='dn';dn.textContent=name;dn.style.color=col;const sm=document.createElement('small');sm.textContent=desc;mid.append(dn,sm);
-    const b=document.createElement('button');b.type='button';b.className='btn sm';b.style.background=col;b.textContent=tag==='보스'?'입장':'열기';b.disabled=!ok;b.addEventListener('click',fn);li.append(no,mid,b);ul.appendChild(li)}}
-
+    const mid=document.createElement('div');const dn=document.createElement('div');dn.className='dn';dn.textContent=name+(ok?'':' · 다음에 열려요');dn.style.color=col;const sm=document.createElement('small');sm.textContent=desc;mid.append(dn,sm);
+    const b=document.createElement('button');b.type='button';b.className='btn sm';b.style.background=col;b.textContent=tag==='보스'?'입장':'열기';b.disabled=!ok;b.addEventListener('click',fn);li.append(no,mid,b);ul.appendChild(li)}}}
+/* 가루 각인: 캐시상점에서 분수대로 옮김 (G002) */
+function showIns(){let el=$('insBox');if(el){el.remove();return}el=document.createElement('div');el.id='insBox';el.style.cssText='box-sizing:border-box;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:60;width:min(520px,94vw);max-height:80vh;overflow:auto;background:#1b1530f2;border:2px solid #ffb0e0;border-radius:10px;padding:14px 18px;color:#fff;font-size:14px;box-shadow:0 8px 40px #000a';document.body.appendChild(el);renderIns()}
+function renderIns(){const el=$('insBox');if(!el)return;me.ins=me.ins||{a:0,h:0,d:0};el.textContent='';
+  const h=document.createElement('div');h.style.cssText='font-size:19px;color:#ffb0e0;margin-bottom:6px';h.textContent='가루 각인';el.appendChild(h);
+  const p=document.createElement('div');p.style.cssText='color:#cfc8e8;margin-bottom:10px;line-height:1.5';p.textContent=`모은 마력 가루를 이 캐릭터의 영구 능력치로 바꿔요. 1레벨마다 +${INS_PER}%, 최대 ${INS_MAX}레벨 · 지금 가루 ${fmtK(countItem('dust'))}`;el.appendChild(p);
+  for(const [k,nm,col] of INS_KINDS){const lv=me.ins[k]||0,row=document.createElement('div');row.style.cssText='display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:space-between;border:1px solid '+col+';border-radius:8px;padding:8px 10px;margin-bottom:8px';
+    const t=document.createElement('div');t.style.cssText='flex:1 1 180px;min-width:0';t.innerHTML='';const a=document.createElement('div');a.style.color=col;a.textContent=`${nm} 각인 Lv.${lv} / ${INS_MAX} (+${(lv*INS_PER).toFixed(1)}%)`;const c=document.createElement('small');c.style.color='#aaa';c.textContent=lv<INS_MAX?`다음 레벨 가루 ${fmtK(insCost(lv))}`:'최대';t.append(a,c);row.appendChild(t);
+    const bs=document.createElement('div');bs.style.cssText='display:flex;gap:4px';for(const [tx,n] of [['+1',1],['+10',10],['+100',100],['최대',INS_MAX]]){const b=document.createElement('button');b.type='button';b.className='btn sm';b.style.background=col;b.textContent=tx;b.disabled=lv>=INS_MAX||countItem('dust')<insCost(lv);b.addEventListener('click',()=>{insBuy(k,n);renderIns()});bs.appendChild(b)}row.appendChild(bs);el.appendChild(row)}
+  const x=document.createElement('button');x.type='button';x.className='btn sm alt';x.textContent='닫기';x.addEventListener('click',()=>el.remove());el.appendChild(x)}
 /* ---------- 제작소 (M): 남는 재료로 만들기 ---------- */
 function topTier(){let t=-1;for(let i=0;i<me.cleared.length;i++)if(me.cleared[i])t=i;return t}
 const CRAFT=[
@@ -3567,7 +3580,7 @@ const INS_MAX=500,INS_PER=.2,INS_COST=20000,STAR_DUST=500000,INS_KINDS=[['a','�
 const insCost=lv=>INS_COST*(lv+1);
 function wideCard(el){el.classList.add('wide');return el}
 function insBuy(k,n){me.ins=me.ins||{a:0,h:0,d:0};let got=0,spent=0;while(got<n&&me.ins[k]<INS_MAX){const c=insCost(me.ins[k]);if(countItem('dust')<c)break;takeN('dust',c);spent+=c;me.ins[k]++;got++}
-  if(!got){sys('가루가 부족해요.');return}recalc();hudKey='';invChanged();persist();const nm=INS_KINDS.find(x=>x[0]===k)[1];sys(`${nm} 각인 +${got} → Lv.${me.ins[k]} (가루 ${fmtK(spent)} 사용)`);toast(`${nm} 각인 Lv.${me.ins[k]}`,1500);renderCash()}
+  if(!got){sys('가루가 부족해요.');return}recalc();hudKey='';invChanged();persist();const nm=INS_KINDS.find(x=>x[0]===k)[1];sys(`${nm} 각인 +${got} → Lv.${me.ins[k]} (가루 ${fmtK(spent)} 사용)`);toast(`${nm} 각인 Lv.${me.ins[k]}`,1500);if(!$('cash').hidden)renderCash()}
 function payDust(n){if(countItem('dust')<n){sys(`마력 가루가 ${(n-countItem('dust')).toLocaleString()}개 부족해요.`);return false}takeN('dust',n);return true}
 function renderCash2(){csTabsDraw();
   const g=$('petgrid');const sum=$('cashsum');g.classList.toggle('shopg',cashTab!=='pet');if(cashTab==='pet')return false;g.textContent='';me.cos=me.cos||{own:[]};
@@ -3616,7 +3629,8 @@ const TRAITS=[
 /* 무한 특성: 끝없이 찍을 수 있음 (기본 특성을 다 채운 뒤 남는 포인트용) */
 const TRAITS_INF=['무한','#ff9ad8',[['ti_atk','공격력','atkp',2,'%'],['ti_hp','최대 체력','hpp',2,'%'],['ti_def','방어','defp',2,'%'],['ti_sk','스킬 피해','sk',.01,'%'],['ti_boss','보스 피해','boss',.015,'%']]];
 /* 환생 각성: 환생 횟수에 따라 자동으로 열리는 보너스 */
-const RB_AWK=[[25,'각성 Ⅰ','치명타 +10%','crit',10],[50,'각성 Ⅱ','스킬 피해 +30%','sk',.3],[100,'각성 Ⅲ','받는 피해 -10%','dmgRed',.1],[150,'각성 Ⅳ','보스 피해 +50%','boss',.5],[200,'각성 Ⅴ','공격력 +50%','atkp',50],[300,'각성 Ⅵ','최대 체력 +100%','hpp',100]];
+const RB_AWK=[[10,'각성 Ⅰ','치명타 +10%','crit',10],[25,'각성 Ⅱ','공격력 ×1.15 (따로 곱해요)','atkX',1.15],[50,'각성 Ⅲ','받는 피해 -15%','dmgRed',.15],[75,'각성 Ⅳ','최대 체력 ×1.3 (따로 곱해요)','hpX',1.3],[100,'각성 Ⅴ','공격력 ×1.3 (따로 곱해요)','atkX',1.3],[150,'각성 Ⅵ','공격력 ×1.5 (따로 곱해요)','atkX',1.5]];
+function awkX(f){let m=1;for(const A of RB_AWK)if((me.rb||0)>=A[0]&&A[3]===f)m*=A[4];return m}
 const TRAIT_BY={};for(const [,,ns] of [...TRAITS,TRAITS_INF])for(const n of ns)TRAIT_BY[n[0]]=n;
 const traitMax=id=>id==='t_rev'?1:/^ti_/.test(id)?1e9:10;
 const trv=id=>(me.tr&&me.tr[id])||0;
@@ -5204,7 +5218,7 @@ let renderCashBox=function(g,sum){const k=me.trBest||0,vt=k>=1,il=k>34?k-34:0,xt
   g.appendChild(wideCard(cashRow('태초 상자',`레전드 확정 · ${+(1.5*SET_DROP).toFixed(2)}% 태초 Ⅱ · ${+(0.3*SET_DROP).toFixed(2)}% 신화(무한)`,'가루 5억','열기',countItem('dust')>=5e8&&full(1),open(3,1,5e8,'태초 상자'),'#ff6ad5')))}
 
 /* 캐시상점 탭 4개: 오늘 · 성장 · 장비 · 꾸미기 (안에서 작은 칸으로 나눔) */
-const CS_SUB={home:[['home','오늘']],grow:[['grow','부스터·편의'],['ins','각인']],enh:[['enh','강화 재료'],['box','장비 상자']],pet:[['pet','펫'],['mount','탈것'],['cos','외형']]};
+const CS_SUB={home:[['home','오늘']],grow:[['grow','부스터·편의']],enh:[['enh','강화 재료'],['box','장비 상자']],pet:[['pet','펫'],['mount','탈것'],['cos','외형']]};
 const csGrp=t=>Object.keys(CS_SUB).find(k=>CS_SUB[k].some(x=>x[0]===t))||'home';
 function csTabsDraw(){const tabs=$('cashtabs');tabs.textContent='';if(cashTab==='ltd')cashTab='home';const G=csGrp(cashTab);
   for(const [k,l] of CS_TABS){const b=document.createElement('button');b.type='button';b.className='btn sm'+(G===k?'':' alt');b.textContent=l;b.addEventListener('click',()=>{cashTab=CS_SUB[k][0][0];renderCash()});tabs.appendChild(b)}
@@ -5431,8 +5445,6 @@ function yBoxOpen(){const k=me.trBest||0,g=Math.random()<.05?2:1,id='Y'+g+gearPr
   if(cashTab==='home'){csHead(g,'신상품','네크로맨서 · 새 등급 기념');
     const own=necPackOwned();g.appendChild(wideCard(cashRow('네크로맨서 출시 패키지',`뼈 날개 + 해골 이름표 + 사령 망토 + 꼬마 해골 펫 (따로 사면 가루 ${fmtK(8.1e8)}) · 한 번만`,own?'받았어요':`가루 ${fmtK(NEC_PACK.price)}`,'사기',!own&&dust>=NEC_PACK.price,()=>csBuy(NEC_PACK.price,()=>{me.cos=me.cos||{own:[]};for(const k of NEC_PACK.cos)if(!me.cos.own.includes(k))me.cos.own.push(k);me.pets=me.pets||[];if(!me.pets.includes(NEC_PACK.pet))me.pets.push(NEC_PACK.pet)},'네크로맨서 출시 패키지! 꾸미기 탭에서 끼세요'),'#7affc8','40% 할인')));
     g.appendChild(wideCard(cashRow('불멸 장비 상자',`내 직업용 [불멸] 장비 확정 · 5% [천상] · 아이템Lv는 수련장 최고 단계 기준${me.trBest>34?` (지금 Lv.${me.trBest-34})`:''}`,`가루 ${fmtK(YBOX_PRICE)}`,'열기',dust>=YBOX_PRICE&&me.bag.length<bagMax(),()=>{if(!payDust(YBOX_PRICE))return;const n=yBoxOpen();invChanged();persist();sys(`불멸 장비 상자: ${n}`);renderCash()},'#ff7a4a','신상')));}
-  if(cashTab==='grow'){const left=csLeft('tp_scroll',TP_WEEK);
-    g.appendChild(cashRow('특성 포인트 두루마리',`환생 특성 포인트 +5 · 무한 특성에 쓰세요 · 이번 주 ${left}/${TP_WEEK}장 남음`,`가루 ${fmtK(TP_SCROLL)}`,'사기',left>0&&dust>=TP_SCROLL,()=>csBuy(TP_SCROLL,()=>{csTake('tp_scroll');me.rbTP=(me.rbTP||0)+5},'특성 포인트 +5!'),'#ff9ad8','신상'))}
   return r}}
 {const b0=renderCashBox;renderCashBox=function(g,sum){b0(g,sum);const dust=countItem('dust');g.appendChild(wideCard(cashRow('불멸 장비 상자',`[불멸] 장비 확정 · 5% [천상]`,`가루 ${fmtK(YBOX_PRICE)}`,'열기',dust>=YBOX_PRICE&&me.bag.length<bagMax(),()=>{if(!payDust(YBOX_PRICE))return;const n=yBoxOpen();invChanged();persist();sys(`불멸 장비 상자: ${n}`);renderCash()},'#ff7a4a','신상')));}}
 
@@ -5452,24 +5464,25 @@ function coloMap(z){const W=64,H=64,map=new Uint8Array(W*H).fill(VOID),rnd=mulbe
   lights.push({x:R.cx*16+8,y:R.cy*16+8,r:260,col:'#ff6a4a',i:.35});set(S.cx,S.cy+1,PORTAL);lights.push({x:S.cx*16+8,y:(S.cy+1)*16+8,r:70,col:'#7ff0ff',i:.9});
   const sx0=(S.x-1)*16,sy0=(S.y-1)*16,sx1=(S.x+S.w+1)*16,sy1=(S.y+S.h+1)*16;
   Object.assign(z,{W,H,map,at,rooms:[R,S],startRoom:S,bossRoom:R,godRoom:R,decor:()=>{},spawn:{x:S.cx*16+8,y:S.cy*16+4},exit:{x:S.cx*16+8,y:(S.cy+1)*16+8},lights,safe:(px,py)=>px>sx0&&px<sx1&&py>sy0&&py<sy1})}
-function makeColo(){const z=makeTrain(35);coloMap(z);z.id='colo';z.colo=1;z.train=0;z.lvAdd=0;z.hpMul0=z.hpMul;z.dmgMul0=z.dmgMul;z.expMul*=1.5;
+function makeColo(){const z=makeTrain(35);coloMap(z);z.id='colo';z.colo=1;z.train=0;z.lvAdd=0;z.hpMul0=z.hpMul;z.dmgMul0=z.dmgMul;z.expMul*=.3;
   
-  z.co={w:1,kc:0,t:performance.now(),end:0};coSet(z);z.title='콜로세움';z.sub='끝없이 몰려와요 · 몬스터 Lv.1부터 9,999,999까지 · 드롭 많음';return z}
+  z.co={w:1,kc:0,t:performance.now(),end:0};coSet(z);z.title='콜로세움';z.sub='끝없이 몰려와요 · 몬스터 Lv.1부터 9,999,999까지 · 25웨이브마다 쉼터 문';return z}
 {const p0=populate;populate=function(z){if(!z.colo)return p0(z);for(let i=0;i<CO_N;i++){const m=spawnMon({},z);m.dead=true;m.respawn=.2+Math.random()*2.5;z.mons.push(m)}}}
 function coSet(z){const [h0,d0]=coF(35),[h,d]=coF(z.co.w);z.hpMul=z.hpMul0*h/h0;z.dmgMul=z.dmgMul0*d/d0}
 {const s0=spawnMon;spawnMon=function(m,z){const r=s0(m,z);if(z&&z.colo&&!m.dead&&!m.isPK){m.cLv=coLv(z.co.w)+(m.elite?2:0);
   if(z===Z){for(let q=0;q<6;q++){const a=Math.random()*6.283,d=130+Math.random()*90,f=freeSpot(me.x+Math.cos(a)*d,me.y+Math.sin(a)*d*.7);if(f&&Math.hypot(f[0]-me.x,f[1]-me.y)>90&&!z.safe(f[0],f[1])){m.x=m.hx=f[0];m.y=m.hy=f[1];break}}m.awake=true;m.aggro=true}}return r}}
 {const k0=killMon;killMon=function(m){const was=m.dead;k0(m);if(Z&&Z.colo&&!was&&m.dead){m.respawn=.3+Math.random()*.7;Z.co.kc++}}}
-/* 드롭: 보통 드롭 + 60%로 보물고 장비 (정예는 확정) · 장비 단계는 수련장 최고 단계+1까지 */
-{const d0=dropLoot;dropLoot=function(m,D){const n0=Z&&Z.ground?Z.ground.length:0,r=d0(m,D);if(Z&&Z.colo&&!Z.vault){if(m.elite||Math.random()<.6){const vk=Math.max(1,Math.min(Z.co.w,(me.trBest||0)+1));Z.vault=vk;Z.train=vk;try{d0(m,D)}finally{Z.vault=0;Z.train=0}}
+/* 드롭: 보통 드롭 + 30%로 보물고 장비 (정예는 확정) · 장비 단계는 수련장 최고 단계까지 (G002 하향) */
+{const d0=dropLoot;dropLoot=function(m,D){const n0=Z&&Z.ground?Z.ground.length:0,r=d0(m,D);if(Z&&Z.colo&&!Z.vault){if(m.elite||Math.random()<.3){const vk=Math.max(1,Math.min(Z.co.w,me.trBest||0));Z.vault=vk;Z.train=vk;try{d0(m,D)}finally{Z.vault=0;Z.train=0}}
     /* 콜로세움 정리: 초월 이하 장비 중 지금보다 약한 건 바로 가루로 · 바닥 아이템은 150개까지 */
-    let dust=0;for(let i=Z.ground.length-1;i>=n0;i--){const g=Z.ground[i];if(g&&isGear(g.id)&&gIdx(g.id)<=2&&!ITEMS[g.id].gm&&!isStronger(g.id,g.e||0,g.il,g.o)){dust+=Math.round(dustOf({id:g.id,e:g.e||0,il:g.il})*DUST_CHANCE);Z.ground.splice(i,1)}}
+    let dust=0;for(let i=Z.ground.length-1;i>=n0;i--){const g=Z.ground[i];if(g&&isGear(g.id)&&gIdx(g.id)<=2&&!ITEMS[g.id].gm&&!isStronger(g.id,g.e||0,g.il,g.o)){dust+=Math.round(dustOf({id:g.id,e:g.e||0,il:g.il})*DUST_CHANCE*.05);Z.ground.splice(i,1)}}
     if(dust){addItem('dust',dust);Z.co.dust=(Z.co.dust||0)+dust}
     while(Z.ground.length>150){const j=Z.ground.findIndex(g=>!isGear(g.id)||gIdx(g.id)<=2);Z.ground.splice(j>=0?j:0,1)}}return r}}
-setInterval(()=>{try{if(!started||!Z||!Z.colo)return;const c=Z.co;if(c.pb==null)c.pb=me.coloBest||0;if(Z.safe(me.x,me.y)&&!me.dead&&!c.end){c.t=performance.now();return}if(me.dead){if(!c.end){c.end=1;me.coloBest=Math.max(me.coloBest||0,c.w);sys(`콜로세움 기록: ${c.w}웨이브 · 몬스터 Lv.${coLv(c.w).toLocaleString()} (최고 ${me.coloBest||0}웨이브)${c.dust?` · 약한 장비는 가루 ${fmtK(c.dust)}로 바꿨어요`:''}`)}return}
+setInterval(()=>{try{if(!started||!Z||!Z.colo)return;const c=Z.co;if(c.pb==null)c.pb=me.coloBest||0;if(c.pause&&!me.dead){c.t=performance.now();return}if(Z.safe(me.x,me.y)&&!me.dead&&!c.end)c.t=performance.now();if(me.dead){if(!c.end){c.end=1;me.coloBest=Math.max(me.coloBest||0,c.w);$('coDoorBox')?.remove();c.pause=0;if(c.boxes&&c.boxes.length)c.box=doorClaim(c,0);sys(`콜로세움 기록: ${c.w}웨이브 · 몬스터 Lv.${coLv(c.w).toLocaleString()} (최고 ${me.coloBest||0}웨이브)${c.dust?` · 약한 장비는 가루 ${fmtK(c.dust)}로 바꿨어요`:''}`)}return}
   if(c.end){const cc=c;delete zones.colo;enterZone('town');setTimeout(()=>coloResult(cc),300);return}
   if(c.kc>=CO_KILLS||performance.now()-c.t>CO_SEC*1000){c.w++;c.kc=0;c.t=performance.now();coSet(Z);
     if(c.w>(me.coloBest||0)){me.coloBest=c.w;if(c.w%10===0)persist()}
+    if(c.w%DOOR_EVERY===0)setTimeout(()=>{if(Z&&Z.co===c&&!me.dead&&!c.end)coDoor(c)},50);
     const L=coLv(c.w);floatText(me.x,me.y-50,`${c.w}웨이브 · Lv.${L.toLocaleString()}`,'#ff6a6a',true);if(c.w%10===0){toast(`콜로세움 ${c.w}웨이브! 몬스터 Lv.${L.toLocaleString()}`,2500)}
     if(L>=CO_MAX&&!c.max){c.max=1;toast('콜로세움 끝 — 몬스터 Lv.9,999,999!',5000)}}}catch(e){}},250);
 
@@ -5544,8 +5557,8 @@ let coopLast=-1;setInterval(()=>{try{if(!started||!Z||!Z.vault){coopLast=-1;retu
 
 /* ================= 콜로세움 결과 창 + 다시 도전 ================= */
 function coloResult(c){let el=$('coloRes');if(!el){el=document.createElement('div');el.id='coloRes';el.style.cssText='position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:60;min-width:280px;max-width:92vw;background:#1b1530ee;border:2px solid #ff4a4a;border-radius:10px;padding:16px 20px;color:#fff;font-size:15px;box-shadow:0 8px 40px #000a;text-align:center';document.body.appendChild(el)}
-  el.textContent='';const h=document.createElement('div');h.style.cssText='font-size:20px;color:#ff6a6a;margin-bottom:8px';h.textContent=c.w>(c.pb||0)&&c.w>1?'★ 콜로세움 신기록!':'콜로세움 결과';el.appendChild(h);
-  for(const [k,v] of [['웨이브',`${c.w} (최고 ${me.coloBest||0})`],['몬스터 레벨',`Lv.${coLv(c.w).toLocaleString()}`],['잡은 몬스터',`${(c.kills||0).toLocaleString()}마리`],['좋은 장비 (레전드 이상)',`${c.good||0}개`],['가루로 바꾼 약한 장비',`가루 ${fmtK(c.dust||0)}`]]){const r=document.createElement('div');r.style.cssText='display:flex;justify-content:space-between;gap:16px;padding:2px 0';const a=document.createElement('span');a.style.color='#c9c3e6';a.textContent=k;const b=document.createElement('b');b.textContent=v;r.append(a,b);el.appendChild(r)}
+  el.textContent='';const h=document.createElement('div');h.style.cssText='font-size:20px;color:#ff6a6a;margin-bottom:8px';h.textContent=(c.w>(c.pb||0)&&c.w>1?'★ 콜로세움 신기록!':'콜로세움 결과')+(c.left?' · 상자 받고 나옴':'');el.appendChild(h);
+  for(const [k,v] of [['웨이브',`${c.w} (최고 ${me.coloBest||0})`],['몬스터 레벨',`Lv.${coLv(c.w).toLocaleString()}`],['잡은 몬스터',`${(c.kills||0).toLocaleString()}마리`],['좋은 장비 (레전드 이상)',`${c.good||0}개`],['가루로 바꾼 약한 장비',`가루 ${fmtK(c.dust||0)}`],...(c.box?[['쉼터 상자',c.box]]:[])]){const r=document.createElement('div');r.style.cssText='display:flex;justify-content:space-between;gap:16px;padding:2px 0';const a=document.createElement('span');a.style.color='#c9c3e6';a.textContent=k;const b=document.createElement('b');b.textContent=v;r.append(a,b);el.appendChild(r)}
   const row=document.createElement('div');row.style.cssText='display:flex;gap:8px;justify-content:center;margin-top:12px';
   const b1=document.createElement('button');b1.type='button';b1.className='btn';b1.textContent='다시 도전';b1.addEventListener('click',()=>{el.remove();delete zones.colo;enterZone('colo')});
   const b2=document.createElement('button');b2.type='button';b2.className='btn alt';b2.textContent='마을에 있기';b2.addEventListener('click',()=>el.remove());row.append(b1,b2);el.appendChild(row)}
@@ -5567,6 +5580,26 @@ const fmtDur=ms=>{const m=Math.round(ms/6e4),h=Math.floor(m/60);return h?`${h}�
 setInterval(()=>{try{if(!started||!me.rbStart||(me.tlv||0)<TLV_MAX)return;const d=Date.now()-me.rbStart;me.rbStart=0;const best=me.rbBest||0,nb=!best||d<best;if(nb)me.rbBest=d;
   toast(nb?`🏁 환생 질주 신기록! ${fmtDur(d)}`:`🏁 환생 질주 ${fmtDur(d)} (최고 ${fmtDur(best)})`,4500);sys(`🏁 환생 후 Lv.3000까지 ${fmtDur(d)}${nb?' · 내 최고 기록!':` · 최고 기록 ${fmtDur(best)}`}`);persist()}catch(e){}},2000);
 
+/* 5차 이후 갈래별 피해 맞춤 (G002 측정, 2026-11-27) */
+window.LATE_BAL={"swordgod": 0.35, "asura": 0.71, "bloodking": 0.41, "bloodlord": 0.47, "archangel": 0.41, "guardian": 0.4, "punisher": 0.7, "crusader": 1.09, "elemlord": 2.25, "archwiz": 1.3, "timelord": 0.32, "voidlord": 0.87, "hades": 0.44, "cursekin": 0.47, "demonking": 2.5, "infernal": 2.5, "starlord": 1.66, "voidstar": 1.44, "starsaint": 1.59, "darklord": 1.9, "deathgod": 0.4, "venomking": 1.41, "shadowking": 1.51, "illusion": 0.65, "windgod": 0.96, "thunderwind": 0.77, "bowgod": 1.32, "stareye": 1.04, "blastking": 1.82, "trapper": 2.5, "beastking": 2.5, "skyhawk": 2.39, "forestsage": 1.26, "stormbow": 1.14, "mangeom": 0.98, "mugeom": 0.98, "raijin": 1, "raiken": 1.18, "shura": 1.1, "oniou": 0.34, "oukaken": 0.79, "hanagami": 0.63, "dragonlord": 0.96, "stormlance": 0.92, "infernolance": 0.92, "sunlance": 0.8, "fortress": 0.52, "warlance": 0.75, "voidlance": 1.49, "nightlance": 1.14, "ifrit": 0.81, "phoenixc": 0.77, "thunderbird": 1.05, "sylph": 1.23, "dryad": 0.98, "treant": 0.74, "frostqueen": 0.98, "blizzardc": 0.79, "boneking": 3.36, "deathknight": 3.15, "nreaper": 2.16, "soulking": 1.53, "plaguelord": 1.34, "doomcaller": 0.68, "vampire": 1.07, "nbloodking": 1.35};
+/* ================= 쉼터 문 (G002): 콜로세움 25웨이브마다 · 상자 받고 나가기 / 더 버티기 ================= */
+const DOOR_EVERY=25;
+function doorBox(n,first){return {n,dust:5e4*n,lb:n,tp:first?1:0}}
+function coDoor(c){const n=Math.floor(c.w/DOOR_EVERY);c.boxes=c.boxes||[];const first=n>(me.coDoor||0)&&!c.boxes.some(b=>b.n===n);c.boxes.push(doorBox(n,first));c.pause=1;me.iframe=1e9;
+  let el=$('coDoorBox');if(el)el.remove();el=document.createElement('div');el.id='coDoorBox';el.style.cssText='box-sizing:border-box;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:61;width:min(440px,94vw);background:#1b1530f2;border:2px solid #7ff0a0;border-radius:10px;padding:16px 18px;color:#fff;font-size:15px;box-shadow:0 8px 40px #000a;text-align:center';document.body.appendChild(el);
+  const sum=c.boxes.reduce((a,b)=>({dust:a.dust+b.dust,lb:a.lb+b.lb,tp:a.tp+b.tp}),{dust:0,lb:0,tp:0});
+  const h=document.createElement('div');h.style.cssText='font-size:20px;color:#7ff0a0;margin-bottom:6px';h.textContent=`🚪 쉼터 문 · ${c.w}웨이브`;el.appendChild(h);
+  const p=document.createElement('div');p.style.cssText='color:#d8d2f0;line-height:1.55;margin-bottom:10px;white-space:pre-line';
+  p.textContent=`쌓인 쉼터 상자 ${c.boxes.length}개: 가루 ${fmtK(sum.dust)} · 한계돌파석 ${sum.lb}개${sum.tp?` · 특성 포인트 +${sum.tp} (처음 연 문)`:''}\n더 버티면 ${DOOR_EVERY}웨이브 뒤에 상자가 하나 더 쌓여요.\n대신 쓰러지면 쌓인 상자의 절반만 받아요.`;el.appendChild(p);
+  const row=document.createElement('div');row.style.cssText='display:flex;gap:8px;justify-content:center;flex-wrap:wrap';
+  const b1=document.createElement('button');b1.type='button';b1.className='btn';b1.style.background='#7ff0a0';b1.textContent='상자 받고 나가기';b1.addEventListener('click',()=>{el.remove();c.box=doorClaim(c,1);c.left=1;c.pause=0;c.end=1;me.iframe=1});
+  const b2=document.createElement('button');b2.type='button';b2.className='btn alt';b2.textContent='더 버티기';b2.addEventListener('click',()=>{el.remove();c.pause=0;c.t=performance.now();me.iframe=1.5;toast('더 버텨요! 다음 쉼터 문까지',1800)});
+  row.append(b1,b2);el.appendChild(row);try{sfx('lvup')}catch(e){}}
+function doorClaim(c,all){const bs=(c.boxes||[]).slice().sort((a,b)=>b.n-a.n);const k=all?bs.length:Math.floor(bs.length/2);const got=bs.slice(0,k);c.boxes=[];
+  if(!got.length)return all?'':'쉼터 상자 없음 (쓰러지면 절반만)';let d=0,lb=0,tp=0;for(const b of got){d+=b.dust;lb+=b.lb;if(b.tp&&b.n>(me.coDoor||0)){tp+=1}}
+  const top=Math.max(...got.map(b=>b.n));if(tp)me.coDoor=Math.max(me.coDoor||0,top);
+  addItem('dust',d);if(lb)addItem('lb_stone',lb);if(tp)me.rbTP=(me.rbTP||0)+tp;invChanged();persist();
+  const t=`쉼터 상자 ${got.length}개: 가루 ${fmtK(d)} · 한계돌파석 ${lb}개${tp?` · 특성 포인트 +${tp}`:''}`;sys('🚪 '+t);return t}
 function makeDuel(k){k=Math.max(1,Math.min(DUEL_MAX,k));const T=ABYSS_FROM+9,z=makeArena(T);
   z.id='pv'+k;z.duel=k;z.hpMul=duelHp(k);z.dmgMul=duelDmg(k);z.expMul=3;
   z.title=`대련장 ${k}단계`;z.sub=`PK ${DUEL_N}명 + 챔피언 · 체력 x${duelHp(k).toFixed(1)} · 공격 x${duelDmg(k).toFixed(1)} (심연 10단계 PK 기준) · 챔피언을 쓰러뜨리면 다음 단계`;return z}
@@ -6207,7 +6240,7 @@ const typing=()=>document.activeElement&&['INPUT','TEXTAREA'].includes(document.
 let interact=null;
 addEventListener('keydown',e=>{
   if(!started)return;
-  if(e.key==='Escape'){if(typing())document.activeElement.blur();closePanels();$('trophyBox')?.remove();return}
+  if(e.key==='Escape'){if(typing())document.activeElement.blur();closePanels();$('trophyBox')?.remove();$('insBox')?.remove();return}
   if(typing())return;
   if(e.key==='Enter'){e.preventDefault();$('cin').focus();return}
   if(e.code==='KeyI'){togglePanel('bag');return}
@@ -6278,7 +6311,7 @@ function hurtPlayer(d,fromX,fromY){
 const TLV_MAX=2001,needT=t=>t<=999?Math.round(needExp(LV_MAX-1+t)*1.5):Math.round(needExp(LV_MAX-1+999)*1.5*(1+(t-999)/1000));   // 레벨 통합: Lv.1~3000 (999 이후는 내부적으로 tlv)
 const LVT=()=>me.lvl+(me.tlv||0);   // 하나로 합친 레벨
 /* 레벨 속도 개선: 환생 1번마다 다시 올리는 데 필요한 경험치 +10% · 몬스터 한 마리로는 레벨 필요 경험치의 1/3, 초월 레벨 필요 경험치의 1/2까지만 */
-const RB_NEED=.1,rbNeed=()=>1+RB_NEED*(me.rb||0),needLv=l=>Math.round(needExp(l)*rbNeed()),needTl=t=>Math.round(needT(t)*rbNeed()),RB_EXP_MAX=200;   // 초월 레벨: 999 다음부터 이어지는 경험치 × 1.5 (아주 어렵게)
+const RB_NEED=.03,rbNeed=()=>1+RB_NEED*(me.rb||0),needLv=l=>Math.round(needExp(l)*rbNeed()),needTl=t=>Math.round(needT(t)*rbNeed()),RB_EXP_MAX=200;   // 초월 레벨: 999 다음부터 이어지는 경험치 × 1.5 (아주 어렵게)
 function gainTExp(n){me.texp=(me.texp||0)+n;while((me.tlv||0)<TLV_MAX&&me.texp>=needTl((me.tlv||0)+1)){me.texp-=needTl((me.tlv||0)+1);me.tlv=(me.tlv||0)+1;me.tlvMax=Math.max(me.tlvMax||0,me.tlv);if(me.tlv%10===0)towerPost();recalc();me.hp=me.maxHp;me.mp=me.maxMp;
     toast(`레벨 업! Lv.${LVT()}`,2600);sys(`✦ Lv.${LVT()} 달성! 공격력·최대 체력·방어 +0.33%씩 (999 이후 총 +${Math.round(me.tlv/TLV_DIV*100)}%)`);checkLvMs();news({k:'tlv',d:me.tlv});
     burst(me.x,me.y-12,70,['#ff4a6a','#ffd35a','#ffffff','#b03aff'],170,1,2,-40);for(let k=0;k<3;k++)fxs.push({k:'ring',x:me.x,y:me.y,t:-k*.1,dur:.7,col:k%2?'#ffffff':'#ff4a6a',r:50+k*30})}hudKey='';persist()}
@@ -7139,7 +7172,7 @@ $('sform').addEventListener('submit',e=>{e.preventDefault();
 /* ---------- 실행 ---------- */
 function applySave(sv){
   const fresh=!sv.nick&&!sv.lvl;
-  me.pkOn=sv.pkOn!==false;me.trophy={};if(sv.trophy&&typeof sv.trophy==='object')for(const k in sv.trophy)if(ITEMS[k]&&isFinite(+sv.trophy[k]))me.trophy[k]=+sv.trophy[k];me.rbStart=Math.max(0,+sv.rbStart||0);me.rbBest=Math.max(0,+sv.rbBest||0);me.fs=Math.max(0,Math.min(9,Math.round(+sv.fs||0)));if(!sv.fs&&((+sv.lvl||1)>=30||(+sv.rb||0)>0))me.fs=9;me.magnet=sv.magnet!==false;me.lowDeco=!!sv.lowDeco;me.x10=Math.max(0,Math.min(Date.now()+864e5*400,Number(sv.x10)||0));me.evX10=!!sv.evX10;me.tlv=Math.round(num(sv.tlv,0,TLV_MAX)??0);me.texp=Math.max(0,Math.round(num(sv.texp,0,1e13)??0));
+  me.pkOn=sv.pkOn!==false;me.trophy={};if(sv.trophy&&typeof sv.trophy==='object')for(const k in sv.trophy)if(ITEMS[k]&&isFinite(+sv.trophy[k]))me.trophy[k]=+sv.trophy[k];me.rbStart=Math.max(0,+sv.rbStart||0);me.rbBest=Math.max(0,+sv.rbBest||0);me.coDoor=Math.max(0,Math.floor(+sv.coDoor||0));me.fs=Math.max(0,Math.min(9,Math.round(+sv.fs||0)));if(!sv.fs&&((+sv.lvl||1)>=30||(+sv.rb||0)>0))me.fs=9;me.magnet=sv.magnet!==false;me.lowDeco=!!sv.lowDeco;me.x10=Math.max(0,Math.min(Date.now()+864e5*400,Number(sv.x10)||0));me.evX10=!!sv.evX10;me.tlv=Math.round(num(sv.tlv,0,TLV_MAX)??0);me.texp=Math.max(0,Math.round(num(sv.texp,0,1e13)??0));
   const fix=id=>LEGACY[id]||id;
   me.nick=cleanStr(sv.nick,12)||'';
   me.color=sv.v===2?clampIdx(sv.color):0;me.hair=sv.v===2?clampHair(sv.hair):0;
