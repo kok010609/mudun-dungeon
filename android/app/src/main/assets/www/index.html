@@ -493,7 +493,7 @@ body.mobile #act{top:auto;bottom:calc(120px + env(safe-area-inset-bottom,0px))}
 
 <section class="panel float wide" id="shop" hidden aria-label="상점">
   <header><h2>떠돌이 상인</h2><span class="meta g">금화<b id="sgold">0</b></span><button class="btn sm alt x" type="button" data-close>닫기</button></header>
-  <details open><summary style="cursor:pointer;color:#ffd35a;font-size:17px">금화 상점 · 성장 재료 (하루 수량은 매일 0시에 다시 채워져요)</summary><ul class="shoplist" id="gbuy"></ul></details>
+  <details id="gbuyD"><summary style="cursor:pointer;color:#ffd35a;font-size:17px">금화 상점 · 성장 재료 (하루 수량은 매일 0시에 다시 채워져요)</summary><ul class="shoplist" id="gbuy"></ul></details>
   <div class="cols">
     <div><h3>사기</h3><ul class="shoplist" id="buy"></ul></div>
     <div><h3>팔기</h3><ul class="shoplist" id="sell"></ul></div>
@@ -2093,7 +2093,7 @@ let nextGoal=function(){const L=me.lvl,hub=()=>togglePanel('hub'),adv=()=>toggle
   if(L>=ADV_LV&&!advOf())return ['전직할 수 있어요! 눌러서 1차 전직',adv];if(L>=ADV2_LV&&!adv2Of())return ['2차 전직할 수 있어요! 눌러서 전직',adv];if(L>=ADV3_LV&&!adv3Of()){const mk=countItem('mark3');return mk>=MARK_NEED?['3차 전직할 수 있어요! 눌러서 전직',adv]:[`3차 전직에 초월의 증표 ${mk}/${MARK_NEED}개 · 90~100층 신화 보스·헬 보스가 떨어뜨려요`,hub]}
   if(rb>0&&L<LV_MAX&&traitPts()>0)return [`환생 특성 포인트 ${traitPts()}점이 남았어요 · 눌러서 찍기`,()=>togglePanel('trait')];
   if(L<LV_MAX){let rec=0;for(let T=0;T<HELL_FROM;T++)if(TIERS[T].lv<=L)rec=T;const top=topTier(),nx=!advOf()&&L<ADV_LV?ADV_LV:!adv2Of()&&L<ADV2_LV?ADV2_LV:!adv3Of()&&L<ADV3_LV?ADV3_LV:LV_MAX;
-    if(Z&&Z.T>=0&&!Z.colo&&!Z.vault&&!Z.train&&Z.T>=Math.min(rec,top)){return [`이 층 몬스터를 잡아 레벨 올리기 (Lv.${L} → ${nx}) · 보스를 잡으면 다음 층 · 체력 포션 Q`,hub]}
+    if(Z&&Z.T>=0&&!Z.colo&&!Z.vault&&!Z.train&&Z.T>=rec){return [`이 층 몬스터를 잡아 레벨 올리기 (Lv.${L} → ${nx}) · 보스를 잡으면 다음 층 · 체력 포션 Q`,hub]}
     if(top<rec)return [`분수대(E)에서 던전 ${rec+1}층에 도전하세요 (지금 레벨에 딱 맞아요)`,hub];return [`던전 ${Math.min(top+2,HELL_FROM)}층으로! 레벨 ${nx}까지 사냥 (${nx===LV_MAX?'만렙':'다음 전직'})`,hub]}
   if(!me.cleared[HELL_FROM-1])return ['100층 신화 보스를 쓰러뜨리면 헬 던전이 열려요',hub];
   if(!(typeof adv4Of==='function'?adv4Of():me.adv4)){const c4=countItem('core4');return c4>=ADV4_NEED?['4차 전직할 수 있어요! 눌러서 전직',adv]:[`4차 전직에 4차의 핵 ${c4}/${ADV4_NEED}개 · 제작소(M)에서 증표 3개로 만들거나 헬 보스에게서`,hub]}
@@ -3584,7 +3584,7 @@ function renderCash2(){csTabsDraw();
     {const it=ITEMS.adv_reset;g.appendChild(cashRow(it.name,it.desc,`가루 ${it.dust.toLocaleString()}`,'구매',countItem('dust')>=it.dust,()=>{if(!payDust(it.dust))return;addItem('adv_reset',1);invChanged();persist();sys('전직 초기화 주문서를 샀어요.');renderCash()},'#ff7ae0'))}
     if(typeof TRAIT_RESET_DUST!=='undefined'){g.appendChild(cashRow('특성 초기화권','환생 특성 포인트를 모두 돌려받아 다시 찍어요',`가루 ${TRAIT_RESET_DUST.toLocaleString()}`,'사용',countItem('dust')>=TRAIT_RESET_DUST&&traitSpent()>0,()=>{if(!payDust(TRAIT_RESET_DUST))return;resetTraits();renderCash()},'#ff9ad8'))}
     return true}
-  if(cashTab==='mount'){me.cos=me.cos||{own:[]};const on=mountOn();sum.textContent=`가루로 사는 탈것이에요. 하나만 탈 수 있고, 타고 있으면 이동 속도가 빨라져요 (모든 이동 속도 보너스 합계는 최대 +80%). 같이 하는 사람 화면에도 보여요. 지금 가루 ${fmtK(countItem('dust'))}`;
+  if(cashTab==='mount'){me.cos=me.cos||{own:[]};const on=mountOn();sum.textContent=`가루로 사는 탈것이에요. 하나만 탈 수 있고, 타고 있으면 이동 속도가 빨라져요 (모든 이동 속도 보너스 합계는 최대 +100% — 이미 꽉 찼으면 더 빨라지지 않아요). 같이 하는 사람 화면에도 보여요. 지금 가루 ${fmtK(countItem('dust'))}`;
     for(const [id,name,price,spd,cols,,mx] of MOUNTS){const own=me.cos.own.includes(id),ride=on===id;if(mx&&mx.rb&&!own)continue;
       g.appendChild(wideCard(cashRow(name,`이동 속도 +${Math.round(spd*100)}%${ride?' · 타는 중':own?' · 보유 중':''}`,own?'보유 중':`가루 ${fmtK(price)}`,!own?'구매':ride?'내리기':'타기',own||countItem('dust')>=price,()=>{
         if(!own){if(!payDust(price))return;me.cos.own.push(id);me.cos.mount=id;sys(`${name}을(를) 샀어요! 이동 속도 +${Math.round(spd*100)}%`);toast(`탈것: ${name}`,2000)}else me.cos.mount=ride?'':id;recalc();hudKey='';invChanged();persist();renderCash()},cols[2],NEW_CASH.has(id)?'신상':'')))}
@@ -3868,12 +3868,12 @@ function csBuy(price,fn,msg){const snap=JSON.stringify(me.bag),csn=JSON.stringif
   if(fail){me.bag=JSON.parse(snap);me.cs=JSON.parse(csn);invChanged();toast('가방이 가득 찼어요 · 가루를 돌려드렸어요',2500);sys('가방이 가득 차서 살 수 없어요. 가방을 비운 뒤 다시 사세요 (가루는 그대로예요).');renderCash();return}recalc();hudKey='';invChanged();persist();sys(msg);toast(msg,1600);burst(me.x,me.y-14,16,['#c9a8ff','#ffffff'],80,.5);renderCash()}
 function csHead(g,t,sub){const h=document.createElement('div');h.className='cshd';h.textContent=t;if(sub){const s=document.createElement('small');s.textContent=' '+sub;h.appendChild(s)}g.appendChild(h)}
 function renderCashHome(g,sum){const s=csState();sum.textContent='매일 무료 선물을 받고, 이번 주 특가와 패키지를 확인하세요. 패키지는 일주일에 한 번씩 살 수 있어요.';
-  csHead(g,'행운의 룰렛','복불복! 가루 100만으로 한 번');roulCard(g);
   csHead(g,'오늘의 선물');
   g.appendChild(wideCard(cashRow('오늘의 무료 선물',CS_FREE.map(([id,n])=>`${ITEMS[id].name} ${fmtK(n)}`).join(' · ')+' (매일 자정 초기화)',s.free?'오늘 받음':'무료',s.free?'내일 또 받아요':'받기',!s.free,()=>{const S=csState();if(S.free)return;S.free=1;for(const [id,n] of CS_FREE)addItem(id,n);invChanged();persist();sys('오늘의 무료 선물을 받았어요!');toast('무료 선물 받음!',1600);burst(me.x,me.y-14,24,['#ffd35a','#ffffff'],100,.6);renderCash()},'#ffd35a',s.free?'':'무료')));
   csHead(g,'이번 주 특가','30% 할인 · 하나씩 한 번만');ltdCards(g);
   csHead(g,'주간 패키지','주 1회');
   for(const [k,nm,desc,orig,price,col,give] of CS_PACK){const left=csLeft(k,1);g.appendChild(cashRow(nm,desc,left?`가루 ${fmtK(price)} (원래 ${fmtK(orig)})`:'이번 주 구매 완료','구매',left>0&&countItem('dust')>=price,()=>{if(csLeft(k,1)<1)return;csBuy(price,()=>{csTake(k);give()},`${nm}을(를) 샀어요!`)},col,left?`${Math.round((1-price/orig)*100)}% 할인`:''))}
+  csHead(g,'행운의 룰렛','복불복! 가루 100만으로 한 번');roulCard(g);
   csHead(g,'알아두기');
   g.appendChild(wideCard(cashRow('+2·+3 장비 강화권','실패·파괴 없이 장비를 바로 +2/+3 올려요. 던전 보스와 보스 군단 보스가 아주 드물게 떨어뜨려요 (+1 강화권은 [장비] 탭의 [강화 재료]에서 주 2장 살 수 있어요).','보스 드롭 전용','보스에게서',false,()=>{},'#ffd35a')));
 }
@@ -5466,7 +5466,7 @@ function coSet(z){const [h0,d0]=coF(35),[h,d]=coF(z.co.w);z.hpMul=z.hpMul0*h/h0;
     let dust=0;for(let i=Z.ground.length-1;i>=n0;i--){const g=Z.ground[i];if(g&&isGear(g.id)&&gIdx(g.id)<=2&&!ITEMS[g.id].gm&&!isStronger(g.id,g.e||0,g.il,g.o)){dust+=Math.round(dustOf({id:g.id,e:g.e||0,il:g.il})*DUST_CHANCE);Z.ground.splice(i,1)}}
     if(dust){addItem('dust',dust);Z.co.dust=(Z.co.dust||0)+dust}
     while(Z.ground.length>150){const j=Z.ground.findIndex(g=>!isGear(g.id)||gIdx(g.id)<=2);Z.ground.splice(j>=0?j:0,1)}}return r}}
-setInterval(()=>{try{if(!started||!Z||!Z.colo)return;const c=Z.co;if(me.dead){if(!c.end){c.end=1;sys(`콜로세움 기록: ${c.w}웨이브 · 몬스터 Lv.${coLv(c.w).toLocaleString()} (최고 ${me.coloBest||0}웨이브)${c.dust?` · 약한 장비는 가루 ${fmtK(c.dust)}로 바꿨어요`:''}`)}return}
+setInterval(()=>{try{if(!started||!Z||!Z.colo)return;const c=Z.co;if(c.pb==null)c.pb=me.coloBest||0;if(Z.safe(me.x,me.y)&&!me.dead&&!c.end){c.t=performance.now();return}if(me.dead){if(!c.end){c.end=1;me.coloBest=Math.max(me.coloBest||0,c.w);sys(`콜로세움 기록: ${c.w}웨이브 · 몬스터 Lv.${coLv(c.w).toLocaleString()} (최고 ${me.coloBest||0}웨이브)${c.dust?` · 약한 장비는 가루 ${fmtK(c.dust)}로 바꿨어요`:''}`)}return}
   if(c.end){const cc=c;delete zones.colo;enterZone('town');setTimeout(()=>coloResult(cc),300);return}
   if(c.kc>=CO_KILLS||performance.now()-c.t>CO_SEC*1000){c.w++;c.kc=0;c.t=performance.now();coSet(Z);
     if(c.w>(me.coloBest||0)){me.coloBest=c.w;if(c.w%10===0)persist()}
@@ -5536,7 +5536,7 @@ const FS=[
 function fsGoal(){const n=me.fs||0;if(n>=FS.length||(me.rb||0)>0||me.lvl>=100)return null;const [t,d]=FS[n];return [`첫걸음 ${n+1}/${FS.length} · ${t} — ${d}`,n===0||n===4?()=>togglePanel('hub'):()=>togglePanel('bag')]}
 setInterval(()=>{try{if(!started||me.dead)return;const n=me.fs||0;if(n>=FS.length)return;if((me.rb||0)>0||me.lvl>=100){me.fs=FS.length;return}
   if(FS[n][2]()){const got=FS[n][3]();me.fs=n+1;invChanged();persist();toast(`✔ 첫걸음 ${n+1}/${FS.length} 완료! ${got}`,3500);sys(`✔ 첫걸음 [${FS[n][0]}] 완료 · 선물: ${got}`);burst(me.x,me.y-14,30,['#7ff0a0','#ffd35a','#ffffff'],110,.7);try{sfx('lvup')}catch(e){}}}catch(e){}},1000);
-{const g0=nextGoal;nextGoal=function(){const f=fsGoal();if(f&&!(me.lvl>=ADV_LV&&!advOf()))return f;return g0()}}
+{const g0=nextGoal;nextGoal=function(){const f=fsGoal();if(f&&!(me.lvl>=ADV_LV&&!advOf())){if(me.lvl>=20&&(me.fs||0)>=2){const g=g0();if(/층에 도전/.test(g[0]))return [g[0]+' · 첫걸음 '+((me.fs||0)+1)+'/'+FS.length+'은 가방(I)에서',g[1]]}return f}return g0()}}
 /* ================= 함께 보물고: 같은 보물고 단계에 친구가 있으면 장비가 더 나와요 (최대 2명까지 보너스) ================= */
 const coopN=()=>{if(!Z||!Z.vault)return 0;let n=0;for(const r of remotes.values())if(!r.other&&r.z===zoneId)n++;return Math.min(2,n)};
 {const v1=vaultList;vaultList=function(D,E,r){const out=v1(D,E,r),n=coopN();if(n&&r()<.25*n){const extra=v1(D,E,r).filter(([id])=>isGear(id)).slice(0,1);out.push(...extra)}return out}}
@@ -5544,16 +5544,17 @@ let coopLast=-1;setInterval(()=>{try{if(!started||!Z||!Z.vault){coopLast=-1;retu
 
 /* ================= 콜로세움 결과 창 + 다시 도전 ================= */
 function coloResult(c){let el=$('coloRes');if(!el){el=document.createElement('div');el.id='coloRes';el.style.cssText='position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:60;min-width:280px;max-width:92vw;background:#1b1530ee;border:2px solid #ff4a4a;border-radius:10px;padding:16px 20px;color:#fff;font-size:15px;box-shadow:0 8px 40px #000a;text-align:center';document.body.appendChild(el)}
-  el.textContent='';const h=document.createElement('div');h.style.cssText='font-size:20px;color:#ff6a6a;margin-bottom:8px';h.textContent=c.w>=(me.coloBest||0)&&c.w>1?'★ 콜로세움 신기록!':'콜로세움 결과';el.appendChild(h);
+  el.textContent='';const h=document.createElement('div');h.style.cssText='font-size:20px;color:#ff6a6a;margin-bottom:8px';h.textContent=c.w>(c.pb||0)&&c.w>1?'★ 콜로세움 신기록!':'콜로세움 결과';el.appendChild(h);
   for(const [k,v] of [['웨이브',`${c.w} (최고 ${me.coloBest||0})`],['몬스터 레벨',`Lv.${coLv(c.w).toLocaleString()}`],['잡은 몬스터',`${(c.kills||0).toLocaleString()}마리`],['좋은 장비 (레전드 이상)',`${c.good||0}개`],['가루로 바꾼 약한 장비',`가루 ${fmtK(c.dust||0)}`]]){const r=document.createElement('div');r.style.cssText='display:flex;justify-content:space-between;gap:16px;padding:2px 0';const a=document.createElement('span');a.style.color='#c9c3e6';a.textContent=k;const b=document.createElement('b');b.textContent=v;r.append(a,b);el.appendChild(r)}
   const row=document.createElement('div');row.style.cssText='display:flex;gap:8px;justify-content:center;margin-top:12px';
   const b1=document.createElement('button');b1.type='button';b1.className='btn';b1.textContent='다시 도전';b1.addEventListener('click',()=>{el.remove();delete zones.colo;enterZone('colo')});
   const b2=document.createElement('button');b2.type='button';b2.className='btn alt';b2.textContent='마을에 있기';b2.addEventListener('click',()=>el.remove());row.append(b1,b2);el.appendChild(row)}
 {const k1=killMon;killMon=function(m){const was=m.dead;k1(m);if(Z&&Z.colo&&!was&&m.dead)Z.co.kills=(Z.co.kills||0)+1}}
 /* ================= 득템 진열장: 레전드 이상을 처음 얻으면 기록 + 모두에게 금빛 알림 ================= */
-{const a1=addItem;addItem=function(id,...rest){const r=a1(id,...rest);try{if(r!==false&&ITEMS[id]&&isGear(id)&&!ITEMS[id].gm&&gIdx(id)>=4){me.trophy=me.trophy||{};if(!me.trophy[id]){me.trophy[id]=Date.now();if(Z&&Z.colo)Z.co.good=(Z.co.good||0)+1;
+{const a1=addItem;addItem=function(id,...rest){const r=a1(id,...rest);try{if(r!==false&&!window._noTrophy&&ITEMS[id]&&isGear(id)&&!ITEMS[id].gm&&gIdx(id)>=4){if(Z&&Z.colo)Z.co.good=(Z.co.good||0)+1;me.trophy=me.trophy||{};if(!me.trophy[id]){me.trophy[id]=Date.now();
     toast(`🏆 진열장에 새 기록! ${ITEMS[id].name} [${gLabel(id)}]`,4000);sys(`🏆 처음 얻은 ${gLabel(id)} 장비 → 진열장에 기록했어요 (가방 → 🏆 진열장)`);edgeT=2;edgeCol=gCol(id);try{news({k:'leg',i:id})}catch(e){}}}}catch(e){}return r}}
-function showTrophy(){let el=$('trophyBox');if(el){el.remove();return}el=document.createElement('div');el.id='trophyBox';el.style.cssText='position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:60;width:min(560px,94vw);max-height:80vh;overflow:auto;background:#1b1530f2;border:2px solid #ffd35a;border-radius:10px;padding:14px 18px;color:#fff;font-size:14px;box-shadow:0 8px 40px #000a';
+{const st0=stashTake;stashTake=function(...a){window._noTrophy=1;try{return st0(...a)}finally{window._noTrophy=0}}}
+function showTrophy(){let el=$('trophyBox');if(el){el.remove();return}el=document.createElement('div');el.id='trophyBox';el.style.cssText='box-sizing:border-box;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:60;width:min(560px,94vw);max-height:80vh;overflow:auto;background:#1b1530f2;border:2px solid #ffd35a;border-radius:10px;padding:14px 18px;color:#fff;font-size:14px;box-shadow:0 8px 40px #000a';
   const ids=Object.keys(me.trophy||{}).filter(id=>ITEMS[id]).sort((a,b)=>gIdx(b)-gIdx(a)||me.trophy[b]-me.trophy[a]);
   const h=document.createElement('div');h.style.cssText='font-size:19px;color:#ffd35a;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center';h.textContent=`🏆 득템 진열장 · ${ids.length}개`;const x=document.createElement('button');x.type='button';x.className='btn sm alt';x.textContent='닫기';x.addEventListener('click',()=>el.remove());h.appendChild(x);el.appendChild(h);
   const by={};for(const id of ids){const g=gLabel(id).split(' ')[0];(by[g]=by[g]||[]).push(id)}
@@ -6206,7 +6207,7 @@ const typing=()=>document.activeElement&&['INPUT','TEXTAREA'].includes(document.
 let interact=null;
 addEventListener('keydown',e=>{
   if(!started)return;
-  if(e.key==='Escape'){if(typing())document.activeElement.blur();closePanels();return}
+  if(e.key==='Escape'){if(typing())document.activeElement.blur();closePanels();$('trophyBox')?.remove();return}
   if(typing())return;
   if(e.key==='Enter'){e.preventDefault();$('cin').focus();return}
   if(e.code==='KeyI'){togglePanel('bag');return}
@@ -6872,14 +6873,14 @@ const gsLeft=g=>{me.gshop=me.gshop&&me.gshop.d===gsDay()?me.gshop:{d:gsDay(),n:{
 function buyGShop(g,k){const left=gsLeft(g);k=Math.min(k,left,Math.floor(me.gold/g[4]));if(k<1)return;let got=0;
   for(let i=0;i<k;i++){if(me.gold<g[4])break;if(!g[6]()){if(!got)sys('가방이 가득 찼거나 살 수 없어요.');break}me.gold-=g[4];me.gshop.n[g[0]]=(me.gshop.n[g[0]]||0)+1;got++}
   if(got){sys(`금화 상점: ${g[2]}${got>1?' ×'+got:''} (금화 -${(g[4]*got).toLocaleString()})`);sfx('buff')}invChanged();persist();renderShop()}
+let advRsArm=0;
 function renderShop(){
+  {const gd=$('gbuyD');if(gd&&!gd.dataset.auto&&me.lvl>=ADV_LV){gd.open=true;gd.dataset.auto=1}}
   const buy=$('buy');buy.textContent='';
   {// 대량 구매: 물약·주문서처럼 쌓이는 아이템은 고른 개수만큼 한 번에
     const li=document.createElement('li');li.style.cssText='display:flex;flex-wrap:wrap;gap:4px;align-items:center';const lb=document.createElement('small');lb.textContent='한 번에 살 개수:';li.appendChild(lb);
     for(const [t,v] of [['1개',1],['10개',10],['50개',50],['100개',100],['최대','max']]){const b=document.createElement('button');b.type='button';b.className='btn sm'+(shopQty===v?'':' alt');b.textContent=t;b.setAttribute('aria-pressed',String(shopQty===v));
       b.addEventListener('click',()=>{shopQty=v;renderShop()});li.appendChild(b)}buy.appendChild(li)}
-  {const id='adv_reset',it=ITEMS[id],d=countItem('dust');buy.appendChild(shopRow(id,it.desc+` (보유 가루 ${d.toLocaleString()})`,'가루 '+it.dust.toLocaleString(),'사기',d<it.dust,()=>{
-    if(countItem('dust')<it.dust){sys(`마력 가루가 ${(it.dust-countItem('dust')).toLocaleString()}개 부족해요.`);return}if(!addItem(id,1)){sys('가방이 가득 찼어요');return}takeN('dust',it.dust);invChanged();sys('전직 초기화 주문서를 샀어요. 가방에서 [읽기]로 써요.')}))}
   for(const id of STOCK){const it=ITEMS[id],st=stackable(id),cap=capOf(id);
     const want=st?(shopQty==='max'?Math.floor(me.gold/it.price):shopQty):1,n=Math.max(1,Math.min(want,st?cap*20:1));
     const sub=st&&n>1?`${it.desc} · ${n}개 = ${(it.price*n).toLocaleString()}G`:it.desc;
@@ -6887,9 +6888,11 @@ function renderShop(){
       const k=Math.min(n,Math.floor(me.gold/it.price));if(k<1)return;const c0=countItem(id);let left=k;
       while(left>0){const c=Math.min(cap,left);if(!addItem(id,c))break;left-=c}const got=countItem(id)-c0;
       if(!got){sys('가방이 가득 찼어요');return}me.gold-=it.price*got;invChanged();if(got>1||k>1)sys(`${it.name} ${got}개를 ${(it.price*got).toLocaleString()}G에 샀어요.${got<k?' (가방이 가득 찼어요)':''}`)}))}
+  {const id='adv_reset',it=ITEMS[id],d=countItem('dust');buy.appendChild(shopRow(id,it.desc+` (보유 가루 ${d.toLocaleString()})`,'가루 '+it.dust.toLocaleString(),advRsArm?'정말 살까요? (한 번 더)':'사기',d<it.dust,()=>{if(!advRsArm){advRsArm=1;renderShop();setTimeout(()=>{advRsArm=0;if(!$('shop').hidden)renderShop()},4000);return}advRsArm=0;
+    if(countItem('dust')<it.dust){sys(`마력 가루가 ${(it.dust-countItem('dust')).toLocaleString()}개 부족해요.`);return}if(!addItem(id,1)){sys('가방이 가득 찼어요');return}takeN('dust',it.dust);invChanged();sys('전직 초기화 주문서를 샀어요. 가방에서 [읽기]로 써요.')}))}
   const sell=$('sell');sell.textContent='';
   if(!me.bag.length){const li=document.createElement('li');li.style.cssText='display:block;color:var(--muted);font-size:14px';li.textContent='팔 물건이 없어요. 장착 중인 장비는 가방에서 먼저 벗어야 팔 수 있어요.';sell.appendChild(li)}
-  me.bag.forEach((s,i)=>{if(ITEMS[s.id].noSell||s.lk)return;const pr=Math.round(sellOf(s.id)*(1+(s.e||0)*.3));sell.appendChild(shopRow(s.id,(s.e?`+${s.e} 강화 · `:'')+(s.n>1?`${s.n}개 보유`:(ITEMS[s.id].desc||'')),pr,'팔기',false,()=>{me.gold+=pr;takeAt(i,1);invChanged()}))});
+  me.bag.forEach((s,i)=>{if(ITEMS[s.id].noSell||s.lk||s.id==='dust')return;const pr=Math.round(sellOf(s.id)*(1+(s.e||0)*.3));sell.appendChild(shopRow(s.id,(s.e?`+${s.e} 강화 · `:'')+(s.n>1?`${s.n}개 보유`:(ITEMS[s.id].desc||'')),pr,'팔기',false,()=>{me.gold+=pr;takeAt(i,1);invChanged()}))});
   $('sgold').textContent=me.gold.toLocaleString();
   const gb=$('gbuy');gb.textContent='';for(const g of GSHOP){const left=gsLeft(g),icon=typeof g[1]==='function'?g[1]():g[1],it=ITEMS[icon];if(!it)continue;
     const li=shopRow(icon,`${g[3]} · 오늘 ${left}/${g[5]}개 남음`,g[4],left<=0?'오늘 끝':'사기',left<=0||me.gold<g[4],()=>buyGShop(g,1));li.querySelector('.nm').textContent=g[2];
