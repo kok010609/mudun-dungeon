@@ -1322,12 +1322,13 @@ function makeTown(){
   set(GATE.tx,GATE.ty,PORTAL);
   for(const h of houses){for(let y=h.y;y<h.y+3;y++)for(let x=h.x;x<h.x+4;x++)set(x,y,HOUSE);for(let y=h.y+3;y<h.y+5;y++){set(h.x+1,y,PATH);set(h.x+2,y,PATH)}}
   for(let y=CY;y<CY+2;y++)for(let x=CX;x<CX+2;x++)set(x,y,FOUNT);
-  const Z={id:'town',W,H,map,at,th:TIERS[0],portalCol:'#a07aff',T:-1,amb:'#152048',dark:.44,mons:[],ground:[],
+  const Z={id:'town',W,H,map,at,th:TIERS[0],portalCol:'#a07aff',T:-1,amb:'#3a2a50',dark:.1,mons:[],ground:[],
     spawn:{x:FX,y:FY+40},title:'무한대로 마을',sub:'분수대(E)에서 던전으로 · 마을 사람들에게 말을 걸어 보세요',
     safe:(px,py)=>Math.hypot(px/16-CX-1,py/16-CY-1)<11||(typeof npcSafe==='function'&&npcSafe(px,py))||Math.hypot(px/16-GATE.tx-.5,py/16-GATE.ty)<7,
     gate:{x:GATE.tx*16+8,y:GATE.ty*16+8},
     lights:[{x:FX,y:FY,r:56,col:'#7fd0ff',i:.8},{x:MERCH.x,y:MERCH.y-14,r:48,col:'#ffbf66',i:.9,fl:1},{x:GATE.tx*16+8,y:GATE.ty*16+8,r:64,col:'#a07aff',i:.9}],
-    decor:(c,f)=>{houses.forEach(h=>drawHouse(c,h));drawFountain(c,f);drawStallBack(c)}};
+    decor:(c,f)=>{if(typeof TD!=='undefined'&&TD)drawTownGround(c,Z.at);houses.forEach(h=>drawHouse(c,h));drawFountain(c,f);drawStallBack(c)}};
+  if(typeof TD!=='undefined'&&TD)for(const l of TD.lamps)Z.lights.push({x:l.x,y:l.y-26,r:40,col:'#ffcf7a',i:.7,fl:1});
   for(const h of houses)for(const wx of [9,45])Z.lights.push({x:h.x*16+wx+5,y:h.y*16+36,r:30,col:'#ffcc66',i:.8});
   return Z;
 }
@@ -5822,6 +5823,51 @@ function npcPortal(){if(!Z||Z.id!=='town')return null;const P=[[TRAINP,'초월�
   for(const [p,nm,ok,why,fn] of P)if(Math.hypot(me.x-p.x,me.y-p.y)<24)return ok?{label:nm+' 들어가기 (E)',fn}:{label:nm+' (잠김 · '+why+' 열려요)',fn:()=>toast(nm+': '+why+' 열려요',2200)};return null}
 setInterval(()=>{try{if($('npcBox')&&!npcNear())closeNpc()}catch(e){}},400);
 {const ez=enterZone;enterZone=function(id,...a){const r=ez(id,...a);try{if(id==='town'&&started&&me.lvl>=2&&!['pot_s','pot_l','pot_x','herb'].some(k=>countItem(k)>0)){setTimeout(()=>{toast('떠돌이 상인: 포션이 다 떨어졌네! 와서 사 가~',3000);sys('🧪 포션이 0개예요. 광장 왼쪽 위 떠돌이 상인에게서 살 수 있어요 (금화).')},600)}}catch(e){}return r}}
+/* ================= 밝은 마을 (G004): 낮 햇살 · 가로등 · 꽃밭 · 깃발 · 벤치 · 나무 · 동물 · 나비 ================= */
+var TD=(()=>{const T=16,px=(tx,ty)=>({x:tx*T+8,y:ty*T+8});
+  const lamps=[];for(const tx of [6,12,18,24,37,43,49,55])lamps.push({x:tx*T+8,y:(CY-1)*T+12});for(const ty of [5,10,15,29,34,39])lamps.push({x:(CX-1)*T+10,y:ty*T+12});
+  const trees=[[23,30],[38,30],[16,22],[46,22],[24,14],[37,13],[12,30],[51,28]].map(([a,b])=>({...px(a,b),s:(a*7+b*3)%3}));
+  const beds=houses.map(h=>({x:h.x*T+2,y:(h.y+3)*T+2}));
+  const benches=[px(CX-3,CY+7),px(CX+4,CY+7),px(CX-7,CY-3),px(CX+8,CY-3)];
+  const stalls=[{...px(CX+5,CY+8),c1:'#3a9aff',c2:'#f4efe2',goods:['#ff5a5a','#ffd35a','#7fe07f']},{...px(CX-5,CY+8),c1:'#ff9ad8',c2:'#f4efe2',goods:['#c99aff','#ff9a5a','#7fd8ff']}];
+  const pots=[];for(const h of houses){pots.push({x:h.x*T+4,y:(h.y+3)*T-2},{x:h.x*T+60,y:(h.y+3)*T-2})}
+  const flowers=[];{const r=mulberry32(77);for(let i=0;i<70;i++){const a=r()*6.283,d=13+r()*9,tx=CX+Math.cos(a)*d*1.3,ty=CY+Math.sin(a)*d*.9;flowers.push({x:Math.round(tx*T),y:Math.round(ty*T),c:['#ff7a9a','#ffd35a','#ffffff','#b88aff','#ff9a5a'][Math.floor(r()*5)]})}}
+  const hens=[0,1,2].map(i=>({x:(CX+5+i)*T,y:(CY+12+i%2)*T,hx:(CX+6)*T,hy:(CY+12)*T,dir:1,tt:i}));
+  const cat={x:(CX+3)*T+4,y:(CY-3)*T+10};
+  const flies=[0,1,2,3,4,5].map(i=>({ph:i*1.7,cx:beds[i%4].x+20,cy:beds[i%4].y+4}));
+  return {lamps,trees,beds,benches,stalls,pots,flowers,hens,cat,flies}})();
+/* 바닥에 굳는 장식 (world 캔버스) */
+function drawTownGround(c,at){
+  for(const f of TD.flowers){if(at(Math.floor(f.x/16),Math.floor(f.y/16))!==G)continue;rect(c,f.x,f.y+2,1,2,'#3f8a3a');rect(c,f.x-1,f.y,3,2,f.c);rect(c,f.x,f.y,1,1,'#fff6c8')}
+  /* 광장 둘레 돌 테두리 + 분수대 둘레 원형 타일 */
+  for(let a=0;a<64;a++){const ang=a/64*6.283,x=Math.round(FX+Math.cos(ang)*34),y=Math.round(FY+Math.sin(ang)*28);rect(c,x-2,y-1,4,3,a%2?'#c9b48a':'#b39c72')}
+  for(const b of TD.beds){rect(c,b.x-1,b.y-1,14,10,'#5a3a26');rect(c,b.x,b.y,12,8,'#6b4a2a');for(let i=0;i<4;i++){const col=['#ff7a9a','#ffd35a','#ff9a5a','#b88aff'][i];rect(c,b.x+1+i*3,b.y+1,2,3,'#3f8a3a');rect(c,b.x+1+i*3,b.y,2,2,col)}}
+  for(const b of TD.benches){const x=b.x-9,y=b.y-2;rect(c,x,y,18,6,'#1b1530');rect(c,x+1,y+1,16,2,'#b07a45');rect(c,x+1,y+3,16,1,'#8a5a32');rect(c,x+1,y+5,2,3,'#5a3a26');rect(c,x+15,y+5,2,3,'#5a3a26');rect(c,x,y-4,18,3,'#1b1530');rect(c,x+1,y-3,16,1,'#c99a5c')}
+  for(const p of TD.pots){rect(c,p.x-3,p.y-3,7,6,'#1b1530');rect(c,p.x-2,p.y-2,5,4,'#c0623a');rect(c,p.x-2,p.y-6,5,4,'#3f8a3a');rect(c,p.x-1,p.y-7,1,1,'#ff7a9a');rect(c,p.x+1,p.y-6,1,1,'#ffd35a')}
+  /* 깃발 줄: 위쪽 집 두 채, 아래쪽 집 두 채를 잇는 알록달록 삼각 깃발 */
+  const flagLine=(x1,y1,x2,y2)=>{const n=Math.floor((x2-x1)/7);for(let i=0;i<=n;i++){const k=i/n,x=Math.round(x1+(x2-x1)*k),y=Math.round(y1+(y2-y1)*k+Math.sin(k*Math.PI)*10);rect(c,x,y,7,1,'#5a3a26');
+    if(i<n){const col=['#ff5a5a','#ffd35a','#5ab8ff','#7fe07f','#ff9ad8'][i%5];rect(c,x+1,y+1,5,2,col);rect(c,x+2,y+3,3,2,col);rect(c,x+3,y+5,1,1,col)}}};
+  flagLine(houses[0].x*16+62,houses[0].y*16+10,houses[1].x*16+2,houses[1].y*16+10);
+  flagLine(houses[2].x*16+62,houses[2].y*16+10,houses[3].x*16+2,houses[3].y*16+10)}
+/* 세워진 것 (앞뒤 가림) */
+function drawLamp(c,l,t){const x=l.x-cam.x,y=l.y-cam.y;rect(c,x-2,y-2,5,3,'#1b1530');rect(c,x-1,y-22,3,21,'#1b1530');rect(c,x,y-21,1,19,'#5a6078');
+  rect(c,x-4,y-30,9,9,'#1b1530');const fl=.85+.15*Math.sin(t*9+l.x);rect(c,x-3,y-29,7,7,`rgba(255,${Math.round(200*fl)},${Math.round(90*fl)},1)`);rect(c,x-1,y-28,3,5,'#fff6c8');rect(c,x-4,y-32,9,2,'#1b1530');rect(c,x-1,y-34,3,2,'#1b1530')}
+function drawTree(c,tr,t){const x=tr.x-cam.x,y=tr.y-cam.y,sw=Math.round(Math.sin(t*1.3+tr.x)*1);rect(c,x-8,y+1,16,3,'#0005');rect(c,x-2,y-10,5,12,'#1b1530');rect(c,x-1,y-10,3,11,'#7a4a2a');
+  const g=['#3f8a3a','#4ea04a','#6ac260'];pxCircle(c,x+sw,y-20,12,'#1b1530');pxCircle(c,x+sw,y-20,11,g[0]);pxCircle(c,x-3+sw,y-23,7,g[1]);pxCircle(c,x+3+sw,y-25,4,g[2]);
+  if(tr.s===0)for(const [a,b] of [[-6,-16],[5,-18],[0,-26],[-4,-24]])rect(c,x+a+sw,y+b,2,2,'#ff5a5a');if(tr.s===1)for(const [a,b] of [[-7,-20],[6,-22],[-1,-14],[2,-28]])rect(c,x+a+sw,y+b,2,2,'#ffd0e8')}
+function drawStall(c,s,t){const x=s.x-cam.x,y=s.y-cam.y;rect(c,x-15,y-30,30,4,'#1b1530');for(let i=0;i<7;i++)rect(c,x-14+i*4,y-29,4,5,i%2?s.c2:s.c1);
+  rect(c,x-14,y-24,2,20,'#6b4426');rect(c,x+12,y-24,2,20,'#6b4426');rect(c,x-15,y-6,30,8,'#1b1530');rect(c,x-14,y-5,28,6,'#a8743f');rect(c,x-14,y-5,28,2,'#c99a5c');
+  s.goods.forEach((g,i)=>{rect(c,x-11+i*8,y-9,6,4,'#1b1530');rect(c,x-10+i*8,y-8,4,3,g)})}
+function drawHen(c,h,t){const x=Math.round(h.x-cam.x),y=Math.round(h.y-cam.y),pk=(Math.floor(t*2+h.tt)%5===0)?2:0,d=h.dir;rect(c,x-4,y+1,8,2,'#0004');rect(c,x-4,y-6,8,7,'#1b1530');rect(c,x-3,y-5,6,5,'#ffffff');
+  rect(c,x+(d>0?2:-4),y-9+pk,3,4,'#1b1530');rect(c,x+(d>0?2:-3),y-8+pk,2,3,'#ffffff');rect(c,x+(d>0?3:-3),y-10+pk,1,1,'#ff3a3a');rect(c,x+(d>0?4:-4),y-7+pk,1,1,'#ffa31a');rect(c,x-1,y+1,1,1,'#ffa31a');rect(c,x+1,y+1,1,1,'#ffa31a')}
+function drawCat(c,t){const x=TD.cat.x-cam.x,y=TD.cat.y-cam.y,tl=Math.round(Math.sin(t*2)*2);rect(c,x-5,y-4,10,5,'#1b1530');rect(c,x-4,y-3,8,3,'#f0a050');rect(c,x+3,y-7,5,5,'#1b1530');rect(c,x+4,y-6,3,3,'#f0a050');rect(c,x+4,y-8,1,1,'#f0a050');rect(c,x+6,y-8,1,1,'#f0a050');
+  rect(c,x+4,y-5,3,1,(t%5)<.2?'#f0a050':'#1b1530');rect(c,x-7,y-3+tl,3,1,'#f0a050');if(Math.floor(t)%6<3){c.fillStyle='#ffffffcc';c.font='8px sans-serif';c.fillText('z',x+9,y-9-((t*4)%4))}}
+function stepTown(dt,t){for(const h of TD.hens){if(Math.random()<dt*.6){h.tx=h.hx+(Math.random()-.5)*90;h.ty=h.hy+(Math.random()-.5)*40}if(h.tx!=null){const dx=h.tx-h.x,dy=h.ty-h.y,d=Math.hypot(dx,dy);if(d>2){h.x+=dx/d*22*dt;h.y+=dy/d*22*dt;h.dir=dx>0?1:-1}}}}
+function drawTownAir(c,t){for(const b of TD.flies){const x=b.cx+Math.cos(t*.7+b.ph)*26+Math.sin(t*1.9+b.ph)*6-cam.x,y=b.cy-14+Math.sin(t*1.1+b.ph)*12-cam.y,w=Math.sin(t*16+b.ph)>0;const col=['#fff6a0','#ffd0f0','#a0e0ff'][Math.floor(b.ph)%3];
+    rect(c,Math.round(x)-(w?2:1),Math.round(y),w?2:1,2,col);rect(c,Math.round(x)+1,Math.round(y),w?2:1,2,col);rect(c,Math.round(x),Math.round(y),1,2,'#3a2a1a')}
+  /* 꽃잎 바람 */
+  for(let i=0;i<10;i++){const ph=i*37.3,x=((ph*13+t*18)%(view.w+40))-20,y=((ph*29+t*22+Math.sin(t+i)*20)%(view.h+40))-20;rect(c,Math.round(x),Math.round(y),2,1,i%2?'#ffd0e8':'#ffffffaa')}}
+
 /* 도트 그림 */
 function drawNPC(c,n,t){const x=Math.round(n.x-cam.x),y=Math.round(n.y-cam.y),bob=Math.round(Math.sin(t*2+n.x)*1);
   rect(c,x-7,y+1,14,3,'#0006');
@@ -6616,6 +6662,12 @@ function render(t){
     ents.push({y:MERCH.y,draw:()=>drawHeroAt(ctx,MERCH.x-cam.x,MERCH.y-cam.y,'down',false,'#8a5a3a',1,t,-1,'',false)});
     ents.push({y:BOARD.y,draw:()=>drawBoard(ctx,t)});
     for(const n of NPCS)if(vis(n.x,n.y))ents.push({y:n.y+(n.k==='owl'?1:0),draw:()=>drawNPC(ctx,n,t)});
+    {const dt=Math.min(.1,t-(TD.lt||t));TD.lt=t;stepTown(dt,t)}
+    for(const l of TD.lamps)if(vis(l.x,l.y))ents.push({y:l.y,draw:()=>drawLamp(ctx,l,t)});
+    for(const tr of TD.trees)if(vis(tr.x,tr.y,60))ents.push({y:tr.y,draw:()=>drawTree(ctx,tr,t)});
+    for(const st of TD.stalls)if(vis(st.x,st.y))ents.push({y:st.y,draw:()=>drawStall(ctx,st,t)});
+    for(const h of TD.hens)if(vis(h.x,h.y))ents.push({y:h.y,draw:()=>drawHen(ctx,h,t)});
+    if(vis(TD.cat.x,TD.cat.y))ents.push({y:TD.cat.y,draw:()=>drawCat(ctx,t)});
     ents.push({y:MERCH.y+6,draw:()=>{const x=MERCH.x-cam.x,y=MERCH.y-cam.y;rect(ctx,x-13,y-3,26,8,'#1b1530');rect(ctx,x-12,y-2,24,6,'#a8743f');rect(ctx,x-12,y-2,24,2,'#c99a5c');
       ctx.drawImage(itemIcon('pot_s'),x-10,y-9);ctx.drawImage(itemIcon('herb'),x+2,y-9)}});
   }
@@ -6627,6 +6679,7 @@ function render(t){
   for(const r of remotes.values()){if(isNaN(r.rx)||r.z!==zoneId||!PET_BY[r.pt])continue;const P=PET_BY[r.pt];ents.push({y:r.ry+3,draw:()=>drawPetAt(ctx,Math.round(r.rx)-cam.x-14,Math.round(r.ry)-cam.y+4,P,t,1,false)})}
   if(!me.dead&&started)ents.push({y:me.y+0.1,draw:()=>{const mt=mountOn(),L=mt?MOUNT_LIFT:0,X=Math.round(me.x)-cam.x,Y=Math.round(me.y)-cam.y-L;if(mt)drawMount(ctx,X,Y+L,mt,t,me.dir,me.moving);if(me.cos&&me.cos.aura)drawCosAura(ctx,X,Y,me.cos.aura,t);{const A4=adv4Of();if(A4)drawFormStage(ctx,X,Y,t,stageOf(),A4.col,false,null,false,'back')}if(me.cos&&me.cos.wing)drawCosWing(ctx,X,Y,me.cos.wing,t);if(!(me.iframe>0&&Math.floor(t*20)%2)){cam.y+=L;drawHero(ctx,me,capeColor(),me.hair,t,me.spinT>0?-1:(t-me.atkT)/0.28,me.eq.weapon,me.spinT>0?1-me.spinT/.5:-1,me.cls);cam.y-=L;const sh=eqItem('shoulder');if(sh){rect(ctx,X-7,Y-17,3,2,sh.col);rect(ctx,X+4,Y-17,3,2,sh.col);rect(ctx,X-7,Y-17,3,1,'#ffffff')}}}});
   ents.sort((a,b)=>a.y-b.y).forEach(e=>e.draw());
+  if(Z.id==='town'&&GFX.q>0&&typeof TD!=='undefined')drawTownAir(ctx,t);
   for(const p of parts){ctx.globalAlpha=1-p.t/0.6;rect(ctx,Math.round(p.x-cam.x),Math.round(p.y-cam.y),2,2,p.col)}ctx.globalAlpha=1;
   for(const q of mprojs){const x=Math.round(q.x-cam.x),y=Math.round(q.y-cam.y);frameLights.push({x,y,r:26,col:q.col,i:.7});
     pxCircle(ctx,x,y,3,shade(q.col,-.5));pxCircle(ctx,x,y,2,q.col);rect(ctx,x-1,y-1,2,2,'#ffffff')}
