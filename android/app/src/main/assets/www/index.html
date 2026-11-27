@@ -665,6 +665,58 @@ body.mobile #act{top:auto;bottom:calc(120px + env(safe-area-inset-bottom,0px))}
 <div id="toast" hidden></div>
 
 <script>
+/* ================= 웹·앱 버전 같이하기 (Firebase) =================
+   claude.ai 안에서는 쓰지 않아요 (claude.ai 자체 같이하기 방을 그대로 씀).
+   GitHub Pages 웹 버전과 안드로이드 앱에서만 켜져요. FB_CFG에 Firebase 웹 설정을 넣으면 동작해요. */
+const FB_CFG=null;
+const FB_SDK='https://www.gstatic.com/firebasejs/10.12.2/';
+var FB_MODE=false;
+(()=>{let cfg=window.FB_CFG_TEST||FB_CFG,h='';try{h=location.hostname}catch{}
+  const webHost=h==='appassets.androidplatform.net'||/\.github\.io$/.test(h)||((h==='localhost'||h==='127.0.0.1')&&!!window.FB_CFG_TEST);
+  if(!cfg||!webHost||window.claude)return;FB_MODE=true;
+  const ROOM_KEY='mudun-room',okCode=c=>typeof c==='string'&&/^[a-z0-9]{3,12}$/.test(c);
+  let code='open';try{const q=new URLSearchParams(location.search).get('room');const l=localStorage.getItem(ROOM_KEY);code=okCode(q)?q:okCode(l)?l:'open';localStorage.setItem(ROOM_KEY,code)}catch{}
+  window.fbRoomCode=code;
+  const load=src=>new Promise((ok,no)=>{if(window.FB_MOCK)return ok();const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>no(new Error('sdk'));document.head.appendChild(s)});
+  const ready=(async()=>{await load(FB_SDK+'firebase-app-compat.js');await load(FB_SDK+'firebase-auth-compat.js');await load(FB_SDK+'firebase-database-compat.js');
+    const F=window.FB_MOCK||window.firebase;const app=F.apps&&F.apps.length?F.app():F.initializeApp(cfg);const auth=F.auth();let u=auth.currentUser;if(!u){const cr=await auth.signInAnonymously();u=auth.currentUser||(cr&&cr.user)}
+    return {F,db:F.database(),uid:u.uid}})();
+  ready.catch(()=>{});
+  const POS=['x','y','d','m','z'];
+  async function mkRoom(){const {F,db,uid}=await ready;const base=db.ref('rooms/'+code);const myPos=base.child('pos/'+uid),myInfo=base.child('info/'+uid);
+    myPos.onDisconnect().remove();myInfo.onDisconnect().remove();
+    const peers=new Map();let peerCb=null;const mk=(u,p)=>({peer:u,by:u,isMe:u===uid,sameTab:u===uid,kind:'viewer',guest:false,presence:{...(p.info||{}),...(p.pos||{})}});
+    const fire=(k,u)=>{const p=peers.get(u);if(!peerCb||!p)return;if(k==='left'){peerCb({joined:[],updated:[],left:[mk(u,p)]});return}if(!p.info)return;
+      if(!p.shown){p.shown=1;peerCb({joined:[mk(u,p)],updated:[],left:[]})}else peerCb({joined:[],updated:[mk(u,p)],left:[]})};
+    const fresh=v=>v&&(!v.t||Date.now()-v.t<120000);
+    const onSnap=part=>s=>{const u=s.key,v=s.val();if(!fresh(v))return;const p=peers.get(u)||{};p[part]=v;peers.set(u,p);fire('upd',u)};
+    base.child('info').on('child_added',onSnap('info'));base.child('info').on('child_changed',onSnap('info'));
+    base.child('pos').on('child_added',onSnap('pos'));base.child('pos').on('child_changed',onSnap('pos'));
+    base.child('info').on('child_removed',s=>{const u=s.key;if(peers.has(u)){fire('left',u);peers.delete(u)}});
+    let lastInfo='',lastPos='',pend=null,timer=0;
+    const flush=()=>{timer=0;if(!pend)return;const o=pend;pend=null;const pos={},info={};for(const k in o)(POS.includes(k)?pos:info)[k]=o[k];
+      const pj=JSON.stringify(pos),ij=JSON.stringify(info);if(pj!==lastPos){lastPos=pj;myPos.set({...pos,t:Date.now()}).catch(()=>{})}if(ij!==lastInfo){lastInfo=ij;myInfo.set({...info,t:Date.now()}).catch(()=>{})}};
+    setInterval(()=>{if(lastInfo){myInfo.child('t').set(Date.now()).catch(()=>{})}},30000);
+    return {presence:o=>{pend=o;if(!timer)timer=setTimeout(flush,250);return Promise.resolve()},
+      onPeers:(cb,err)=>{peerCb=cb;for(const u of peers.keys())fire('upd',u);return()=>{peerCb=null}},
+      onConnection:(cb,err)=>{const r=db.ref('.info/connected'),f=s=>cb(s.val()===true);r.on('value',f);return()=>r.off('value',f)},
+      on:()=>()=>{},emit:()=>Promise.resolve(),connected:()=>true}}
+  async function mkDb(){const {db,uid}=await ready;const web=()=>{const e=new Error('web');e.code='web';return Promise.reject(e)};
+    return {doc:p=>{if(p.startsWith('tower/'))return {set:v=>db.ref('tower/'+uid).set(v),get:async()=>{const s=await db.ref('tower/'+uid).once('value');return {exists:s.exists(),data:()=>s.val()}}};return {get:web,set:web}},
+      collection:p=>({orderBy:()=>({limit:n=>({get:async()=>{const s=await db.ref('tower').orderByChild('best').limitToLast(n).once('value');const a=[];s.forEach(c=>{a.push(c.val())});a.sort((x,y)=>(y.best||0)-(x.best||0));return {docs:a.map(v=>({data:()=>v}))}}})})})}}
+  async function mkUser(){const {uid}=await ready;return {id:async()=>uid,isOwner:()=>false,canEdit:()=>false,can:()=>null}}
+  window.claude={use:async n=>{try{return n==='room'?await mkRoom():n==='db'?await mkDb():n==='user'?await mkUser():null}catch(e){return null}}};
+})();
+function fbRoomUI(list){if(!FB_MODE)return;const li=document.createElement('div');li.id='fbRoom';li.style.cssText='display:block;border:1px solid #7ff0a0;border-radius:6px;padding:6px 8px;margin-bottom:6px;color:#dfffe8';
+  const c=window.fbRoomCode||'open';li.innerHTML='';const t=document.createElement('div');t.textContent=c==='open'?'🌐 모두의 방 (누구나)':'🔒 방 코드: '+c;li.appendChild(t);
+  const row=document.createElement('div');row.style.cssText='display:flex;gap:4px;margin-top:4px;flex-wrap:wrap';
+  const inp=document.createElement('input');inp.placeholder='방 코드 (영어·숫자 3~12자)';inp.maxLength=12;inp.style.cssText='flex:1 1 120px;min-width:0;font-size:13px;padding:4px';
+  const go=document.createElement('button');go.type='button';go.className='btn sm';go.textContent='들어가기';go.addEventListener('click',()=>{const v=(inp.value||'').trim().toLowerCase();if(!/^[a-z0-9]{3,12}$/.test(v)){toast('방 코드는 영어 소문자·숫자 3~12자예요',2000);return}try{localStorage.setItem('mudun-room',v)}catch{}persist();location.replace(location.pathname+'?room='+v)});
+  const mk=document.createElement('button');mk.type='button';mk.className='btn sm alt';mk.textContent='새 방 만들기';mk.addEventListener('click',()=>{inp.value=Math.random().toString(36).slice(2,8)});
+  const op=document.createElement('button');op.type='button';op.className='btn sm alt';op.textContent='모두의 방';op.addEventListener('click',()=>{try{localStorage.setItem('mudun-room','open')}catch{}persist();location.replace(location.pathname+'?room=open')});
+  row.append(inp,go,mk);if(c!=='open')row.appendChild(op);li.appendChild(row);
+  const s=document.createElement('small');s.style.color='#aaa';s.textContent='친구에게 방 코드를 알려주면 같은 방에서 만나요.';li.appendChild(s);list.parentNode.insertBefore(li,list)}
+
 /* =========================================================
    무한대로 던전 키우기 (예전 이름: 슬라임 언덕 온라인)
    - 화면: 저해상도 캔버스(cv)에 도트를 그리고 크게 확대, 그 위에 어둠·빛 레이어
@@ -1811,7 +1863,7 @@ async function initCloud(){try{const C=window.claude;if(!C||!C.use){cloud.why='�
   cloud.ok=true;cloud.why='켜짐: 계정에 저장돼서 다른 기기에서도 이어서 할 수 있어요';
   snaps.forEach((sn,i)=>{let sv=null;if(sn.exists){try{sv=JSON.parse((sn.data()||{}).json||'null')}catch{}}cloud.sum[i]=sv});
   calcSlotN();cloudAdopt(slot);renderSlots();cloudStash();
-  if(!$('opt').hidden)renderOpt()}catch(e){cloud.ok=false;cloud.why='클라우드 저장 확인 실패 ('+(e&&e.code||e&&e.message||'오류')+'), 이 기기에만 저장돼요'}}
+  if(!$('opt').hidden)renderOpt()}catch(e){cloud.ok=false;cloud.why=e&&e.code==='web'?'웹·앱 버전이라 이 기기에 저장돼요 (같이하기·탑 순위만 서버를 써요)':'클라우드 저장 확인 실패 ('+(e&&e.code||e&&e.message||'오류')+'), 이 기기에만 저장돼요'}}
 function cloudAdopt(i){const sv=cloud.sum[i];cloud.remote=sv;if(!sv)return;const lt=(loadSlot(i).ts||0);
   if((sv.ts||0)>lt+3000){if(!started){if(i===slot){resetMe();applySave(sv);persist();sys(`클라우드(계정)에 있던 캐릭터 ${i+1}의 더 최신 저장을 불러왔어요.`)}}else if(i===slot)sys('다른 기기에 더 최신 저장이 있어요. 옵션(O) → 클라우드에서 불러오기로 가져올 수 있어요.')}}
 async function cloudSave(force){if(!cloud.ok||!cloud.ref||cloud.busy||tabLocked||!started)return;const now=Date.now();if(!force&&now-cloud.at<20000)return;
@@ -7083,7 +7135,7 @@ function renderDex(){
 let room=null,roomDone=false;const remotes=new Map();
 function setConn(s){const el=$('conn');el.className='conn'+(s==='online'?' on':'');el.textContent=s==='online'?'온라인':s==='solo'?'혼자 모드':'연결 중'}
 function renderPlist(){
-  const list=$('plist');list.textContent='';
+  const list=$('plist');list.textContent='';if(FB_MODE&&!$('fbRoom'))fbRoomUI(list);
   const people=[{nick:me.nick,lvl:me.lvl,color:me.color,tag:' (나)',z:zoneId}];
   for(const r of remotes.values())if(r.nick)people.push({nick:r.nick,lvl:r.lvl,color:r.color,tag:r.other?' (내 다른 탭)':'',z:r.z,r});
   $('cnt').textContent=people.length;
@@ -7096,7 +7148,7 @@ function renderPlist(){
       go.title=`${p.nick} 님이 있는 곳으로 이동해요`;go.addEventListener('click',e=>{followPeer(p.r);e.currentTarget.blur()});li.appendChild(go)}
     list.appendChild(li)}
   if(people.length===1){const li=document.createElement('li');li.className='alone';
-    li.textContent=room&&!roomWhy?'아직 혼자예요.':roomWhy||'혼자 모드예요.';list.appendChild(li)}
+    li.textContent=room&&!roomWhy?(FB_MODE?'아직 혼자예요. 친구가 같은 방 코드로 들어오면 여기 같이 보여요.':'아직 혼자예요.'):roomWhy||'혼자 모드예요.';list.appendChild(li)}
 }
 document.querySelector('.online .oh').addEventListener('click',()=>{if(isMobile())document.querySelector('.online').classList.toggle('open')});
 function followPeer(r){
@@ -7147,7 +7199,7 @@ const WHY_NULL='혼자 모드: 앱 버전은 아직 혼자 플레이만 돼요. 
 async function initRoom(){
   try{room=window.claude&&window.claude.use?await window.claude.use('room'):null}catch{room=null}
   roomDone=true;
-  if(!room){roomWhy=WHY_NULL;setConn('solo');renderPlist();if(started)sys(WHY_NULL);return}
+  if(!room){roomWhy=FB_MODE?'혼자 모드: 같이하기 서버에 연결하지 못했어요. 인터넷 연결을 확인하고 새로고침해 보세요.':WHY_NULL;setConn('solo');renderPlist();if(started)sys(WHY_NULL);return}
   const dead=e=>{setConn('solo');const c=e&&e.code||'unknown';roomWhy=`혼자 모드: 같이하기 연결이 끊겼어요 (${c}). `+(c==='not_permitted'||c==='not_granted'?'이 계정은 방에 들어갈 권한이 없어요. 게임 주인에게 [공유]에서 초대를 요청하세요.':c==='capability_disabled'?'조직 설정에서 같이하기 기능이 꺼져 있어요.':'페이지를 새로고침해 보세요.');renderPlist();sys(roomWhy)};
   room.onConnection(c=>setConn(c?'online':'connecting'),dead);
   room.onPeers(ch=>{ch.joined.forEach(upsertPeer);ch.updated.forEach(upsertPeer);ch.left.forEach(removePeer);renderPlist()},dead);
