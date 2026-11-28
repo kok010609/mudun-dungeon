@@ -5683,20 +5683,19 @@ setInterval(()=>{try{const b=$('autoBtn');if(!b||!started)return;const can=gm.on
       let why='';if(me.lvl>AUTO_FREE_LV)why='자동사냥은 Lv.100까지예요. 이제 직접 싸워 봐요!';else if(autoLeft()<=0)why='오늘 자동사냥 30분을 다 썼어요. 내일 또 쓸 수 있어요';else if(potCount()<=0)why='포션이 0개라 자동사냥을 멈췄어요. 마을 상인에게서 사 와요';
       if(why){setAuto(false);toast(why,3000);sys('⏸ '+why)}}}}catch(e){}},1000);
 /* ================= AI 동료 파티 (G005) =================
-   마을 여관지기 '포근 할멈'에게서 동료를 데려가요. 동료 힘은 내 힘에 비례 (능력치 판매 없음).
-   claude.ai 버전에서는 동료와 진짜 AI(Claude)로 대화할 수 있어요 (sample 기능, 처음 한 번 허락). */
+   마을 여관지기 '포근 할멈'에게서 동료를 데려가요. 동료 힘은 내 힘에 비례 (능력치 판매 없음). 대사는 정해진 말만. */
 const COMP_DEF={
   rock:{n:'바위솔',role:'방패',col:'#b8c4d8',cape:'#5a6a88',cls:'knight',hp:1.3,atk:.12,rng:24,cd:.9,
     desc:'앞에서 버티는 방패 · 곁에 있으면 내가 받는 피해 -15%',
-    pers:'말수 적고 듬직한 방패 전사. 짧고 담백하게 말하고, 동료를 지키는 걸 자랑으로 여긴다. 가끔 바위 같은 농담을 한다.',
+    
     say:{boss:['큰 녀석이다. 내 뒤로.','버텨 볼게. 믿어.'],low:['물러나! 내가 막는다.','포션부터 마셔!'],loot:['좋은 거 주웠네.','그거 튼튼해 보인다.'],lvup:['또 강해졌군.','좋아, 한 걸음 더.'],idle:['…조용하군.','방패 좀 닦아야겠다.'],rev:['아직 안 끝났어.','다시 섰다.'],hello:['바위솔이다. 앞은 맡겨.']}},
   dew:{n:'이슬비',role:'치유사',col:'#9affc8',cape:'#3a9a6a',cls:'shaman',hp:.8,atk:.06,rng:110,cd:1.4,
     desc:'뒤에서 돌보는 치유사 · 내 체력이 60% 아래면 회복 (4초마다 최대 체력 12%)',
-    pers:'다정하고 걱정이 많은 치유사. 상냥한 존댓말을 쓰고, 플레이어 몸 상태를 늘 챙긴다. 꽃과 차를 좋아한다.',
+    
     say:{boss:['다치면 바로 말해 주세요!','제가 뒤에서 지킬게요.'],low:['잠깐만요, 치료할게요!','무리하지 마세요…!'],loot:['와, 반짝반짝해요!','축하해요!'],lvup:['레벨 업 축하해요!','점점 멋져지시네요.'],idle:['차 한 잔 하실래요?','오늘 날씨 좋네요.'],rev:['돌아왔어요, 걱정 마세요.'],hello:['이슬비예요. 다치면 제가 고쳐 드릴게요.']}},
   wind:{n:'휘파람',role:'사냥꾼',col:'#ffc46a',cape:'#c2722a',cls:'archer',hp:.8,atk:.28,rng:150,cd:.8,
     desc:'멀리서 쏘는 사냥꾼 · 가장 센 공격 (내 공격력의 28%)',
-    pers:'장난기 많고 자신만만한 사냥꾼. 반말로 경쾌하게 말하고 경쟁심이 강하다. 누가 더 많이 잡나 내기를 좋아한다.',
+    
     say:{boss:['저거 내가 먼저 맞힌다!','보스다! 내기할래?'],low:['야야, 피 없잖아!','뒤로 빠져, 내가 엄호할게!'],loot:['오, 그거 대박인데?','나도 하나 줘~'],lvup:['오~ 좀 하는데?','이 속도면 금방이야!'],idle:['심심하다~ 사냥 가자!','활시위 손질 중.'],rev:['아야… 다시 간다!'],hello:['휘파람이야! 내 화살 구경해.']}}};
 const COMP_IDS=Object.keys(COMP_DEF),COMP_LV=5;
 const compSlots=()=>(me.rb||0)>0||me.lvl>=ADV_LV?3:me.lvl>=100?2:1;
@@ -5739,12 +5738,9 @@ function compLabels(t,label,sx,sy,bubble){const now=performance.now();for(const 
     const w=22*dpr,hx=sx(c.x)-w/2,hy=sy(c.y-25);octx.fillStyle='#0b0e1c';octx.fillRect(hx-1,hy-1,w+2,4*dpr);octx.fillStyle=c.hp/c.maxHp>.4?'#5affb0':'#ff6a6a';octx.fillRect(hx,hy,w*Math.max(0,c.hp/c.maxHp),2*dpr);
     if(c.say&&now<c.sayU)bubble(sx(c.x),sy(c.y-40),c.say)}}
 /* ---------- 여관 창: 동료 고르기 + AI 대화 ---------- */
-let compAI=null,compAIBusy=false,compAIHist={};
-let compAITried=0;async function compAIGet(){if(compAI||FB_MODE||compAITried>2)return compAI;compAITried++;try{if(window.claude&&window.claude.use){const s=await window.claude.use('sample');if(s)compAI=s}}catch(e){}return compAI}
-setTimeout(compAIGet,3000);
 function showParty(){closePanels();partyInit();let el=document.createElement('div');el.id='partyBox';
   el.style.cssText=`box-sizing:border-box;position:fixed;left:50%;${isMobile()?'top:calc(50px + env(safe-area-inset-top,0px))':'top:50%'};transform:translate(-50%,${isMobile()?'0':'-50%'});z-index:61;width:min(560px,96vw);max-height:${isMobile()?'calc(100% - 290px)':'86vh'};overflow:auto;background:#1b1530f4;border:2px solid #ffb07a;border-radius:10px;padding:12px 14px;color:#fff;font-size:14px;box-shadow:0 8px 40px #000a`;
-  document.body.appendChild(el);renderParty();if(!compAI)compAIGet().then(a=>{if(a)renderParty()})}
+  document.body.appendChild(el);renderParty()}
 function renderParty(){const el=$('partyBox');if(!el)return;el.textContent='';const P=me.party,slots=compSlots();
   const h=document.createElement('div');h.style.cssText='font-size:19px;color:#ffb07a';h.textContent='🏡 모험가 여관 · 동료';el.appendChild(h);
   const p=document.createElement('div');p.style.cssText='color:#cfc8e8;margin:4px 0 10px;line-height:1.5';p.textContent=`같이 다닐 동료를 골라요 (지금 ${slots}명까지 · Lv.100에 2명, 1차 전직에 3명). 동료 힘은 내 힘에 비례하고, 경험치·아이템은 모두 내 거예요. 같이 싸울수록 ♥가 늘어 조금씩 세져요.`;el.appendChild(p);
@@ -5754,20 +5750,8 @@ function renderParty(){const el=$('partyBox');if(!el)return;el.textContent='';co
     const bt=document.createElement('button');bt.type='button';bt.className='btn sm'+(on?' alt':'');bt.textContent=on?'쉬게 하기':'데려가기';bt.disabled=!on&&P.act.length>=slots;bt.style.minHeight='34px';
     bt.addEventListener('click',()=>{if(on)P.act=P.act.filter(x=>x!==id);else{P.act.push(id);setTimeout(()=>{const c=comps.find(c=>c.id===id);if(c)compSay(c,'hello',true)},200)}partyInit();persist();renderParty()});
     top.append(nm,bt);row.appendChild(top);const ds=document.createElement('small');ds.style.color='#bbb';ds.textContent=D.desc;row.appendChild(ds);
-    if(on&&compAI){const box=document.createElement('div');box.style.cssText='display:flex;gap:4px;margin-top:6px';const inp=document.createElement('input');inp.placeholder=`${D.n}에게 말 걸기 (진짜 AI)`;inp.maxLength=120;inp.style.cssText='flex:1;min-width:0;font-size:14px;padding:6px';
-      const go=document.createElement('button');go.type='button';go.className='btn sm';go.textContent='보내기';const send=()=>compTalk(id,inp.value,inp,go);go.addEventListener('click',send);inp.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter')send()});box.append(inp,go);row.appendChild(box)}
     el.appendChild(row)}
-  const n=document.createElement('small');n.style.cssText='display:block;color:#aaa;margin:2px 0 8px';n.textContent=compAI?'💬 동료와의 대화는 Claude(진짜 AI)가 해요. 처음 한 번 허락을 물어보고, 보낸 말과 게임 상황(레벨·층 등)이 Claude에게 전달돼요.':'💬 진짜 AI 대화는 claude.ai에 로그인해서 열었을 때만 돼요. 지금은 정해진 대사로 말해요.';el.appendChild(n);
   const x=document.createElement('button');x.type='button';x.className='btn alt';x.textContent='닫기';x.addEventListener('click',()=>el.remove());el.appendChild(x)}
-async function compTalk(id,text,inp,btn){text=(text||'').trim().slice(0,120);if(!text||compAIBusy||!compAI)return;const D=COMP_DEF[id],c=comps.find(c=>c.id===id);compAIBusy=true;btn.disabled=true;inp.value='';addChat(me.nick,me.color,`(${D.n}에게) ${text}`);
-  const H=compAIHist[id]=(compAIHist[id]||[]).slice(-6);
-  const ctxs=`게임 상황: 플레이어 "${me.nick}" ${({knight:'기사',mage:'마법사',rogue:'도적',archer:'궁수',samurai:'사무라이',lancer:'창술사',shaman:'정령사',necro:'네크로맨서'})[me.cls]||''} Lv.${me.lvl}${me.rb?` 환생 ${me.rb}회`:''}, 지금 있는 곳 "${Z&&Z.title||'마을'}", 체력 ${Math.round(me.hp/me.maxHp*100)}%, 너와의 친밀도 ${bondLv(me.party.bond[id])}/5.`;
-  const sysTxt=`너는 도트 RPG "무한대로 던전 키우기" 속 동료 "${D.n}"(${D.role})이다. 성격: ${D.pers} ${ctxs} 규칙: 한국어로 1~2문장(60자 이내)만 말해. 캐릭터를 벗어나지 말고, 게임 밖 이야기·개인정보·위험한 내용은 부드럽게 넘겨. 게임 수치를 지어내지 말고 모르면 모른다고 해.`;
-  const msgs=[{role:'user',content:sysTxt+'\n\n(대화 시작)'},{role:'assistant',content:D.say.hello[0]},...H,{role:'user',content:text}];
-  try{const r=await compAI(msgs,{cache:false,modelTier:'quick'});let t=(r&&r.text||'').replace(/\s+/g,' ').trim().slice(0,90);if(!t)t='…';H.push({role:'user',content:text},{role:'assistant',content:t});compAIHist[id]=H.slice(-6);
-    addChat(D.n,D.col,t);if(c){c.say=t;c.sayU=performance.now()+6000}}
-  catch(e){const code=e&&e.code;if(code==='not_granted'){compAI=null;toast('AI 대화를 허락하지 않아서 정해진 대사로 말해요',2500);renderParty()}else if(code==='rate_limited')toast('잠깐 쉬었다가 다시 말 걸어 주세요',2200);else{toast('대화가 잠깐 안 돼요',2000);try{console.warn('compTalk',e&&e.message||e)}catch(_){}}}
-  compAIBusy=false;if(btn.isConnected)btn.disabled=false}
 /* 연결: 업데이트·구역 이동·득템·레벨업·피해 */
 {const u0=update;update=function(dt,t){const r=u0(dt,t);try{if(comps.length)stepParty(dt)}catch(e){}return r}}
 {const ez=enterZone;enterZone=function(...a){const r=ez(...a);try{if(started){partyInit();for(const c of comps){c.tgt=null}if(Z&&Z.colo){const c=comps[0];if(c)compSay(c,'boss',true)}}}catch(e){}return r}}
